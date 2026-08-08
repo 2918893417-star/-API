@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>仪表盘 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/style.css"/>
+    <link rel="stylesheet" href="./assets/css/admin.css"/>
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">仪表盘</h1>
+    <p class="adm-page-desc">欢迎回来 <?php echo $_SESSION['admin_username'];?>，今天是 <?php echo date('Y年m月d日');?></p>
+</div>
+
+<!-- Vue 挂载点 -->
+<div id="admin">
+
+<!-- 统计卡片 -->
+<div class="adm-stats-grid">
+    <div class="adm-stat-card" style="--stat-color: #2563eb;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            调用量
+        </div>
+        <div class="adm-stat-value color-primary">{{ num.access }}</div>
+        <div class="adm-stat-sub">总 API 调用次数</div>
+    </div>
+    <div class="adm-stat-card" style="--stat-color: #10b981;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            接口量
+        </div>
+        <div class="adm-stat-value color-success">{{ num.api }}</div>
+        <div class="adm-stat-sub">已注册 API 接口</div>
+    </div>
+    <div class="adm-stat-card" style="--stat-color: #f59e0b;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            友链量
+        </div>
+        <div class="adm-stat-value color-warning">{{ num.link }}</div>
+        <div class="adm-stat-sub">友情链接数量</div>
+    </div>
+    <div class="adm-stat-card" style="--stat-color: #6366f1;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            蜘蛛量
+        </div>
+        <div class="adm-stat-value" style="color:#6366f1;">{{ num.spider }}</div>
+        <div class="adm-stat-sub">爬虫访问次数</div>
+    </div>
+    <div class="adm-stat-card" style="--stat-color: #06b6d4;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            公告量
+        </div>
+        <div class="adm-stat-value" style="color:#06b6d4;">{{ num.post }}</div>
+        <div class="adm-stat-sub">系统公告数量</div>
+    </div>
+    <div class="adm-stat-card" style="--stat-color: #ef4444;">
+        <div class="adm-stat-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            待处理反馈
+        </div>
+        <div class="adm-stat-value color-danger">{{ num.feedback }}</div>
+        <div class="adm-stat-sub">用户反馈待处理</div>
+    </div>
+</div>
+
+<!-- 会员系统统计 -->
+<div class="adm-card adm-fade-in" style="animation-delay: 0.1s;">
+    <div class="adm-card-header">
+        <h3 class="adm-card-title">
+            <span class="adm-card-title-icon" style="background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(236,72,153,0.1));color:#7c3aed;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            会员系统统计
+        </h3>
+        <a href="?action=admin&page=user_manage" class="adm-btn adm-btn-sm adm-btn-secondary">
+            管理会员
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+    </div>
+    <div class="adm-card-body">
+        <div class="adm-data-row">
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">用户总数</div>
+                <div class="adm-data-cell-value">{{ num.user_total }}</div>
+            </div>
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">VIP用户</div>
+                <div class="adm-data-cell-value" style="color:#f97316;">{{ num.vip_count }}</div>
+            </div>
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">普通用户</div>
+                <div class="adm-data-cell-value">{{ num.normal_count }}</div>
+            </div>
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">本月订单</div>
+                <div class="adm-data-cell-value" style="color:#10b981;">{{ num.order_month }}</div>
+            </div>
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">总收入(元)</div>
+                <div class="adm-data-cell-value" style="color:#f59e0b;">¥{{ num.total_income }}</div>
+            </div>
+            <div class="adm-data-cell">
+                <div class="adm-data-cell-label">API Key总数</div>
+                <div class="adm-data-cell-value" style="color:#8b5cf6;">{{ num.apikey_count }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 双栏内容 -->
+<div class="adm-grid-2">
+
+    <!-- 服务器信息 -->
+    <div class="adm-card adm-fade-in" style="animation-delay: 0.15s;">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:var(--adm-primary-bg);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                </span>
+                服务器信息
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <ul class="adm-list">
+                <li class="adm-list-item">
+                    <span class="adm-list-label">PHP版本</span>
+                    <span class="adm-list-value"><?php echo $config['php_version'];?></span>
+                </li>
+                <li class="adm-list-item">
+                    <span class="adm-list-label">服务器系统</span>
+                    <span class="adm-list-value"><?php echo $config['php_uname'];?></span>
+                </li>
+                <li class="adm-list-item">
+                    <span class="adm-list-label">PHP运行方式</span>
+                    <span class="adm-list-value"><?php echo $config['server_software'];?></span>
+                </li>
+                <li class="adm-list-item">
+                    <span class="adm-list-label">文件上传限制</span>
+                    <span class="adm-list-value"><?php echo $config['upload_max_filesize'];?></span>
+                </li>
+                <li class="adm-list-item">
+                    <span class="adm-list-label">脚本执行最长时间</span>
+                    <span class="adm-list-value"><?php echo $config['max_execution_time'];?></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 接口调用排行 -->
+    <div class="adm-card adm-fade-in" style="animation-delay: 0.2s;">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </span>
+                接口调用排行
+            </h3>
+            <a href="?action=admin&page=control" class="adm-btn adm-btn-sm adm-btn-secondary">
+                查看全部
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+        </div>
+        <div class="adm-card-body" style="padding: 8px 0;">
+            <ul class="adm-list" id="apiRankList">
+                <li class="adm-list-item" v-for="(api,index) in apis" style="padding: 12px 24px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <span class="adm-badge adm-badge-default" :class="{'adm-badge-warning':index===0,'adm-badge-info':index===1,'adm-badge-success':index===2}">{{index+1}}</span>
+                        <span style="font-weight:600;color:var(--adm-text);">{{api.name}}</span>
+                    </div>
+                    <span style="color:var(--adm-text-muted);font-size:13px;">调用 {{api.access}} 次</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- 图表区域 -->
+<div class="adm-grid-2">
+
+    <!-- 访问数据 -->
+    <div class="adm-card adm-fade-in">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </span>
+                访问数据
+            </h3>
+            <span style="font-size:13px;color:var(--adm-text-muted);">最近7天</span>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-chart-container">
+                <canvas id="access"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 蜘蛛数量 -->
+    <div class="adm-card adm-fade-in">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                </span>
+                蜘蛛数量
+            </h3>
+            <span style="font-size:13px;color:var(--adm-text-muted);">最近7天</span>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-chart-container">
+                <canvas id="spider"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- 结束 Vue 挂载点 -->
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/chart.min.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+let admin = new Vue({
+    el: '#admin',
+    data: {
+        num: [],
+        apis: [],
+        accessChartNum: [],
+        accessChartDay: [],
+        spiderChartNum: [],
+        spiderChartDay: [],
+    },
+    created (){
+        fetch('./Data/api.php?type=getAdminInfo')
+            .then(response => response.json())
+            .then(json => {
+                this.num = json.data;
+                this.accessChartDay = json.data.access_time.map(Number);
+                this.accessChartNum = json.data.access_data.map(Number);
+                this.spiderChartDay = json.data.spider_time.map(Number);
+                this.spiderChartNum = json.data.spider_data.map(Number);
+            });  
+        fetch('./Data/api.php?type=getApiAccessList')
+            .then(response => response.json())
+            .then(json => {
+                this.apis = json.data;
+            });
+    }
+    
+});
+setTimeout(function(){
+    var chartFontColor = '#64748b';
+    var chartGridColor = 'rgba(148,163,184,0.15)';
+    
+    new Chart($("#access"), {
+        type: 'line',
+        data: {
+            labels: admin.accessChartDay,
+            datasets: [{
+                label: "调用量",
+                data: admin.accessChartNum,
+                borderColor: "#2563eb",
+                backgroundColor: "rgba(37, 99, 235, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: "#2563eb",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    titleFont: { size: 13, weight: '600' },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: chartGridColor, drawBorder: false },
+                    ticks: { color: chartFontColor, font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: chartGridColor, drawBorder: false },
+                    ticks: { color: chartFontColor, font: { size: 12 } },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    new Chart($("#spider"), {
+        type: 'line',
+        data: {
+            labels: admin.spiderChartDay,
+            datasets: [{
+                label: "蜘蛛量",
+                data: admin.spiderChartNum,
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16, 185, 129, 0.1)",
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: "#10b981",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    titleFont: { size: 13, weight: '600' },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8,
+                    displayColors: false,
+                }
+            },
+            scales: {
+                x: {
+                    grid: { color: chartGridColor, drawBorder: false },
+                    ticks: { color: chartFontColor, font: { size: 12 } }
+                },
+                y: {
+                    grid: { color: chartGridColor, drawBorder: false },
+                    ticks: { color: chartFontColor, font: { size: 12 } },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}, 1500);
+</script>
+</body>
+</html>

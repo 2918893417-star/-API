@@ -1,0 +1,102 @@
+<a class="adm-fab-up" href="javascript:goTop();" id="fabUp">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</a>
+
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+<script>
+/* 退出登录 */
+$('#admExitLogin').click(function(){
+    mdui.confirm('确定要退出登录吗？', '提示', function(){
+        fetch('./Data/api.php?type=exitLogin')
+            .then(response => response.json())
+            .then(json => {
+                if(json.code == 0 || json.code == 200){
+                    window.location.href = '?action=admin&page=login';
+                }else{
+                    mdui.snackbar(json.msg || '退出失败');
+                }
+            })
+            .catch(() => {
+                mdui.snackbar('网络错误，请重试');
+            });
+    });
+});
+
+/* 返回顶部 */
+function goTop(){
+    $('html, body').animate({scrollTop: 0}, 500);
+}
+
+$(window).scroll(function(){
+    if($(this).scrollTop() > 300){
+        $('#fabUp').fadeIn();
+    } else {
+        $('#fabUp').fadeOut();
+    }
+});
+
+/* 下拉菜单点击外部关闭 */
+$(document).click(function(e){
+    if(!$(e.target).closest('.adm-user-menu, .adm-dropdown').length){
+        $('#admUserDropdown').removeClass('adm-show');
+    }
+});
+
+/* 主题切换 */
+$('#admToggleTheme').click(function(){
+    $('body').toggleClass('adm-dark-theme');
+    localStorage.setItem('adm_theme', $('body').hasClass('adm-dark-theme') ? 'dark' : 'light');
+});
+
+/* 初始化主题 */
+if(localStorage.getItem('adm_theme') === 'dark'){
+    $('body').addClass('adm-dark-theme');
+}
+
+/* 侧边栏折叠/展开（桌面端折叠 + 移动端抽屉） */
+$('#admSidebarToggle').click(function(){
+    if($(window).width() <= 768){
+        /* 移动端：抽屉式开关 */
+        $('#admSidebar').toggleClass('open');
+        $('#admOverlay').toggle($('#admSidebar').hasClass('open'));
+    } else {
+        /* 桌面端：折叠/展开 */
+        $('body').toggleClass('adm-sidebar-collapsed');
+        localStorage.setItem('adm_sidebar_collapsed', $('body').hasClass('adm-sidebar-collapsed') ? '1' : '0');
+    }
+});
+
+/* 初始化侧边栏折叠状态（仅桌面端） */
+if(localStorage.getItem('adm_sidebar_collapsed') === '1' && $(window).width() > 768){
+    $('body').addClass('adm-sidebar-collapsed');
+}
+
+/* 移动端点击遮罩或导航项后关闭抽屉 */
+$('#admOverlay').click(function(){
+    $('#admSidebar').removeClass('open');
+    $(this).hide();
+});
+$('#admSidebar .adm-nav-item').click(function(){
+    if($(window).width() <= 768){
+        $('#admSidebar').removeClass('open');
+        $('#admOverlay').hide();
+    }
+});
+
+/* 窗口尺寸变化时重置移动端状态 */
+$(window).resize(function(){
+    if($(window).width() > 768){
+        $('#admSidebar').removeClass('open');
+        $('#admOverlay').hide();
+    }
+});
+</script>
+
+<!-- 关闭布局 -->
+</main>
+</div>
+
+</body>
+</html>

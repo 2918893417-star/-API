@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>登录日志 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/style.css"/>
+    <link rel="stylesheet" href="./assets/css/admin.css"/>
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">登录日志</h1>
+    <p class="adm-page-desc">查看管理员登录记录，监控异常登录</p>
+</div>
+
+<div id="table" class="adm-fade-in">
+    <div class="adm-table-wrap">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>登录时间</th>
+                    <th>登录 IP</th>
+                    <th>登录地址</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="log in logs">
+                    <td><span class="adm-badge adm-badge-default">{{ log.id }}</span></td>
+                    <td>{{ log.time }}</td>
+                    <td><code style="background:var(--adm-primary-bg);color:var(--adm-primary-dark);padding:2px 8px;border-radius:4px;font-size:12px;">{{ log.ip }}</code></td>
+                    <td>{{ log.address }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script>
+var table = new Vue({
+    el: '#table',
+    data: { logs: [] },
+    created (){
+        fetch('./Data/api.php?type=getAllLoginLog')
+            .then(response => response.json())
+            .then(json => {
+                this.logs = json.data;
+            })
+    }
+});
+
+$('.page').click(function(){
+    var num = $(this).text();
+    $(this).siblings('button').removeClass('mdui-btn-active');
+    $(this).addClass('mdui-btn-active');
+    fetch('./Data/api.php?type=getAccessInfo&num='+num)
+        .then(response => response.json())
+        .then(json => {
+            table.logs = json.data;
+        });
+});
+</script>
+</body>
+</html>

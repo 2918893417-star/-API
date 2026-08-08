@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户中心 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --uc-primary: #3b82f6;
+            --uc-primary-dark: #2563eb;
+            --uc-primary-light: #eff6ff;
+            --uc-accent: #8b5cf6;
+            --uc-bg: #f8fafc;
+            --uc-card: #ffffff;
+            --uc-text: #0f172a;
+            --uc-text-secondary: #475569;
+            --uc-text-muted: #94a3b8;
+            --uc-border: #e2e8f0;
+            --uc-success: #10b981;
+            --uc-warning: #f59e0b;
+            --uc-danger: #ef4444;
+            --uc-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+            --uc-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+            --uc-shadow-lg: 0 24px 60px rgba(59, 130, 246, 0.18);
+        }
+
+        [v-cloak] { display: none; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            background: var(--uc-bg);
+            color: var(--uc-text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .uc-page {
+            min-height: calc(100vh - 64px);
+            padding: 6rem 0 3rem;
+        }
+
+        .uc-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* ========== Hero Welcome Bar ========== */
+        .uc-hero {
+            position: relative;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4338ca 60%, #6366f1 100%);
+            border-radius: 1.25rem;
+            padding: 2.5rem;
+            color: white;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--uc-shadow-lg);
+        }
+
+        .uc-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+        }
+
+        .uc-hero::after {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .uc-hero-inner {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .uc-hero-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            border: 3px solid rgba(255,255,255,0.2);
+            flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+        }
+
+        .uc-hero-info { flex: 1; min-width: 240px; }
+
+        .uc-hero-greeting {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 0.25rem;
+        }
+
+        .uc-hero-name {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .uc-hero-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .uc-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.875rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .uc-badge-vip {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .uc-badge-normal {
+            background: rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.9);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .uc-badge-expired {
+            background: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .uc-balance-badge {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .uc-hero-stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .uc-hero-stat {
+            text-align: center;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.75rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            min-width: 120px;
+        }
+
+        .uc-hero-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.125rem;
+        }
+
+        .uc-hero-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        /* ========== Layout ========== */
+        .uc-layout {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        /* ========== Sidebar ========== */
+        .uc-sidebar {
+            width: 240px;
+            position: sticky;
+            top: 88px;
+            background: var(--uc-card);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--uc-shadow);
+        }
+
+        .uc-sidebar-section {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--uc-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.75rem 0.75rem 0.5rem;
+        }
+
+        .uc-sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .uc-sidebar-menu li {
+            position: relative;
+            padding: 0.75rem 1rem;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            color: var(--uc-text-secondary);
+            user-select: none;
+        }
+
+        .uc-sidebar-menu li i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .uc-sidebar-menu li:hover {
+            background: var(--uc-primary-light);
+            color: var(--uc-primary);
+        }
+
+        .uc-sidebar-menu li.active {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+        .uc-sidebar-menu li.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            background: white;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .uc-sidebar-menu li.danger { color: var(--uc-danger); }
+        .uc-sidebar-menu li.danger:hover { background: #fef2f2; color: var(--uc-danger); }
+
+        /* ========== Content ========== */
+        .uc-content {
+            background: var(--uc-card);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: var(--uc-shadow);
+            min-height: 500px;
+        }
+
+        .uc-section { display: none; }
+        .uc-section.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .uc-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--uc-border);
+        }
+
+        .uc-section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--uc-text);
+        }
+
+        .uc-section-subtitle {
+            font-size: 0.875rem;
+            color: var(--uc-text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .uc-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.625rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .uc-btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+        .uc-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+        }
+
+        .uc-btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .uc-btn-outline {
+            background: white;
+            color: var(--uc-primary);
+            border: 1.5px solid var(--uc-primary);
+        }
+
+        .uc-btn-outline:hover {
+            background: var(--uc-primary-light);
+        }
+
+        .uc-btn-danger {
+            background: white;
+            color: var(--uc-danger);
+            border: 1.5px solid var(--uc-danger);
+        }
+
+        .uc-btn-danger:hover {
+            background: #fef2f2;
+        }
+
+        /* ========== Info Grid ========== */
+        .uc-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .uc-info-item {
+            padding: 1.25rem;
+            background: var(--uc-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--uc-border);
+        }
+
+        .uc-info-label {
+            font-size: 0.8125rem;
+            color: var(--uc-text-muted);
+            margin-bottom: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .uc-info-value {
+            font-size: 1.0625rem;
+            font-weight: 600;
+            color: var(--uc-text);
+            word-break: break-all;
+        }
+
+        .uc-qrcode-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .uc-qrcode-card {
+            padding: 1.25rem;
+            background: var(--uc-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--uc-border);
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .uc-qrcode-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--uc-shadow);
+        }
+
+        .uc-qrcode-thumb {
+            width: 100%;
+            max-width: 120px;
+            height: 120px;
+            margin: 0 auto 0.75rem;
+            background: white;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--uc-border);
+        }
+
+        .uc-qrcode-thumb img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .uc-qrcode-thumb-placeholder {
+            color: var(--uc-text-muted);
+            font-size: 0.75rem;
+        }
+
+        .uc-qrcode-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--uc-text);
+        }
+
+        .uc-qrcode-label.qq { color: #12b7f5; }
+        .uc-qrcode-label.wx { color: #09bb07; }
+        .uc-qrcode-label.ali { color: #1677ff; }
+
+        /* ========== Balance ========== */
+        .uc-balance-card {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 1.25rem;
+            padding: 2rem;
+            color: white;
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--uc-shadow-lg);
+        }
+
+        .uc-balance-card::after {
+            content: '';
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .uc-balance-title {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .uc-balance-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            position: relative;
+            z-index: 1;
+        }
+
+        .uc-balance-label {
+            color: var(--uc-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .uc-amount-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .uc-amount-item {
+            padding: 1rem;
+            text-align: center;
+            border: 2px solid var(--uc-border);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            background: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all 0.2s ease;
+            color: var(--uc-text);
+        }
+
+        .uc-amount-item:hover {
+            border-color: var(--uc-primary);
+            transform: translateY(-2px);
+        }
+
+        .uc-amount-item.selected {
+            border-color: var(--uc-primary);
+            background: var(--uc-primary-light);
+            color: var(--uc-primary);
+        }
+
+        /* ========== API Keys ========== */
+        .uc-tip-box {
+            background: var(--uc-primary-light);
+            border-left: 4px solid var(--uc-primary);
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--uc-text-secondary);
+            line-height: 1.7;
+        }
+
+        .uc-tip-box strong { color: var(--uc-primary); }
+
+        .uc-tip-box code {
+            background: white;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.25rem;
+            font-size: 0.8125rem;
+            border: 1px solid var(--uc-border);
+            color: var(--uc-text);
+        }
+
+        .uc-apikey-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .uc-apikey-count {
+            color: var(--uc-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .uc-apikey-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .uc-apikey-card {
+            border: 1px solid var(--uc-border);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.25s ease;
+            background: white;
+        }
+
+        .uc-apikey-card:hover {
+            box-shadow: var(--uc-shadow);
+            transform: translateY(-4px);
+        }
+
+        .uc-apikey-card.disabled {
+            opacity: 0.65;
+            background: #f8fafc;
+        }
+
+        .uc-apikey-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .uc-apikey-name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--uc-text);
+        }
+
+        .uc-status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .uc-status-active {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .uc-status-inactive {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .uc-status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .uc-status-paid {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .uc-status-refund {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .uc-apikey-key-box {
+            background: var(--uc-bg);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-family: "SF Mono", Monaco, Consolas, monospace;
+            font-size: 0.875rem;
+            color: var(--uc-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            border: 1px solid var(--uc-border);
+        }
+
+        .uc-copy-btn {
+            background: none;
+            border: none;
+            color: var(--uc-primary);
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .uc-copy-btn:hover { color: var(--uc-primary-dark); }
+
+        .uc-apikey-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .uc-apikey-action-btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--uc-border);
+            background: white;
+            cursor: pointer;
+            font-size: 0.8125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .uc-apikey-action-btn:hover { background: var(--uc-bg); }
+        .uc-apikey-action-btn.danger { color: var(--uc-danger); border-color: #fecaca; }
+        .uc-apikey-action-btn.danger:hover { background: #fef2f2; }
+
+        .uc-apikey-info {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.8125rem;
+            color: var(--uc-text-muted);
+            flex-wrap: wrap;
+        }
+
+        .uc-apikey-info span { display: flex; align-items: center; gap: 0.375rem; }
+
+        .uc-empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--uc-text-muted);
+        }
+
+        .uc-empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* ========== Plans ========== */
+        .uc-plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .uc-plan-card {
+            position: relative;
+            border: 2px solid var(--uc-border);
+            border-radius: 1rem;
+            padding: 1.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .uc-plan-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--uc-shadow);
+        }
+
+        .uc-plan-card.featured {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #3b82f6, #8b5cf6) border-box;
+            transform: scale(1.02);
+            box-shadow: var(--uc-shadow-lg);
+        }
+
+        .uc-plan-card.featured:hover {
+            transform: scale(1.02) translateY(-6px);
+        }
+
+        .uc-plan-badge {
+            position: absolute;
+            top: 1rem;
+            right: -8px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            padding: 0.25rem 0.875rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transform: rotate(6deg);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .uc-plan-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.375rem;
+            color: var(--uc-text);
+        }
+
+        .uc-plan-desc {
+            color: var(--uc-text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .uc-plan-price {
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.125rem;
+        }
+
+        .uc-plan-price .currency {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--uc-text);
+        }
+
+        .uc-plan-price .amount {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: var(--uc-text);
+            letter-spacing: -0.02em;
+        }
+
+        .uc-plan-price .unit {
+            color: var(--uc-text-muted);
+            font-size: 0.875rem;
+        }
+
+        .uc-plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem;
+        }
+
+        .uc-plan-features li {
+            padding: 0.375rem 0;
+            font-size: 0.875rem;
+            color: var(--uc-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .uc-plan-features i { color: var(--uc-primary); }
+
+        .uc-plan-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 0.625rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+
+        .uc-plan-btn:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .uc-plan-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ========== Tables ========== */
+        .uc-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .uc-table th, .uc-table td {
+            padding: 0.875rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--uc-border);
+            font-size: 0.875rem;
+        }
+
+        .uc-table th {
+            font-weight: 600;
+            color: var(--uc-text-muted);
+            background: var(--uc-bg);
+            font-size: 0.8125rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .uc-table tbody tr:hover {
+            background: var(--uc-bg);
+        }
+
+        /* ========== Stats Cards ========== */
+        .uc-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .uc-stat-card {
+            padding: 1.25rem;
+            background: var(--uc-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--uc-border);
+        }
+
+        .uc-stat-label {
+            font-size: 0.8125rem;
+            color: var(--uc-text-muted);
+            margin-bottom: 0.375rem;
+        }
+
+        .uc-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .uc-stat-value.danger { color: var(--uc-danger); }
+        .uc-stat-value.success { color: var(--uc-success); }
+
+        /* ========== Modal ========== */
+        .uc-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s ease;
+            padding: 1rem;
+        }
+
+        .uc-modal {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--uc-shadow-lg);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .uc-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--uc-text);
+        }
+
+        .uc-form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .uc-form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--uc-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .uc-form-hint {
+            font-size: 0.75rem;
+            color: var(--uc-text-muted);
+            margin-top: 0.375rem;
+        }
+
+        .uc-form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1.5px solid var(--uc-border);
+            border-radius: 0.625rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: white;
+            color: var(--uc-text);
+        }
+
+        .uc-form-input:focus {
+            outline: none;
+            border-color: var(--uc-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+
+        .uc-form-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--uc-text-muted);
+            margin: 1.5rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--uc-border);
+        }
+
+        .uc-form-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+
+        .uc-loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .uc-loading::after {
+            content: '';
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== Toast ========== */
+        .uc-toast {
+            position: fixed;
+            top: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.625rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+            z-index: 2000;
+            box-shadow: var(--uc-shadow-lg);
+            animation: slideDown 0.3s ease;
+        }
+
+        .uc-toast.success { background: var(--uc-success); }
+        .uc-toast.error { background: var(--uc-danger); }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        /* ========== Recharge button ========== */
+        .uc-recharge-btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+
+        .uc-recharge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
+        }
+
+        .uc-recharge-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .uc-recharge-hint {
+            font-size: 0.8125rem;
+            color: var(--uc-text-muted);
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        /* ========== Responsive ========== */
+        @media (max-width: 968px) {
+            .uc-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .uc-sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .uc-hero-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .uc-hero-stats {
+                width: 100%;
+            }
+
+            .uc-hero-stat {
+                flex: 1;
+                min-width: 100px;
+            }
+
+            .uc-plan-card.featured {
+                transform: none;
+            }
+
+            .uc-plan-card.featured:hover {
+                transform: translateY(-6px);
+            }
+
+            .uc-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .uc-page {
+                padding: 5rem 0 2rem;
+            }
+
+            .uc-container {
+                padding: 0 1rem;
+            }
+
+            .uc-hero {
+                padding: 1.5rem;
+            }
+
+            .uc-hero-name {
+                font-size: 1.375rem;
+            }
+
+            .uc-hero-avatar {
+                width: 72px;
+                height: 72px;
+                font-size: 1.875rem;
+            }
+
+            .uc-hero-stats {
+                gap: 0.5rem;
+            }
+
+            .uc-hero-stat {
+                padding: 0.5rem 0.75rem;
+                min-width: 0;
+                flex: 1;
+            }
+
+            .uc-content {
+                padding: 1.25rem;
+            }
+
+            .uc-section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .uc-section-title {
+                font-size: 1.25rem;
+            }
+
+            .uc-balance-amount {
+                font-size: 2.25rem;
+            }
+
+            .uc-plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .uc-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .uc-stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .uc-qrcode-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .uc-table th, .uc-table td {
+                padding: 0.625rem 0.75rem;
+                font-size: 0.8125rem;
+            }
+        }
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<div class="uc-page" id="app" v-cloak>
+    <div class="uc-container">
+
+        <!-- Hero Welcome Bar -->
+        <div class="uc-hero">
+            <div class="uc-hero-inner">
+                <div class="uc-hero-avatar">{{ user.username.charAt(0).toUpperCase() }}</div>
+                <div class="uc-hero-info">
+                    <div class="uc-hero-greeting">你好,欢迎回来 👋</div>
+                    <div class="uc-hero-name">{{ user.username }}</div>
+                    <div class="uc-hero-badges">
+                        <span :class="['uc-badge', user.is_vip ? 'uc-badge-vip' : 'uc-badge-normal']">
+                            <i class="fas fa-crown"></i> {{ user.level_name }}
+                        </span>
+                        <span class="uc-badge uc-balance-badge">
+                            <i class="fas fa-wallet"></i> ¥{{ user.balance }}
+                        </span>
+                        <span v-if="user.is_vip" class="uc-badge uc-badge-normal">
+                            <i class="fas fa-clock"></i> {{ user.expire_time_text }}到期
+                        </span>
+                    </div>
+                </div>
+                <div class="uc-hero-stats">
+                    <div class="uc-hero-stat">
+                        <div class="uc-hero-stat-value">¥{{ user.balance }}</div>
+                        <div class="uc-hero-stat-label">账户余额</div>
+                    </div>
+                    <div class="uc-hero-stat">
+                        <div class="uc-hero-stat-value">{{ user.level_name }}</div>
+                        <div class="uc-hero-stat-label">当前等级</div>
+                    </div>
+                    <div class="uc-hero-stat">
+                        <div class="uc-hero-stat-value">{{ user.reg_time }}</div>
+                        <div class="uc-hero-stat-label">注册时间</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout -->
+        <div class="uc-layout">
+
+            <!-- Sidebar -->
+            <aside class="uc-sidebar">
+                <div class="uc-sidebar-section">管理</div>
+                <ul class="uc-sidebar-menu">
+                    <li :class="{active: activeSection === 'profile'}" @click="activeSection = 'profile'">
+                        <i class="fas fa-user"></i> 个人信息
+                    </li>
+                    <li :class="{active: activeSection === 'balance'}" @click="activeSection = 'balance'">
+                        <i class="fas fa-wallet"></i> 余额充值
+                    </li>
+                    <li :class="{active: activeSection === 'apikey'}" @click="activeSection = 'apikey'; loadApiKeys()">
+                        <i class="fas fa-key"></i> API密钥
+                    </li>
+                </ul>
+
+                <div class="uc-sidebar-section">会员</div>
+                <ul class="uc-sidebar-menu">
+                    <li :class="{active: activeSection === 'svip'}" @click="activeSection = 'svip'">
+                        <i class="fas fa-crown"></i> 会员中心
+                    </li>
+                </ul>
+
+                <div class="uc-sidebar-section">记录</div>
+                <ul class="uc-sidebar-menu">
+                    <li :class="{active: activeSection === 'orders'}" @click="activeSection = 'orders'; loadOrders()">
+                        <i class="fas fa-clipboard-list"></i> 订单记录
+                    </li>
+                    <li :class="{active: activeSection === 'charges'}" @click="activeSection = 'charges'; loadChargeLogs()">
+                        <i class="fas fa-coins"></i> 扣费记录
+                    </li>
+                </ul>
+
+                <div class="uc-sidebar-section">其他</div>
+                <ul class="uc-sidebar-menu">
+                    <li class="danger" @click="doLogout">
+                        <i class="fas fa-right-from-bracket"></i> 退出登录
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Content -->
+            <main class="uc-content">
+
+                <!-- 个人信息 -->
+                <div class="uc-section" :class="{active: activeSection === 'profile'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">个人信息</div>
+                            <div class="uc-section-subtitle">查看和管理您的账户信息</div>
+                        </div>
+                        <button class="uc-btn uc-btn-primary" @click="openEditModal()">
+                            <i class="fas fa-pen"></i> 编辑信息
+                        </button>
+                    </div>
+
+                    <div class="uc-info-grid">
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-user"></i> 用户名</div>
+                            <div class="uc-info-value">{{ user.username }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-envelope"></i> 邮箱</div>
+                            <div class="uc-info-value">{{ user.email || '未绑定' }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-tty"></i> QQ</div>
+                            <div class="uc-info-value">{{ user.qq || '未绑定' }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-wallet"></i> 当前余额</div>
+                            <div class="uc-info-value">¥{{ user.balance }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-crown"></i> 会员等级</div>
+                            <div class="uc-info-value">{{ user.level_name }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-calendar"></i> 注册时间</div>
+                            <div class="uc-info-value">{{ user.reg_time }}</div>
+                        </div>
+                        <div class="uc-info-item">
+                            <div class="uc-info-label"><i class="fas fa-clock"></i> 会员到期</div>
+                            <div class="uc-info-value">{{ user.expire_time_text }}</div>
+                        </div>
+                    </div>
+
+                    <div class="uc-qrcode-grid">
+                        <div class="uc-qrcode-card">
+                            <div class="uc-qrcode-thumb">
+                                <img v-if="user.qq_qrcode" :src="user.qq_qrcode" alt="QQ二维码" />
+                                <span v-else class="uc-qrcode-thumb-placeholder">未上传</span>
+                            </div>
+                            <div class="uc-qrcode-label qq">QQ收款码</div>
+                        </div>
+                        <div class="uc-qrcode-card">
+                            <div class="uc-qrcode-thumb">
+                                <img v-if="user.wx_qrcode" :src="user.wx_qrcode" alt="微信二维码" />
+                                <span v-else class="uc-qrcode-thumb-placeholder">未上传</span>
+                            </div>
+                            <div class="uc-qrcode-label wx">微信收款码</div>
+                        </div>
+                        <div class="uc-qrcode-card">
+                            <div class="uc-qrcode-thumb">
+                                <img v-if="user.ali_qrcode" :src="user.ali_qrcode" alt="支付宝二维码" />
+                                <span v-else class="uc-qrcode-thumb-placeholder">未上传</span>
+                            </div>
+                            <div class="uc-qrcode-label ali">支付宝收款码</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 余额充值 -->
+                <div class="uc-section" :class="{active: activeSection === 'balance'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">余额充值</div>
+                            <div class="uc-section-subtitle">充值余额以使用平台服务</div>
+                        </div>
+                    </div>
+
+                    <div class="uc-balance-card">
+                        <div class="uc-balance-title">账户余额</div>
+                        <div class="uc-balance-amount">¥{{ user.balance }}</div>
+                    </div>
+
+                    <p class="uc-balance-label">选择充值金额:</p>
+                    <div class="uc-amount-grid">
+                        <div v-for="amount in [10, 50, 100, 200, 500]" :key="amount"
+                             class="uc-amount-item"
+                             :class="{selected: selectedAmount === amount}"
+                             @click="selectedAmount = amount">
+                            ¥{{ amount }}
+                        </div>
+                    </div>
+                    <button class="uc-recharge-btn" @click="doRecharge">
+                        充值 ¥{{ selectedAmount }}
+                    </button>
+                    <p class="uc-recharge-hint">
+                        * 演示系统,充值金额将直接计入余额
+                    </p>
+                </div>
+
+                <!-- API密钥 -->
+                <div class="uc-section" :class="{active: activeSection === 'apikey'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">API 密钥</div>
+                            <div class="uc-section-subtitle">管理您的 API 访问密钥</div>
+                        </div>
+                        <button class="uc-btn uc-btn-primary" @click="createApiKey" :disabled="apiKeys.length >= 10">
+                            <i class="fas fa-plus"></i> 创建新密钥
+                        </button>
+                    </div>
+
+                    <div class="uc-tip-box">
+                        <strong>💡 使用说明：</strong>
+                        通过 API Key 调用平台所有接口,每个用户最多可创建 10 个密钥。<br>
+                        普通用户每日限 100 次,会员用户享更高额度。<br>
+                        <strong>请求方式：</strong>
+                        <code>?apikey=你的密钥</code> 或 Header: <code>X-API-Key: 你的密钥</code>
+                    </div>
+
+                    <div class="uc-apikey-header">
+                        <span class="uc-apikey-count">已创建 {{ apiKeys.length }} / 10 个密钥</span>
+                    </div>
+
+                    <div class="uc-apikey-list" v-if="apiKeys.length > 0">
+                        <div v-for="key in apiKeys" :key="key.id"
+                             class="uc-apikey-card"
+                             :class="{disabled: key.status == 0}">
+                            <div class="uc-apikey-card-header">
+                                <div class="uc-apikey-name">{{ key.name }}</div>
+                                <span :class="['uc-status-badge', key.status == 1 ? 'uc-status-active' : 'uc-status-inactive']">
+                                    {{ key.status == 1 ? '启用' : '已禁用' }}
+                                </span>
+                            </div>
+                            <div class="uc-apikey-key-box">
+                                <span>{{ key.api_key_masked }}</span>
+                                <button class="uc-copy-btn" @click="copyKey(key.api_key)">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                            <div class="uc-apikey-actions">
+                                <button class="uc-apikey-action-btn" @click="copyKey(key.api_key)">
+                                    <i class="fas fa-copy"></i> 复制
+                                </button>
+                                <button v-if="key.status == 1" class="uc-apikey-action-btn danger" @click="disableKey(key)">
+                                    <i class="fas fa-ban"></i> 禁用
+                                </button>
+                                <button v-else class="uc-apikey-action-btn" @click="enableKey(key)">
+                                    <i class="fas fa-check"></i> 启用
+                                </button>
+                            </div>
+                            <div class="uc-apikey-info">
+                                <span><i class="fas fa-chart-line"></i> 今日: {{ key.calls_today }} / {{ key.daily_limit }}</span>
+                                <span><i class="fas fa-history"></i> 总计: {{ key.calls_total }}</span>
+                                <span><i class="fas fa-clock"></i> 创建: {{ key.create_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="uc-empty-state">
+                        <i class="fas fa-key"></i>
+                        <p>还没有 API Key,点击上方按钮创建</p>
+                    </div>
+                </div>
+
+                <!-- 会员中心 -->
+                <div class="uc-section" :class="{active: activeSection === 'svip'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">会员中心</div>
+                            <div class="uc-section-subtitle">升级会员,解锁全部 API 接口无限调用权限</div>
+                        </div>
+                    </div>
+
+                    <div class="uc-plan-grid">
+                        <div v-for="(plan, idx) in plans" :key="plan.id"
+                             class="uc-plan-card"
+                             :class="{featured: plan.level === 2}">
+                            <div v-if="plan.level === 2" class="uc-plan-badge">推荐</div>
+                            <h3 class="uc-plan-name">{{ plan.name }}</h3>
+                            <p class="uc-plan-desc">{{ plan.description }}</p>
+                            <div class="uc-plan-price">
+                                <span class="currency">¥</span>
+                                <span class="amount">{{ plan.price }}</span>
+                                <span class="unit" v-if="plan.duration > 0">/{{ plan.duration }}天</span>
+                                <span class="unit" v-else>/永久</span>
+                            </div>
+                            <ul class="uc-plan-features">
+                                <li><i class="fas fa-check-circle"></i> 无限频率 API 调用</li>
+                                <li><i class="fas fa-check-circle"></i> 每日 999999 次调用</li>
+                                <li><i class="fas fa-check-circle"></i> 全站接口 100% 折扣</li>
+                                <li><i class="fas fa-check-circle"></i> 故障优先排查</li>
+                            </ul>
+                            <button class="uc-plan-btn" @click="buyPlan(plan)">
+                                {{ user.is_vip ? '续费' : '立即购买' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 订单记录 -->
+                <div class="uc-section" :class="{active: activeSection === 'orders'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">订单记录</div>
+                            <div class="uc-section-subtitle">查看您的购买订单历史</div>
+                        </div>
+                    </div>
+
+                    <div v-if="orders.length === 0" class="uc-empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>暂无订单记录</p>
+                    </div>
+                    <table v-else class="uc-table">
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>套餐</th>
+                                <th>金额</th>
+                                <th>支付方式</th>
+                                <th>状态</th>
+                                <th>创建时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="order in orders" :key="order.id">
+                                <td>{{ order.order_no }}</td>
+                                <td>{{ order.plan_name }}</td>
+                                <td>¥{{ order.amount }}</td>
+                                <td>{{ order.pay_type_name }}</td>
+                                <td>
+                                    <span :class="['uc-status-badge', order.status == 0 ? 'uc-status-pending' : order.status == 1 ? 'uc-status-paid' : 'uc-status-refund']">
+                                        {{ order.status_name }}
+                                    </span>
+                                </td>
+                                <td>{{ order.create_time }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 扣费记录 -->
+                <div class="uc-section" :class="{active: activeSection === 'charges'}">
+                    <div class="uc-section-header">
+                        <div>
+                            <div class="uc-section-title">扣费记录</div>
+                            <div class="uc-section-subtitle">查看账户扣费详情</div>
+                        </div>
+                    </div>
+
+                    <div class="uc-stats-grid">
+                        <div class="uc-stat-card">
+                            <div class="uc-stat-label">累计扣费金额</div>
+                            <div class="uc-stat-value danger">¥{{ chargeStats.total_amount || '0.0000' }}</div>
+                        </div>
+                        <div class="uc-stat-card">
+                            <div class="uc-stat-label">总调用次数</div>
+                            <div class="uc-stat-value">{{ chargeStats.total || 0 }} 次</div>
+                        </div>
+                        <div class="uc-stat-card">
+                            <div class="uc-stat-label">当前余额</div>
+                            <div class="uc-stat-value success">¥{{ user.balance }}</div>
+                        </div>
+                    </div>
+
+                    <div v-if="chargeLogs.length === 0" class="uc-empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>暂无扣费记录</p>
+                    </div>
+                    <table v-else class="uc-table">
+                        <thead>
+                            <tr>
+                                <th>接口名称</th>
+                                <th>类型</th>
+                                <th>扣费金额</th>
+                                <th>扣费前余额</th>
+                                <th>扣费后余额</th>
+                                <th>时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="log in chargeLogs" :key="log.id">
+                                <td>{{ log.api_name || '未知接口' }}</td>
+                                <td>
+                                    <span :class="['uc-status-badge', log.charge_type == 1 ? 'uc-status-refund' : 'uc-status-paid']">
+                                        {{ log.charge_type_name }}
+                                    </span>
+                                </td>
+                                <td :style="parseFloat(log.amount) > 0 ? 'color:#dc2626;font-weight:600;' : 'color:#6b7280;'">
+                                    {{ parseFloat(log.amount) > 0 ? '-¥' + parseFloat(log.amount).toFixed(4) : '¥0.0000' }}
+                                </td>
+                                <td>¥{{ parseFloat(log.balance_before).toFixed(2) }}</td>
+                                <td>¥{{ parseFloat(log.balance_after).toFixed(2) }}</td>
+                                <td>{{ log.time }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- 编辑信息弹窗 -->
+    <div v-if="showEditModal" class="uc-modal-overlay" @click.self="closeEditModal()">
+        <div class="uc-modal">
+            <div class="uc-modal-title">
+                <i class="fas fa-pen" style="color: var(--uc-primary); margin-right: 0.5rem;"></i>
+                编辑个人信息
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">邮箱</label>
+                <input type="email" class="uc-form-input" v-model="editForm.email" placeholder="请输入邮箱地址" />
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">QQ 号</label>
+                <input type="text" class="uc-form-input" v-model="editForm.qq" placeholder="请输入QQ号" />
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">QQ 收款码</label>
+                <input type="text" class="uc-form-input" v-model="editForm.qq_qrcode" placeholder="请输入收款码图片URL" />
+                <div class="uc-form-hint">输入收款码图片地址</div>
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">微信收款码</label>
+                <input type="text" class="uc-form-input" v-model="editForm.wx_qrcode" placeholder="请输入收款码图片URL" />
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">支付宝收款码</label>
+                <input type="text" class="uc-form-input" v-model="editForm.ali_qrcode" placeholder="请输入收款码图片URL" />
+            </div>
+
+            <div class="uc-form-section-title">修改密码（选填）</div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">原密码</label>
+                <input type="password" class="uc-form-input" v-model="editForm.old_password" placeholder="不修改密码请留空" />
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">新密码</label>
+                <input type="password" class="uc-form-input" v-model="editForm.new_password" placeholder="不修改密码请留空" />
+            </div>
+
+            <div class="uc-form-group">
+                <label class="uc-form-label">确认新密码</label>
+                <input type="password" class="uc-form-input" v-model="editForm.confirm_password" placeholder="再次输入新密码" />
+            </div>
+
+            <div class="uc-form-actions">
+                <button class="uc-btn uc-btn-outline" @click="closeEditModal()">取消</button>
+                <button class="uc-btn uc-btn-primary" @click="saveUserProfile()" :disabled="saving">
+                    <span v-if="!saving"><i class="fas fa-save"></i> 保存修改</span>
+                    <span v-else class="uc-loading">保存中...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 购买确认弹窗 -->
+    <div v-if="showBuyModal" class="uc-modal-overlay" @click.self="showBuyModal = false">
+        <div class="uc-modal">
+            <div class="uc-modal-title">
+                <i class="fas fa-credit-card" style="color: var(--uc-primary); margin-right: 0.5rem;"></i>
+                确认购买
+            </div>
+            <p style="margin-bottom: 1rem; color: var(--uc-text-secondary);">
+                您即将购买 <strong style="color: var(--uc-text);">{{ buyingPlan.name }}</strong>
+            </p>
+            <div class="uc-info-item" style="margin-bottom: 0.75rem;">
+                <div class="uc-info-label">支付金额</div>
+                <div class="uc-info-value" style="font-size: 1.5rem; color: var(--uc-primary);">¥{{ buyingPlan.price }}</div>
+            </div>
+            <div class="uc-info-item" style="margin-bottom: 1.5rem;">
+                <div class="uc-info-label">当前余额</div>
+                <div class="uc-info-value">¥{{ user.balance }}</div>
+            </div>
+            <div class="uc-form-actions">
+                <button class="uc-btn uc-btn-outline" @click="showBuyModal = false">取消</button>
+                <button class="uc-btn uc-btn-primary" @click="confirmBuy" :disabled="user.balance < buyingPlan.price">
+                    确认支付
+                </button>
+            </div>
+            <p v-if="user.balance < buyingPlan.price" style="color: var(--uc-danger); font-size: 0.875rem; margin-top: 0.75rem; text-align: center;">
+                <i class="fas fa-exclamation-circle"></i> 余额不足,请先充值
+            </p>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div v-if="toast.show" :class="['uc-toast', 'uc-toast-' + toast.type]">
+        <i :class="toast.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'"></i>
+        {{ toast.message }}
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+            user: {
+                username: '',
+                email: '',
+                qq: '',
+                qq_qrcode: '',
+                wx_qrcode: '',
+                ali_qrcode: '',
+                balance: 0,
+                level: 0,
+                level_name: '普通用户',
+                expire_time: 0,
+                expire_time_text: '-',
+                is_vip: false,
+                reg_time: '-'
+            },
+            plans: [],
+            orders: [],
+            apiKeys: [],
+            chargeLogs: [],
+            chargeStats: { total_amount: '0.0000', total: 0 },
+            activeSection: 'profile',
+            selectedAmount: 10,
+            showBuyModal: false,
+            buyingPlan: {},
+            showEditModal: false,
+            editForm: {
+                email: '',
+                qq: '',
+                qq_qrcode: '',
+                wx_qrcode: '',
+                ali_qrcode: '',
+                old_password: '',
+                new_password: '',
+                confirm_password: ''
+            },
+            saving: false,
+            toast: { show: false, type: 'success', message: '' }
+        },
+        created() {
+            this.loadUserInfo();
+            this.loadPlans();
+        },
+        methods: {
+            showToast(message, type) {
+                this.toast = { show: true, type: type || 'success', message: message };
+                setTimeout(() => { this.toast.show = false; }, 2500);
+            },
+            loadUserInfo() {
+                fetch('./Data/user.php?type=getUserInfo')
+                    .then(r => r.json())
+                    .then(json => {
+                        if(json.code === 0){
+                            this.user = json.data;
+                        }
+                    });
+            },
+            loadPlans() {
+                fetch('./Data/user.php?type=getPlans')
+                    .then(r => r.json())
+                    .then(json => {
+                        if(json.code === 0){
+                            this.plans = json.data;
+                        }
+                    });
+            },
+            loadOrders() {
+                fetch('./Data/user.php?type=getMyOrders')
+                    .then(r => r.json())
+                    .then(json => {
+                        if(json.code === 0){
+                            this.orders = json.data;
+                        }
+                    });
+            },
+            loadApiKeys() {
+                fetch('./Data/user.php?type=getMyApiKeys')
+                    .then(r => r.json())
+                    .then(json => {
+                        if(json.code === 0){
+                            this.apiKeys = json.data;
+                        }
+                    });
+            },
+            loadChargeLogs() {
+                fetch('./Data/user.php?type=getMyChargeLogs')
+                    .then(r => r.json())
+                    .then(json => {
+                        if(json.code === 0){
+                            this.chargeLogs = json.data.list || [];
+                            this.chargeStats = {
+                                total_amount: json.data.total_amount || '0.0000',
+                                total: json.data.total || 0
+                            };
+                        }
+                    });
+            },
+            openEditModal() {
+                this.editForm = {
+                    email: this.user.email || '',
+                    qq: this.user.qq || '',
+                    qq_qrcode: this.user.qq_qrcode || '',
+                    wx_qrcode: this.user.wx_qrcode || '',
+                    ali_qrcode: this.user.ali_qrcode || '',
+                    old_password: '',
+                    new_password: '',
+                    confirm_password: ''
+                };
+                this.showEditModal = true;
+            },
+            closeEditModal() {
+                this.showEditModal = false;
+            },
+            saveUserProfile() {
+                if(this.editForm.new_password && this.editForm.new_password !== this.editForm.confirm_password){
+                    this.showToast('两次输入的新密码不一致', 'error');
+                    return;
+                }
+                if(this.editForm.new_password && !this.editForm.old_password){
+                    this.showToast('请输入原密码', 'error');
+                    return;
+                }
+                this.saving = true;
+                const body = new URLSearchParams();
+                body.append('email', this.editForm.email);
+                body.append('qq', this.editForm.qq);
+                body.append('qq_qrcode', this.editForm.qq_qrcode);
+                body.append('wx_qrcode', this.editForm.wx_qrcode);
+                body.append('ali_qrcode', this.editForm.ali_qrcode);
+                if(this.editForm.old_password){
+                    body.append('old_password', this.editForm.old_password);
+                    body.append('new_password', this.editForm.new_password);
+                    body.append('confirm_password', this.editForm.confirm_password);
+                }
+                fetch('./Data/user.php?type=saveUserProfile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString()
+                })
+                .then(r => r.json())
+                .then(json => {
+                    this.saving = false;
+                    if(json.code === 0){
+                        this.showToast('保存成功', 'success');
+                        this.showEditModal = false;
+                        this.loadUserInfo();
+                    } else {
+                        this.showToast(json.msg || '保存失败', 'error');
+                    }
+                })
+                .catch(() => {
+                    this.saving = false;
+                    this.showToast('网络错误,请重试', 'error');
+                });
+            },
+            createApiKey() {
+                const name = prompt('请输入密钥名称(便于记忆):', '我的 API Key');
+                if(!name) return;
+                fetch('./Data/user.php?type=generateApiKey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'name=' + encodeURIComponent(name)
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if(json.code === 0){
+                        this.showToast('创建成功!请保存好您的密钥', 'success');
+                        if(confirm('新密钥已生成: ' + json.data.api_key + '\n\n请立即复制保存,关闭后将无法再次查看完整密钥。')){
+                            this.loadApiKeys();
+                        }
+                    } else {
+                        this.showToast(json.msg, 'error');
+                    }
+                });
+            },
+            copyKey(key) {
+                const tempInput = document.createElement('input');
+                tempInput.value = key;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                try {
+                    document.execCommand('copy');
+                    this.showToast('密钥已复制到剪贴板', 'success');
+                } catch(e) {
+                    this.showToast('复制失败,请手动复制', 'error');
+                }
+                document.body.removeChild(tempInput);
+            },
+            disableKey(key) {
+                if(!confirm('确定要禁用此 API Key 吗?禁用后将无法使用。')) return;
+                fetch('./Data/user.php?type=deleteApiKey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'key_id=' + key.id
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if(json.code === 0){
+                        this.showToast('已禁用', 'success');
+                        this.loadApiKeys();
+                    } else {
+                        this.showToast(json.msg, 'error');
+                    }
+                });
+            },
+            enableKey(key) {
+                fetch('./Data/user.php?type=enableApiKey', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'key_id=' + key.id
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if(json.code === 0){
+                        this.showToast('已启用', 'success');
+                        this.loadApiKeys();
+                    } else {
+                        this.showToast(json.msg, 'error');
+                    }
+                });
+            },
+            doRecharge() {
+                if(this.selectedAmount <= 0) return;
+                fetch('./Data/user.php?type=recharge', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'amount=' + this.selectedAmount
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if(json.code === 0){
+                        this.showToast('充值成功 ¥' + this.selectedAmount, 'success');
+                        this.loadUserInfo();
+                    } else {
+                        this.showToast(json.msg, 'error');
+                    }
+                });
+            },
+            buyPlan(plan) {
+                this.buyingPlan = plan;
+                this.showBuyModal = true;
+            },
+            confirmBuy() {
+                fetch('./Data/user.php?type=createOrder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'plan_id=' + this.buyingPlan.id + '&pay_type=balance'
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if(json.code === 0){
+                        this.showToast('购买成功!', 'success');
+                        this.showBuyModal = false;
+                        this.loadUserInfo();
+                        this.loadOrders();
+                    } else {
+                        this.showToast(json.msg, 'error');
+                    }
+                });
+            },
+            doLogout() {
+                if(confirm('确定要退出登录吗?')){
+                    fetch('./Data/user.php?type=logout')
+                        .then(() => {
+                            window.location.href = '?action=login';
+                        });
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

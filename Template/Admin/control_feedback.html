@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>管理反馈 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">用户反馈</h1>
+    <p class="adm-page-desc">查看并处理用户提交的反馈信息</p>
+</div>
+
+<div id="control_feedback" class="adm-fade-in">
+    <div class="adm-card" v-if="feedbacks">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(236,72,153,0.1);color:#ec4899;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                反馈列表
+            </h3>
+        </div>
+        <div class="adm-card-body" style="padding:8px 0;">
+            <div v-for="feedback in feedbacks" :key="feedback.id"
+                 @click="watchFeedback(feedback.id)"
+                 mdui-dialog="{target:'#watch_feedback'}"
+                 style="padding:16px 24px;border-bottom:1px solid var(--adm-border-light);cursor:pointer;transition:background 0.2s;display:flex;align-items:center;gap:14px;"
+                 onmouseover="this.style.background='var(--adm-primary-bg)'"
+                 onmouseout="this.style.background=''">
+                <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,rgba(236,72,153,0.15),rgba(124,58,237,0.15));display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                        <strong style="color:var(--adm-text);font-size:15px;">{{ feedback.title }}</strong>
+                        <span style="color:var(--adm-text-muted);font-size:12px;">{{ getLocalTime(feedback.time) }}</span>
+                    </div>
+                    <div style="display:flex;gap:12px;font-size:12px;color:var(--adm-text-muted);">
+                        <span>ID: {{ feedback.id }}</span>
+                        <span>IP: {{ feedback.ip }}</span>
+                    </div>
+                </div>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;color:var(--adm-text-muted);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+        </div>
+    </div>
+    <div class="adm-card" v-else>
+        <div class="adm-empty">
+            <div class="adm-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="adm-empty-title">尚未任何反馈</div>
+            <div style="font-size:13px;margin-top:4px;">静静的等待吧 ⌛️</div>
+        </div>
+    </div>
+
+    <!-- 查看反馈Dialog -->
+    <div id="watch_feedback" class="mdui-dialog">
+        <div class="mdui-dialog-title mdui-p-y-2" style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;">
+            <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button> 查看反馈信息
+        </div>
+        <div class="mdui-dialog-content mdui-p-x-3 mdui-p-b-2">
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">反馈标题</label>
+                <input class="mdui-textfield-input" type="text" v-model="watch_feedback.title" disabled/>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">反馈内容</label>
+                <textarea class="mdui-textfield-input" rows="12" v-model="watch_feedback.content" disabled></textarea>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">反馈者邮箱</label>
+                <input class="mdui-textfield-input" type="email" v-model="watch_feedback.email" disabled/>
+            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>关闭</button>
+            <button class="mdui-btn mdui-color-red-accent" @click="deleteFeedback" mdui-dialog-close>删除</button>
+            <button class="mdui-btn mdui-color-theme-accent" mdui-dialog-close mdui-dialog="{target:'#reply_feedback'}">回复</button>
+        </div>
+    </div>
+
+    <!-- 回复反馈Dialog -->
+    <div id="reply_feedback" class="mdui-dialog">
+        <div class="mdui-dialog-title mdui-p-y-2" style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;">
+            <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button> 回复反馈
+        </div>
+        <div class="mdui-dialog-content mdui-p-x-3 mdui-p-b-2">
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">回复内容</label>
+                <textarea class="mdui-textfield-input" rows="12" v-model="reply_feedback.content" required></textarea>
+            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+            <button class="mdui-btn mdui-color-theme-accent" @click="replyFeedback(reply_feedback.email)" mdui-dialog-close>发送邮件回复</button>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+    let control_feedback = new Vue({
+        el: '#control_feedback',
+        data: {
+            feedbacks: [],
+            watch_feedback: [],
+            reply_feedback: ['email']
+        },
+        methods: {
+            watchFeedback: function(id) {
+                fetch('./Data/api.php?type=getOneFeedback&id=' + id)
+                    .then(response => response.json())
+                    .then(json => {
+                        this.watch_feedback = json.data;
+                        this.reply_feedback.email = json.data.email
+                    })
+            },
+            deleteFeedback: function() {
+                var x = confirm('确定要删除此反馈？');
+                if (x) {
+                    fetch('./Data/post.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'type=del_feedback&id=' + this.watch_feedback.id
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg)
+                        if (json.code == 0) {
+                            setTimeout(function() {
+                                window.location.reload();
+                            }, 1000);
+                        }
+                    })
+                }
+            },
+            replyFeedback: function(email) {
+                var x = confirm('确定要发送回复邮件？');
+                if (x) {
+                    fetch('./Data/post.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'type=reply_feedback&email=' + encodeURIComponent(this.reply_feedback.email) + '&content=' + encodeURIComponent(this.reply_feedback.content)
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        this.reply_feedback.content = '';
+                        mdui.snackbar(json.msg)
+                    })
+                }
+            },
+            getLocalTime: function(nS) {
+                return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getAllFeedback')
+                .then(response => response.json())
+                .then(json => {
+                    this.feedbacks = json.data;
+                })
+        }
+    });
+</script>
+</body>
+</html>

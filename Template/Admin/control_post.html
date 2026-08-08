@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>管理公告 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/style.css"/>
+    <link rel="stylesheet" href="./assets/css/admin.css"/>
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+    <div>
+        <h1 class="adm-page-title">公告管理</h1>
+        <p class="adm-page-desc">管理网站公告与展示</p>
+    </div>
+    <button class="adm-btn adm-btn-primary" mdui-dialog="{target:'#add_post'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加公告
+    </button>
+</div>
+
+<div id="control_post" class="adm-fade-in">
+    <!-- 绑定公告ID -->
+    <div class="adm-card" style="margin-bottom:20px;">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                绑定展示公告
+            </h3>
+        </div>
+        <div class="adm-card-body" style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="adm-form-group" style="flex:1;min-width:200px;margin:0;">
+                <label class="adm-form-label">公告 ID</label>
+                <input class="adm-form-input" type="number" v-model="websetting.post_id" required/>
+                <div class="adm-form-hint">设置为 -1 则关闭公告展示</div>
+            </div>
+            <button class="adm-btn adm-btn-primary" @click="changePostId" mdui-dialog-close>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                设置
+            </button>
+        </div>
+    </div>
+
+    <!-- 公告列表 -->
+    <div class="adm-card" v-if="posts">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+                </span>
+                全部公告
+            </h3>
+        </div>
+        <div class="adm-card-body" style="padding:8px 0;">
+            <div v-for="(post,index) in posts" :key="post.id"
+                 @click="editPost(post.id)"
+                 mdui-dialog="{target:'#edit_post'}"
+                 style="padding:16px 24px;border-bottom:1px solid var(--adm-border-light);cursor:pointer;transition:background 0.2s;"
+                 onmouseover="this.style.background='var(--adm-primary-bg)'"
+                 onmouseout="this.style.background=''">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <span class="adm-badge adm-badge-default">ID:{{ post.id }}</span>
+                        <strong style="color:var(--adm-text);font-size:15px;">{{ post.title }}</strong>
+                    </div>
+                    <span style="color:var(--adm-text-muted);font-size:12px;">{{ getLocalTime(post.time) }}</span>
+                </div>
+                <div style="color:var(--adm-text-secondary);font-size:13px;line-height:1.6;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ post.content }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改公告Dialog -->
+    <div id="edit_post" class="mdui-dialog">
+        <div class="mdui-dialog-title mdui-p-y-2" style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;">
+            <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button> 修改公告
+        </div>
+        <div class="mdui-dialog-content mdui-p-x-3 mdui-p-b-2">
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告标题</label>
+                <input class="mdui-textfield-input" type="text" v-model="edit_post.title" required/>
+                <div class="mdui-textfield-error">公告标题不能为空</div>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告内容</label>
+                <textarea class="mdui-textfield-input" rows="12" v-model="edit_post.content"></textarea>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告图标</label>
+                <select class="mdui-select" v-model="edit_post.icon" style="width:100%;">
+                    <option value="info">信息</option>
+                    <option value="success">成功</option>
+                    <option value="warning">警告</option>
+                    <option value="error">失败</option>
+                </select>
+            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+            <button class="mdui-btn mdui-color-red-accent" @click="deletePost" mdui-dialog-close>删除</button>
+            <button class="mdui-btn mdui-color-theme-accent" @click="updatePost" mdui-dialog-close>保存</button>
+        </div>
+    </div>
+
+    <!-- 添加公告Dialog -->
+    <div id="add_post" class="mdui-dialog">
+        <div class="mdui-dialog-title mdui-p-y-2" style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;">
+            <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button> 添加公告
+        </div>
+        <div class="mdui-dialog-content mdui-p-x-3 mdui-p-b-2">
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告标题</label>
+                <input class="mdui-textfield-input" type="text" v-model="add_post.title" required/>
+                <div class="mdui-textfield-error">公告标题不能为空</div>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告内容</label>
+                <textarea class="mdui-textfield-input" rows="12" v-model="add_post.content"></textarea>
+            </div>
+            <div class="mdui-textfield">
+                <label class="mdui-textfield-label">公告图标</label>
+                <select class="mdui-select" v-model="add_post.icon" style="width:100%;">
+                    <option value="info">信息</option>
+                    <option value="success">成功</option>
+                    <option value="warning">警告</option>
+                    <option value="error">失败</option>
+                </select>
+            </div>
+        </div>
+        <div class="mdui-dialog-actions">
+            <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+            <button class="mdui-btn mdui-color-theme-accent" @click="addPost" mdui-dialog-close>添加</button>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+let control_post = new Vue({
+    el: '#control_post',
+    data: {
+        posts: [],
+        edit_post: [],
+        add_post: [],
+        websetting: []
+    },
+    methods: {
+        editPost: function(id){
+            fetch('./Data/api.php?type=getOnePost&id='+id)
+                .then(response => response.json())
+                .then(json => {
+                    this.edit_post = json.data;
+                })
+        },
+        updatePost: function(){
+            fetch('./Data/post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'type=edit_post&id='+this.edit_post.id+'&title='+encodeURIComponent(this.edit_post.title)+'&content='+encodeURIComponent(this.edit_post.content)+'&icon='+encodeURIComponent(this.edit_post.icon)
+            })
+                .then(response => response.json())
+                .then(json => {
+                    mdui.snackbar(json.msg);
+                    if(json.code == 0){
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1000);
+                    }
+                })
+        },
+        deletePost: function(){
+            var x = confirm('确定要删除此公告？');
+            if(x){
+                if(this.websetting.post_id == this.edit_post.id){
+                    mdui.snackbar('不能删除当前使用中的公告');
+                    throw('不能删除当前使用中的公告');
+                }
+                fetch('./Data/post.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'type=del_post&id='+this.edit_post.id
+                })
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg)
+                        if(json.code == 0){
+                            setTimeout(function(){
+                                window.location.reload();
+                            },1000);
+                        }
+                    })
+            }
+        },
+        addPost: function(){
+            fetch('./Data/post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'type=add_post&title='+encodeURIComponent(this.add_post.title)+'&content='+encodeURIComponent(this.add_post.content)+'&icon='+encodeURIComponent(this.add_post.icon)
+            })
+                .then(response => response.json())
+                .then(json => {
+                    mdui.snackbar(json.msg);
+                    if(json.code == 0){
+                        setTimeout(function(){
+                            window.location.reload();
+                        },1000);
+                    }
+                })
+        },
+        changePostId: function(){
+            fetch('./Data/post.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'type=change_post_id&id='+this.websetting.post_id
+            })
+                .then(response => response.json())
+                .then(json => {
+                    mdui.snackbar(json.msg);
+                })
+        },
+        getLocalTime: function(nS){
+            return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/,' ');
+        }
+    },
+    created (){
+        fetch('./Data/api.php?type=getAllPost')
+            .then(response => response.json())
+            .then(json => {
+                this.posts = json.data;
+            });
+        fetch('./Data/api.php?type=getWebSetting')
+            .then(response => response.json())
+            .then(json => {
+                this.websetting = json.data;
+            });
+    }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>第三步 - 邮件服务配置 | MXGAPI 管理系统</title>
+    <link rel="stylesheet" href="./assets/css/install.css">
+</head>
+<body class="install-page">
+
+<div class="install-aurora"></div>
+
+<div class="install-container">
+
+    <div class="install-header">
+        <div class="install-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <h1 class="install-title">MXGAPI 管理系统</h1>
+        <p class="install-subtitle">配置邮件服务（SMTP）</p>
+    </div>
+
+    <div class="install-steps">
+        <div class="install-step completed">
+            <div class="install-step-circle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <span class="install-step-label">准备</span>
+        </div>
+        <div class="install-step-line completed"></div>
+        <div class="install-step completed">
+            <div class="install-step-circle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <span class="install-step-label">数据库</span>
+        </div>
+        <div class="install-step-line completed"></div>
+        <div class="install-step completed">
+            <div class="install-step-circle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <span class="install-step-label">网站信息</span>
+        </div>
+        <div class="install-step-line completed"></div>
+        <div class="install-step active">
+            <div class="install-step-circle">4</div>
+            <span class="install-step-label">邮件配置</span>
+        </div>
+        <div class="install-step-line"></div>
+        <div class="install-step">
+            <div class="install-step-circle">5</div>
+            <span class="install-step-label">完成</span>
+        </div>
+    </div>
+
+    <div class="install-card">
+        <div class="install-card-header">
+            <div class="install-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                </svg>
+            </div>
+            <h2 class="install-card-title">邮件服务配置</h2>
+            <p class="install-card-desc">配置 SMTP 邮件服务后，系统可发送注册验证、密码找回等邮件。如果暂时不需要，可填写任意信息跳过。</p>
+        </div>
+
+        <div class="install-alert install-alert-info">
+            <svg class="install-alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+            <div class="install-alert-content">
+                常见 SMTP 配置：QQ 邮箱 (smtp.qq.com:465)、163 邮箱 (smtp.163.com:465)、Gmail (smtp.gmail.com:587)
+            </div>
+        </div>
+
+        <form action="./Core/install.php" method="post" class="install-form">
+            <div class="install-form-row">
+                <div class="install-form-group">
+                    <label class="install-form-label">SMTP 服务器 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="text" name="host" required placeholder="smtp.example.com">
+                </div>
+                <div class="install-form-group">
+                    <label class="install-form-label">SMTP 端口 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="number" name="port" required placeholder="465">
+                    <div class="install-form-hint">SSL 通常为 465，TLS 通常为 587</div>
+                </div>
+            </div>
+
+            <div class="install-form-row">
+                <div class="install-form-group">
+                    <label class="install-form-label">SMTP 用户名 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="text" name="username" required placeholder="your@email.com">
+                </div>
+                <div class="install-form-group">
+                    <label class="install-form-label">SMTP 密码 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="password" name="password" required placeholder="授权码或密码">
+                    <div class="install-form-hint">部分邮箱需使用授权码而非登录密码</div>
+                </div>
+            </div>
+
+            <div class="install-form-group">
+                <label class="install-form-label">加密连接类型</label>
+                <select class="install-form-select" name="secure">
+                    <option value="">不加密 (None)</option>
+                    <option value="ssl" selected>SSL 加密 (推荐)</option>
+                    <option value="tls">TLS 加密</option>
+                </select>
+            </div>
+
+            <input type="hidden" name="step" value="3">
+
+            <div class="install-actions">
+                <a href="javascript:history.back()" class="install-btn install-btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    返回
+                </a>
+                <button type="submit" class="install-btn install-btn-primary">
+                    完成安装
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="install-footer">
+        <p>© 2024 MXGAPI 管理系统 · 邮件服务配置</p>
+    </div>
+
+</div>
+
+</body>
+</html>

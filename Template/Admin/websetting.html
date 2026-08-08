@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>网站配置 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">网站配置</h1>
+    <p class="adm-page-desc">管理网站基础信息、邮件服务与安全设置</p>
+</div>
+
+<!-- 标签页 -->
+<div class="adm-tabs adm-fade-in" style="margin-bottom:24px;">
+    <a href="#websetting" class="adm-tab active">网站信息</a>
+    <a href="#smtp_config" class="adm-tab">邮件配置</a>
+    <a href="#security" class="adm-tab">安全设置</a>
+</div>
+
+<!-- 网站信息部分 -->
+<div id="websetting" class="adm-fade-in">
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </span>
+                基础信息
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">网站标题 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="title" v-model="setting.title" required/>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">网站副标题 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="subtitle" v-model="setting.subtitle" required/>
+                </div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">网站简介 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="3" type="text" name="description" maxlength="100" v-model="setting.description" required></textarea>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">网站关键词 <span class="adm-form-required">*</span></label>
+                <input class="adm-form-input" type="text" name="keywords" v-model="setting.keywords" required/>
+                <div class="adm-form-hint">多个关键词用英文逗号分隔</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                资源与链接
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">网站头像 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="favicon" v-model="setting.favicon" required/>
+                    <div class="adm-form-hint">输入图片URL地址</div>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">网站地址 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="url" v-model="setting.url" required/>
+                </div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">网站备案信息</label>
+                <textarea class="adm-form-textarea" type="text" name="icp" rows="2" v-model="setting.icp"></textarea>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">网站版权信息 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="3" type="text" name="copyright" v-model="setting.copyright" required></textarea>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">自定义脚本（暂时不可用）</label>
+                <textarea class="adm-form-textarea" type="text" name="end_script" rows="2" v-model="setting.end_script" disabled></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-bottom:24px;">
+        <button class="adm-btn adm-btn-primary adm-btn-lg" @click="update">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            保存配置
+        </button>
+    </div>
+</div>
+
+<!-- 邮件配置部分 -->
+<div id="smtp_config" class="adm-fade-in" style="display:none;">
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </span>
+                SMTP 邮件服务
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">SMTP 服务器</label>
+                    <input class="adm-form-input" type="text" v-model="smtp_config.smtp_host" placeholder="smtp.example.com"/>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">SMTP 端口</label>
+                    <input class="adm-form-input" type="number" v-model="smtp_config.smtp_port" placeholder="465"/>
+                </div>
+            </div>
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">SMTP 用户名</label>
+                    <input class="adm-form-input" type="text" v-model="smtp_config.smtp_username"/>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">SMTP 密码</label>
+                    <input class="adm-form-input" type="password" v-model="smtp_config.smtp_password"/>
+                </div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">加密连接类型</label>
+                <select class="adm-form-select" v-model="smtp_config.smtp_secure">
+                    <option value>无</option>
+                    <option value="ssl">SSL</option>
+                    <option value="tls">TLS</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;">
+                <button class="adm-btn adm-btn-secondary" @click="sendTestEmail">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    发送测试邮件
+                </button>
+                <button class="adm-btn adm-btn-primary" @click="update">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    保存配置
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 安全设置部分 -->
+<div id="security" class="adm-fade-in" style="display:none;">
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                安全防护
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-list">
+                <div class="adm-list-item" style="padding:16px 0;">
+                    <div style="flex:1;">
+                        <div class="adm-list-value" style="margin-bottom:4px;">维护模式</div>
+                        <div style="color:var(--adm-text-muted);font-size:13px;">开启后前台将显示维护页面</div>
+                    </div>
+                    <label class="mdui-switch">
+                        <input type="checkbox" v-model="setting.close_site" @click="toggle_close_site"/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>
+                </div>
+                <div class="adm-list-item" style="padding:16px 0;">
+                    <div style="flex:1;">
+                        <div class="adm-list-value" style="margin-bottom:4px;">防CC攻击</div>
+                        <div style="color:var(--adm-text-muted);font-size:13px;">开启后将自动拦截高频请求</div>
+                    </div>
+                    <label class="mdui-switch">
+                        <input type="checkbox" v-model="setting.cc_protect" @click="toggle_cc_protect">
+                        <i class="mdui-switch-icon"></i>
+                    </label>
+                </div>
+                <div class="adm-list-item" style="padding:16px 0;">
+                    <div style="flex:1;">
+                        <div class="adm-list-value" style="margin-bottom:4px;">防SQL注入</div>
+                        <div style="color:var(--adm-text-muted);font-size:13px;">开启后将过滤危险SQL关键字</div>
+                    </div>
+                    <label class="mdui-switch">
+                        <input type="checkbox" v-model="setting.fire_wall" @click="toggle_fire_wall"/>
+                        <i class="mdui-switch-icon"></i>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/vue.js"></script>
+<script>
+    // 为网站配置页面添加特殊 class
+    document.body.classList.add('page-websetting');
+
+    // 标签页切换
+    document.querySelectorAll('.adm-tab').forEach(function(tab){
+        tab.addEventListener('click', function(e){
+            e.preventDefault();
+            document.querySelectorAll('.adm-tab').forEach(function(t){
+                t.classList.remove('active');
+                t.style.background = '';
+                t.style.color = '';
+                t.style.transform = '';
+                t.style.boxShadow = '';
+            });
+            this.classList.add('active');
+            this.style.background = 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)';
+            this.style.color = 'white';
+            this.style.transform = 'translateY(-1px)';
+            this.style.boxShadow = '0 6px 20px rgba(37, 99, 235, 0.35)';
+            var target = this.getAttribute('href').substring(1);
+            ['websetting','smtp_config','security'].forEach(function(id){
+                var el = document.getElementById(id);
+                if(el) el.style.display = (id === target) ? 'block' : 'none';
+            });
+        });
+    });
+
+    // 初始化激活第一个标签
+    var firstTab = document.querySelector('.adm-tab.active');
+    if(firstTab) {
+        firstTab.style.background = 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)';
+        firstTab.style.color = 'white';
+        firstTab.style.transform = 'translateY(-1px)';
+        firstTab.style.boxShadow = '0 6px 20px rgba(37, 99, 235, 0.35)';
+    }
+
+    let websetting = new Vue({
+        el: '#websetting',
+        data: {
+            setting: [],
+        },
+        methods: {
+            update: function() {
+                fetch('./Data/post.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'type=websetting&title=' + encodeURIComponent(this.setting.title) + '&subtitle=' + encodeURIComponent(this.setting.subtitle) + '&description=' + encodeURIComponent(this.setting.description) + '&keywords=' + encodeURIComponent(this.setting.keywords) + '&favicon=' + encodeURIComponent(this.setting.favicon) + '&url=' + encodeURIComponent(this.setting.url) + '&icp=' + encodeURIComponent(this.setting.icp) + '&copyright=' + encodeURIComponent(this.setting.copyright) + '&access=blue&end_script=' + encodeURIComponent(this.setting.end_script)
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg);
+                    });
+            },
+            toggle_close_site: function() {
+                this.setting.close_site = !this.setting.close_site;
+                fetch('./Data/post.php?type=close_site&close_site=' + Number(this.setting.close_site))
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg)
+                    })
+            },
+            toggle_cc_protect: function() {
+                this.setting.cc_protect = !this.setting.cc_protect;
+                fetch('./Data/post.php?type=cc_protect&cc_protect=' + Number(this.setting.cc_protect))
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg)
+                    })
+            },
+            toggle_fire_wall: function() {
+                this.setting.fire_wall = !this.setting.fire_wall;
+                fetch('./Data/post.php?type=fire_wall&fire_wall=' + Number(this.setting.fire_wall))
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg)
+                    })
+            },
+        },
+        created() {
+            fetch('./Data/api.php?type=getWebSetting')
+                .then(response => response.json())
+                .then(json => {
+                    this.setting = json.data;
+                    this.setting.close_site = Boolean(parseInt(this.setting.close_site));
+                    this.setting.cc_protect = Boolean(parseInt(this.setting.cc_protect));
+                    this.setting.fire_wall = Boolean(parseInt(this.setting.fire_wall));
+                });
+        }
+    });
+
+    let smtp_config = new Vue({
+        el: '#smtp_config',
+        data: {
+            smtp_config: []
+        },
+        methods: {
+            update: function() {
+                fetch('./Data/post.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'type=smtp_config&smtp_host=' + encodeURIComponent(this.smtp_config.smtp_host) + '&smtp_username=' + encodeURIComponent(this.smtp_config.smtp_username) + '&smtp_password=' + encodeURIComponent(this.smtp_config.smtp_password) + '&smtp_port=' + encodeURIComponent(this.smtp_config.smtp_port) + '&smtp_secure=' + encodeURIComponent(this.smtp_config.smtp_secure)
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        mdui.snackbar(json.msg);
+                    });
+            },
+            sendTestEmail: function() {
+                mdui.prompt('请输入收信邮箱',
+                    function(value) {
+                        if (checkMailAddress(value)) {
+                            fetch('./Data/api.php?type=sendTestEmail&to=' + encodeURIComponent(value))
+                                .then(response => response.json())
+                                .then(json => {
+                                    mdui.alert(json.msg, '提示');
+                                })
+                        } else {
+                            mdui.snackbar('请填写正确的邮箱地址！');
+                        }
+                    },
+                    function() {}, {
+                        confirmText: '发送',
+                        cancelText: '取消'
+                    }
+                );
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getSmtpConfig')
+                .then(response => response.json())
+                .then(json => {
+                    this.smtp_config = json.data;
+                })
+        }
+    });
+</script>
+</body>
+</html>

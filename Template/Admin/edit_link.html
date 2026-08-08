@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>编辑友链 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/style.css"/>
+    <link rel="stylesheet" href="./assets/css/admin.css"/>
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">编辑友链</h1>
+    <p class="adm-page-desc">修改友情链接信息</p>
+</div>
+
+<div id="edit_link" class="adm-fade-in">
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </span>
+                友链信息
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-group">
+                <label class="adm-form-label">友链名称 <span class="adm-form-required">*</span></label>
+                <input class="adm-form-input" type="text" name="name" v-model="info.name" required/>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">友链简介 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="3" type="text" name="desc" maxlength="30" v-model="info.desc" required></textarea>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">友链地址 <span class="adm-form-required">*</span></label>
+                <input class="adm-form-input" type="text" name="url" v-model="info.url" required/>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">友链图片地址 <span class="adm-form-required">*</span></label>
+                <input class="adm-form-input" type="url" name="picurl" v-model="info.picurl" required/>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:30px;">
+        <a href="?action=admin&page=control_link" class="adm-btn adm-btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            返回
+        </a>
+        <button class="adm-btn adm-btn-primary adm-btn-lg" @click="update">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            保存修改
+        </button>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script>
+let edit_link = new Vue({
+    el: '#edit_link',
+    data: { info: [] },
+    methods: {
+        update: function(){
+            var id = getRequestParam('id');
+            fetch('./Data/post.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'type=edit_link&id='+id+'&name='+encodeURIComponent(this.info.name)+'&desc='+encodeURIComponent(this.info.desc)+'&url='+encodeURIComponent(this.info.url)+'&picurl='+encodeURIComponent(this.info.picurl)
+            })
+            .then(response => response.json())
+            .then(json => {
+                mdui.snackbar(json.msg);
+            });
+        }
+    },
+    created (){
+        var id = getRequestParam('id');
+        fetch('./Data/api.php?type=getOneLink&id='+id)
+            .then(response => response.json())
+            .then(json => {
+                this.info = json.data;
+            });
+    }
+});
+</script>
+</body>
+</html>

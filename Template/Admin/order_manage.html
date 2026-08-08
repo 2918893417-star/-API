@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>订单管理 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">订单管理</h1>
+    <p class="adm-page-desc">查看所有会员订单记录与支付状态</p>
+</div>
+
+<div id="admin" class="adm-fade-in">
+    <div class="adm-table-wrap">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>用户</th>
+                    <th>邮箱</th>
+                    <th>套餐</th>
+                    <th>金额</th>
+                    <th>支付方式</th>
+                    <th>状态</th>
+                    <th>创建时间</th>
+                    <th>支付时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="order in orders" :key="order.id">
+                    <td><code style="background:var(--adm-primary-bg);color:var(--adm-primary-dark);padding:2px 8px;border-radius:4px;font-size:12px;">{{ order.order_no }}</code></td>
+                    <td><strong style="color:var(--adm-text);">{{ order.username }}</strong></td>
+                    <td>{{ order.user_email }}</td>
+                    <td>{{ order.plan_name }}</td>
+                    <td><strong style="color:var(--adm-warning);">¥{{ order.amount }}</strong></td>
+                    <td><span class="adm-badge adm-badge-info">{{ order.pay_type_name }}</span></td>
+                    <td>
+                        <span class="adm-badge" :class="order.status == 1 ? 'adm-badge-success' : order.status == 0 ? 'adm-badge-warning' : 'adm-badge-danger'">
+                            <span class="adm-status-dot" :style="{background: order.status == 1 ? '#10b981' : (order.status == 0 ? '#f59e0b' : '#ef4444')}"></span>
+                            {{ order.status_name }}
+                        </span>
+                    </td>
+                    <td>{{ order.create_time }}</td>
+                    <td>{{ order.pay_time }}</td>
+                </tr>
+                <tr v-if="orders.length === 0">
+                    <td colspan="9">
+                        <div class="adm-empty">
+                            <div class="adm-empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </div>
+                            <div class="adm-empty-title">暂无订单数据</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '#admin',
+        data: { orders: [] },
+        created() { this.loadOrders(); },
+        methods: {
+            loadOrders() {
+                fetch('./Data/user.php?type=getAllOrders')
+                    .then(r => r.json())
+                    .then(json => { if(json.code === 0) this.orders = json.data; });
+            }
+        }
+    });
+</script>
+</body>
+</html>

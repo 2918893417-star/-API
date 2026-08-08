@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>友情链接 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ========== 页面容器 ========== */
+        .fl-wrap {
+            padding-top: 7rem;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+        .fl-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .fl-title-row h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+        }
+        .fl-title-row .fl-sub {
+            color: #888;
+            font-size: 0.9375rem;
+            margin-top: 0.25rem;
+        }
+
+        /* ========== 两栏布局 ========== */
+        .fl-grid {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .fl-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ========== 卡片通用 ========== */
+        .fl-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            position: relative;
+        }
+        .fl-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+        .fl-card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.0625rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .fl-card-title .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+        .fl-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 28px;
+            height: 28px;
+            padding: 0 10px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: #fff;
+            font-size: 0.8125rem;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        /* ========== 链接网格 ========== */
+        .fl-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 0.875rem;
+        }
+        .fl-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            border-radius: 14px;
+            background: #f7f9fc;
+            transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid transparent;
+        }
+        .fl-link-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59,130,246,.15);
+            background: #fff;
+            border-color: #e5ecf7;
+        }
+        .fl-link-item .fl-avatar {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            flex-shrink: 0;
+        }
+        .fl-link-item .fl-link-info {
+            min-width: 0;
+            flex: 1;
+        }
+        .fl-link-item .fl-link-name {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 0.9375rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .fl-link-item .fl-link-desc {
+            font-size: 0.8125rem;
+            color: #888;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 空状态 */
+        .fl-empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #9ca3af;
+        }
+        .fl-empty .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.5;
+        }
+        .fl-empty .empty-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+        .fl-empty .empty-desc {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        /* ========== 右侧申请表单 ========== */
+        .fl-req-list {
+            margin: 0 0 1.25rem 0;
+            padding: 0;
+            list-style: none;
+        }
+        .fl-req-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+            line-height: 1.55;
+        }
+        .fl-req-list li::before {
+            content: "";
+            position: absolute;
+            left: 0; top: 10px;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #3b82f6;
+        }
+
+        .fl-self-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+            border-radius: 16px;
+            padding: 1rem 1.125rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #e0e7ff;
+        }
+        .fl-self-row {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.8;
+        }
+        .fl-self-row .label {
+            color: #6b7280;
+            min-width: 56px;
+            flex-shrink: 0;
+        }
+        .fl-self-row .value {
+            color: #1a1a1a;
+            font-weight: 500;
+            word-break: break-all;
+        }
+        .fl-self-row .value a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .fl-form-group {
+            margin-bottom: 1rem;
+        }
+        .fl-form-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.375rem;
+        }
+        .fl-form-label .req {
+            color: #ef4444;
+            margin-left: 2px;
+        }
+        .fl-form-label .fetch-btn {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #3b82f6;
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .fl-form-label .fetch-btn:hover { color: #2563eb; }
+        .fl-form-input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            background: #f9fafb;
+            transition: border-color .2s, background .2s, box-shadow .2s;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .fl-form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.12);
+        }
+        textarea.fl-form-input {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .fl-submit-btn {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: transform .2s, box-shadow .2s;
+            margin-top: 0.5rem;
+        }
+        .fl-submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(59,130,246,.3);
+        }
+        .fl-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .fl-success-card {
+            display: none;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        .fl-success-card.show { display: block; }
+        .fl-success-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+        .fl-success-title {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+        .fl-success-desc {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .fl-note {
+            margin-top: 0.875rem;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        .fl-loading {
+            color: #3b82f6;
+            font-size: 0.8125rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .fl-loading .spinner {
+            width: 12px; height: 12px;
+            border: 2px solid #e5e7eb;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: fl-spin 0.6s linear infinite;
+        }
+        @keyframes fl-spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<div class="fl-wrap">
+    <div class="fl-title-row">
+        <div>
+            <h1>友情链接</h1>
+            <div class="fl-sub">优质网站推荐，开发者资源导航</div>
+        </div>
+    </div>
+
+    <div class="fl-grid">
+        <!-- 左侧：链接展示 -->
+        <div class="fl-card">
+            <div class="fl-card-head">
+                <div class="fl-card-title"><span class="dot"></span>友情链接</div>
+                <span class="fl-badge">{{ links.length || 0 }} 个</span>
+            </div>
+
+            <div class="fl-links" v-if="links && links.length > 0">
+                <a class="fl-link-item"
+                   v-for="link in links"
+                   :key="link.id"
+                   :href="link.url"
+                   target="_blank" rel="noopener">
+                    <img class="fl-avatar"
+                         :src="link.picurl"
+                         :alt="link.name"
+                         @error="onImgError($event)" />
+                    <div class="fl-link-info">
+                        <div class="fl-link-name">{{ link.name }}</div>
+                        <div class="fl-link-desc">{{ link.desc }}</div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="fl-empty" v-else>
+                <div class="empty-icon">
+                    <i class="fa-solid fa-link-slash"></i>
+                </div>
+                <div class="empty-title">暂无友情链接</div>
+                <div class="empty-desc">期待与您建立连接</div>
+            </div>
+        </div>
+
+        <!-- 右侧：申请表单 -->
+        <div class="fl-card">
+            <div class="fl-card-head">
+                <div class="fl-card-title"><span class="dot"></span>申请友链</div>
+            </div>
+
+            <div id="apply-form">
+                <div class="fl-form-group">
+                    <div class="fl-form-label">
+                        <span><i class="fa-solid fa-circle-info" style="color:#3b82f6;margin-right:4px;"></i> 申请要求</span>
+                    </div>
+                    <ul class="fl-req-list">
+                        <li>网站内容健康，无违法违规信息</li>
+                        <li>网站已稳定运行，能正常访问</li>
+                        <li>请先添加本站链接，再提交申请</li>
+                        <li>网站具有一定的访问量和内容质量</li>
+                    </ul>
+                </div>
+
+                <div class="fl-form-group">
+                    <div class="fl-form-label">
+                        <span><i class="fa-solid fa-house" style="color:#8b5cf6;margin-right:4px;"></i> 本站信息</span>
+                    </div>
+                    <div class="fl-self-card">
+                        <div class="fl-self-row"><span class="label">名称</span><span class="value"><?php echo $config['title'];?></span></div>
+                        <div class="fl-self-row"><span class="label">地址</span><span class="value"><a href="<?php echo $config['url'];?>" target="_blank"><?php echo $config['url'];?></a></span></div>
+                        <div class="fl-self-row"><span class="label">图标</span><span class="value"><a href="<?php echo $config['url'].ltrim($config['favicon'],'/');?>" target="_blank"><?php echo $config['url'].ltrim($config['favicon'],'/');?></a></span></div>
+                        <div class="fl-self-row"><span class="label">描述</span><span class="value"><?php echo $config['description'];?></span></div>
+                    </div>
+                </div>
+
+                <div class="fl-form-group">
+                    <div class="fl-form-label">
+                        <span>🔗 网站地址 <span class="req">*</span></span>
+                        <span class="fetch-btn" @click="fetchSiteInfo">
+                            <i :class="fetching ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-wand-magic-sparkles'"></i>
+                            {{ fetching ? '获取中...' : '获取' }}
+                        </span>
+                    </div>
+                    <input class="fl-form-input" type="url" v-model="form.url" placeholder="https://example.com" required />
+                </div>
+
+                <div class="fl-form-group">
+                    <div class="fl-form-label"><span>🏷️ 网站名称 <span class="req">*</span></span></div>
+                    <input class="fl-form-input" type="text" v-model="form.name" placeholder="请输入网站名称" required />
+                </div>
+
+                <div class="fl-form-group">
+                    <div class="fl-form-label"><span>🖼️ 网站 Logo</span></div>
+                    <input class="fl-form-input" type="url" v-model="form.picurl" placeholder="https://example.com/logo.png 或 favicon.ico" />
+                </div>
+
+                <div class="fl-form-group">
+                    <div class="fl-form-label"><span>📝 网站描述</span></div>
+                    <textarea class="fl-form-input" v-model="form.desc" placeholder="简单介绍一下您的网站"></textarea>
+                </div>
+
+                <button class="fl-submit-btn" @click="submitForm" :disabled="submitting">
+                    <i :class="submitting ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-paper-plane'"></i>
+                    {{ submitting ? '提交中...' : '提交申请' }}
+                </button>
+
+                <div class="fl-note">提交后我们会尽快审核，审核结果将通过邮件或联系方式通知您</div>
+            </div>
+
+            <!-- 提交成功视图 -->
+            <div id="apply-success" class="fl-success-card">
+                <div class="fl-success-icon"><i class="fa-solid fa-check"></i></div>
+                <div class="fl-success-title">提交成功！</div>
+                <div class="fl-success-desc">我们已收到您的友链申请，请耐心等待管理员审核</div>
+                <button class="fl-submit-btn" style="margin-top:1.5rem;max-width:200px;" @click="resetForm">
+                    <i class="fa-solid fa-rotate-left"></i>再次提交
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let friendlink = new Vue({
+        el: '.fl-wrap',
+        data: {
+            links: [],
+            form: {
+                url: '',
+                name: '',
+                picurl: '',
+                desc: ''
+            },
+            submitting: false,
+            fetching: false
+        },
+        methods: {
+            onImgError(e) {
+                // 图片加载失败时，替换为默认图标
+                e.target.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" rx="12" fill="#e5e7eb"/><text x="50%" y="55%" text-anchor="middle" font-size="20" font-family="Arial" fill="#9ca3af">🔗</text></svg>'
+                );
+            },
+            // 抓取站点信息（仅从 url 中解析 favicon，不请求远端）
+            fetchSiteInfo() {
+                const url = this.form.url.trim();
+                if (!url) {
+                    mdui.snackbar('请先填写网站地址');
+                    return;
+                }
+                let parsed;
+                try { parsed = new URL(url); } catch(e) {
+                    mdui.snackbar('网站地址格式不正确');
+                    return;
+                }
+                this.fetching = true;
+                // 用 Google 公共服务取 favicon
+                const host = parsed.hostname;
+                const fallbackLogo = 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(host) + '&sz=128';
+
+                // 若用户未填写 logo，则自动填入
+                if (!this.form.picurl) {
+                    this.$set(this.form, 'picurl', fallbackLogo);
+                }
+                // 若未填写 name，则尝试用主机名填充
+                if (!this.form.name) {
+                    this.$set(this.form, 'name', host);
+                }
+                // 简单延时，模拟获取过程
+                setTimeout(() => {
+                    this.fetching = false;
+                    mdui.snackbar('已自动填充，请核对信息');
+                }, 500);
+            },
+            submitForm() {
+                const { url, name, picurl, desc } = this.form;
+                if (!url || !name) {
+                    mdui.snackbar('请填写网站地址和名称');
+                    return;
+                }
+                this.submitting = true;
+                fetch('./Data/post.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: 'type=submit_friendlink'
+                        + '&url=' + encodeURIComponent(url)
+                        + '&name=' + encodeURIComponent(name)
+                        + '&picurl=' + encodeURIComponent(picurl)
+                        + '&desc=' + encodeURIComponent(desc)
+                })
+                .then(r => r.json())
+                .then(json => {
+                    this.submitting = false;
+                    if (json.code === 0 || json.code === '0') {
+                        // 显示成功视图
+                        document.getElementById('apply-form').style.display = 'none';
+                        const successEl = document.getElementById('apply-success');
+                        successEl.classList.add('show');
+                    } else {
+                        mdui.snackbar(json.msg || '提交失败');
+                    }
+                })
+                .catch(() => {
+                    this.submitting = false;
+                    mdui.snackbar('网络错误，请稍后重试');
+                });
+            },
+            resetForm() {
+                this.form = { url: '', name: '', picurl: '', desc: '' };
+                document.getElementById('apply-form').style.display = 'block';
+                document.getElementById('apply-success').classList.remove('show');
+            }
+        },
+        created() {
+            // 加载友链
+            fetch('./Data/api.php?type=getAllLink&mod=rand')
+                .then(r => r.json())
+                .then(json => {
+                    if (json.code === 0 && json.data && json.data.length > 0) {
+                        this.links = json.data;
+                    } else {
+                        this.links = [];
+                    }
+                })
+                .catch(() => { this.links = []; });
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>代码管理 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">代码管理</h1>
+    <p class="adm-page-desc">直接在线编辑、保存、删除 API 接口代码，支持一键注入计费中间件</p>
+</div>
+
+<div id="code_mgr" class="adm-fade-in">
+
+    <!-- 顶部操作栏 -->
+    <div class="adm-card adm-code-toolbar-card">
+        <div class="adm-card-body adm-code-toolbar">
+            <div class="adm-code-toolbar-left">
+                <div class="adm-code-path-info" v-if="currentFile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    <span class="adm-code-path-label">/API/</span>
+                    <strong>{{ currentFile }}</strong>
+                    <span class="adm-code-badge" :class="fileInfo.has_billing ? 'is-on' : 'is-off'">
+                        {{ fileInfo.has_billing ? '已启用计费' : '未启用计费' }}
+                    </span>
+                    <span class="adm-code-badge adm-code-badge-protect" v-if="fileInfo.protected">受保护</span>
+                </div>
+                <div class="adm-code-path-info" v-else>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <span style="color:var(--adm-text-muted);">请从左侧选择一个文件</span>
+                </div>
+            </div>
+            <div class="adm-code-toolbar-right">
+                <button class="adm-btn adm-btn-primary" @click="openCreateDialog" :disabled="loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    新建接口
+                </button>
+                <button class="adm-btn adm-btn-info" @click="addBilling" :disabled="!currentFile || fileInfo.has_billing || fileInfo.protected || loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    一键加计费
+                </button>
+                <button class="adm-btn adm-btn-warning" @click="reloadFile" :disabled="!currentFile || loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    重新加载
+                </button>
+                <button class="adm-btn adm-btn-success" @click="saveFile" :disabled="!currentFile || fileInfo.protected || loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    保存
+                </button>
+                <a class="adm-btn" :href="testUrl" target="_blank" v-if="currentFile">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    测试运行
+                </a>
+                <button class="adm-btn adm-btn-danger" @click="deleteFile" :disabled="!currentFile || fileInfo.protected || loading">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    删除
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主体:左侧文件列表 + 右侧编辑器 -->
+    <div class="adm-code-layout">
+
+        <!-- 左侧文件列表 -->
+        <aside class="adm-code-sidebar">
+            <div class="adm-code-sidebar-header">
+                <div class="adm-code-sidebar-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    <span>接口文件</span>
+                    <span class="adm-code-count">{{ files.length }}</span>
+                </div>
+                <button class="adm-code-refresh-btn" @click="loadFiles" title="刷新列表">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+                </button>
+            </div>
+
+            <div class="adm-code-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" v-model="searchKeyword" placeholder="搜索文件名...">
+            </div>
+
+            <div class="adm-code-file-list" v-if="!loading">
+                <div
+                    v-for="f in filteredFiles"
+                    :key="f.name"
+                    class="adm-code-file-item"
+                    :class="{'is-active': currentFile === f.name, 'is-protected': f.protected}"
+                    @click="selectFile(f.name)">
+                    <div class="adm-code-file-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <div class="adm-code-file-meta">
+                        <div class="adm-code-file-name">
+                            {{ f.name }}
+                            <span class="adm-code-lock" v-if="f.protected" title="受保护文件">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                        </div>
+                        <div class="adm-code-file-sub">
+                            <span class="adm-code-billing-dot" :class="f.has_billing ? 'on' : 'off'" :title="f.has_billing ? '已启用计费' : '未启用计费'"></span>
+                            <span>{{ f.size_text }}</span>
+                            <span style="margin:0 4px;color:var(--adm-text-muted);">·</span>
+                            <span>{{ f.lines }} 行</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="adm-code-empty" v-if="filteredFiles.length === 0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    <p>{{ files.length === 0 ? '暂无接口文件' : '未找到匹配文件' }}</p>
+                </div>
+            </div>
+            <div class="adm-code-loading" v-else>
+                <div class="adm-spinner"></div>
+                <span>加载中...</span>
+            </div>
+        </aside>
+
+        <!-- 右侧代码编辑器 -->
+        <section class="adm-code-editor-wrap">
+            <!-- 编辑器顶栏 -->
+            <div class="adm-code-editor-topbar">
+                <div class="adm-code-editor-tabs">
+                    <div class="adm-code-tab is-active" v-if="currentFile">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>{{ currentFile }}</span>
+                        <span class="adm-code-dirty" v-if="dirty" title="未保存修改">●</span>
+                    </div>
+                    <div class="adm-code-tab-empty" v-else>未打开任何文件</div>
+                </div>
+                <div class="adm-code-editor-status" v-if="currentFile">
+                    <span class="adm-code-stat-item" v-if="fileInfo.lines">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        {{ fileInfo.lines }} 行
+                    </span>
+                    <span class="adm-code-stat-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        {{ fileInfo.size_text }}
+                    </span>
+                    <span class="adm-code-stat-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {{ fileInfo.mtime_text }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- 编辑器主体:行号 + textarea -->
+            <div class="adm-code-editor" v-if="currentFile">
+                <div class="adm-code-gutter" id="codeGutter"><div v-for="n in lineNumbers" :key="n" class="adm-code-line-num">{{ n }}</div></div>
+                <textarea
+                    id="codeTextarea"
+                    class="adm-code-textarea"
+                    v-model="codeContent"
+                    @scroll="syncScroll"
+                    @input="onCodeInput"
+                    @keydown.tab="onTab"
+                    spellcheck="false"
+                    :readonly="fileInfo.protected"
+                    :placeholder="'在此编辑 ' + currentFile + ' 的代码...'"></textarea>
+            </div>
+
+            <!-- 空状态 -->
+            <div class="adm-code-editor-empty" v-else>
+                <div class="adm-code-editor-empty-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </div>
+                <h3>选择一个文件开始编辑</h3>
+                <p>从左侧列表选择接口文件,或点击右上角"新建接口"创建新文件</p>
+                <div class="adm-code-editor-empty-tips">
+                    <div class="adm-code-tip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span>一键注入计费代码</span>
+                    </div>
+                    <div class="adm-code-tip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/></svg>
+                        <span>在线编辑保存</span>
+                    </div>
+                    <div class="adm-code-tip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"/></svg>
+                        <span>实时测试运行</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部提示 -->
+            <div class="adm-code-editor-footer" v-if="currentFile && dirty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>有未保存的修改,Ctrl/Cmd + S 可快速保存</span>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- 新建接口对话框 -->
+<div class="mdui-dialog" id="createDialog">
+    <div class="mdui-dialog-title adm-create-dialog-title">
+        <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;">
+            <i class="mdui-icon material-icons">close</i>
+        </button>
+        <span>新建接口文件</span>
+    </div>
+    <div class="mdui-dialog-content mdui-p-x-3">
+        <div class="adm-form-group" style="margin-top:16px;">
+            <label class="adm-form-label">文件名 <span class="adm-form-required">*</span></label>
+            <div class="adm-code-input-suffix">
+                <input class="adm-form-input" type="text" v-model="newFileName" placeholder="例如:weather" @input="newFileName=newFileName.replace(/[^a-zA-Z0-9_]/g,'')" />
+                <span class="adm-code-input-suffix-label">.php</span>
+            </div>
+            <div class="adm-form-hint">仅支持字母、数字、下划线,以字母开头</div>
+        </div>
+        <div class="adm-form-group">
+            <label class="adm-form-label">初始化选项</label>
+            <div class="adm-code-options">
+                <label class="adm-code-option" :class="{'is-active': newFileAddBilling}">
+                    <input type="checkbox" v-model="newFileAddBilling" />
+                    <div class="adm-code-option-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div>
+                        <div class="adm-code-option-title">包含计费中间件</div>
+                        <div class="adm-code-option-desc">自动引入 api_key_auth.php,启用权限校验与计费</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="adm-code-preview" v-if="newFilePreview">
+            <div class="adm-code-preview-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                预览生成代码
+            </div>
+            <pre><code>{{ newFilePreview }}</code></pre>
+        </div>
+    </div>
+    <div class="mdui-dialog-actions">
+        <button class="mdui-btn" mdui-dialog-cancel>取消</button>
+        <button class="mdui-btn mdui-btn-primary" @click="createFile">创建</button>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+let codeMgr = new Vue({
+    el: '#code_mgr',
+    data: {
+        files: [],
+        loading: false,
+        currentFile: '',
+        codeContent: '',
+        originalContent: '',
+        dirty: false,
+        searchKeyword: '',
+        testUrl: '',
+        fileInfo: {
+            has_billing: false,
+            protected: false,
+            size_text: '-',
+            mtime_text: '-',
+            lines: 0
+        },
+        /* 新建对话框 */
+        newFileName: '',
+        newFileAddBilling: true,
+    },
+    computed: {
+        /* 行号数组 */
+        lineNumbers: function() {
+            var lines = (this.codeContent || '').split('\n').length;
+            if (lines < 1) lines = 1;
+            /* 限制最大行号,避免性能问题 */
+            if (lines > 5000) lines = 5000;
+            return Array.from({length: lines}, function(_, i) { return i + 1; });
+        },
+        /* 过滤后的文件列表 */
+        filteredFiles: function() {
+            var kw = (this.searchKeyword || '').toLowerCase().trim();
+            if (!kw) return this.files;
+            return this.files.filter(function(f) {
+                return f.name.toLowerCase().indexOf(kw) !== -1;
+            });
+        },
+        /* 新建文件预览 */
+        newFilePreview: function() {
+            var name = (this.newFileName || 'example').replace(/[^a-zA-Z0-9_]/g, '');
+            if (!name) return '';
+            var phpOpen = '<' + '?php';
+            var tpl = phpOpen + '\n';
+            tpl += "/**\n";
+            tpl += " * " + name + " 接口\n";
+            tpl += " * 创建时间: " + new Date().toLocaleString('zh-CN') + "\n";
+            tpl += " */\n\n";
+            if (this.newFileAddBilling) {
+                tpl += "require_once __DIR__ . '/../Core/api_key_auth.php';\n\n";
+            }
+            tpl += "header('Content-Type: application/json; charset=utf-8');\n\n";
+            tpl += "// 在此处编写接口业务逻辑\n";
+            tpl += "echo json_encode([\n";
+            tpl += "    'code' => 0,\n";
+            tpl += "    'msg'  => 'success',\n";
+            tpl += "    'data' => [\n";
+            tpl += "        'message' => 'Hello from " + name + " API'\n";
+            tpl += "    ]\n";
+            tpl += "], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);\n";
+            return tpl;
+        }
+    },
+    methods: {
+        /* 加载文件列表 */
+        loadFiles: function() {
+            var self = this;
+            self.loading = true;
+            fetch('./Data/code.php?type=list')
+                .then(function(r){ return r.json(); })
+                .then(function(json){
+                    self.loading = false;
+                    if (json.code == 0) {
+                        self.files = json.data || [];
+                    } else {
+                        mdui.snackbar({message: json.msg, position: 'top', timeout: 3000});
+                    }
+                })
+                .catch(function(){
+                    self.loading = false;
+                    mdui.snackbar({message: '加载文件列表失败', position: 'top', timeout: 3000});
+                });
+        },
+
+        /* 选择文件 */
+        selectFile: function(name) {
+            if (this.dirty) {
+                var self = this;
+                swal({
+                    title: '当前有未保存的修改',
+                    text: '切换文件将丢失对「' + this.currentFile + '」的修改,确定切换?',
+                    icon: 'warning',
+                    buttons: ['取消', '确认切换'],
+                    dangerMode: true
+                }).then(function(ok){
+                    if (ok) self._doSelect(name);
+                });
+            } else {
+                this._doSelect(name);
+            }
+        },
+        _doSelect: function(name) {
+            var self = this;
+            self.currentFile = name;
+            self.codeContent = '';
+            self.dirty = false;
+            self.fileInfo = {has_billing: false, protected: false, size_text: '-', mtime_text: '-', lines: 0};
+            fetch('./Data/code.php?type=read&file=' + encodeURIComponent(name))
+                .then(function(r){ return r.json(); })
+                .then(function(json){
+                    if (json.code == 0) {
+                        self.codeContent = json.data.content;
+                        self.originalContent = json.data.content;
+                        self.testUrl = json.data.test_url;
+                        self.fileInfo = {
+                            has_billing: json.data.has_billing,
+                            protected: json.data.protected,
+                            size_text: json.data.size_text,
+                            mtime_text: json.data.mtime_text,
+                            lines: json.data.lines
+                        };
+                        self.$nextTick(function(){
+                            self.syncScroll();
+                            self._focusEditor();
+                        });
+                    } else {
+                        mdui.snackbar({message: json.msg, position: 'top', timeout: 3000});
+                        self.currentFile = '';
+                    }
+                })
+                .catch(function(){
+                    mdui.snackbar({message: '读取文件失败', position: 'top', timeout: 3000});
+                });
+        },
+
+        /* 输入变化 */
+        onCodeInput: function() {
+            this.dirty = (this.codeContent !== this.originalContent);
+            this.$nextTick(this.syncScroll);
+        },
+
+        /* 同步行号滚动 */
+        syncScroll: function() {
+            var ta = document.getElementById('codeTextarea');
+            var gutter = document.getElementById('codeGutter');
+            if (ta && gutter) {
+                gutter.scrollTop = ta.scrollTop;
+            }
+        },
+
+        /* 聚焦编辑器 */
+        _focusEditor: function() {
+            var ta = document.getElementById('codeTextarea');
+            if (ta) ta.focus();
+        },
+
+        /* Tab 键插入 4 个空格 */
+        onTab: function(e) {
+            if (this.fileInfo.protected) return;
+            e.preventDefault();
+            var ta = e.target;
+            var start = ta.selectionStart;
+            var end = ta.selectionEnd;
+            this.codeContent = this.codeContent.substring(0, start) + '    ' + this.codeContent.substring(end);
+            this.$nextTick(function(){
+                ta.selectionStart = ta.selectionEnd = start + 4;
+            });
+        },
+
+        /* 保存文件 */
+        saveFile: function() {
+            if (!this.currentFile) return;
+            if (this.fileInfo.protected) {
+                mdui.snackbar({message: '受保护文件,禁止修改', position: 'top', timeout: 3000});
+                return;
+            }
+            var self = this;
+            swal({
+                title: '确认保存?',
+                text: '将覆盖文件「' + self.currentFile + '」(原文件会自动备份为 .bak)',
+                icon: 'info',
+                buttons: ['取消', '确认保存']
+            }).then(function(ok){
+                if (!ok) return;
+                $.ajax({
+                    method: 'POST',
+                    url: './Data/code.php',
+                    data: {
+                        type: 'save',
+                        file: self.currentFile,
+                        content: self.codeContent
+                    },
+                    beforeSend: function() {
+                        swal('保存中...', {icon: 'info', buttons: false, timer: 1500});
+                    },
+                    success: function(data) {
+                        var json = JSON.parse(data);
+                        if (json.code == 0) {
+                            self.originalContent = self.codeContent;
+                            self.dirty = false;
+                            if (json.data) {
+                                self.fileInfo.size_text = json.data.size_text || self.fileInfo.size_text;
+                                self.fileInfo.mtime_text = json.data.mtime_text || self.fileInfo.mtime_text;
+                                self.fileInfo.has_billing = json.data.has_billing;
+                                self.fileInfo.lines = json.data.lines || self.fileInfo.lines;
+                            }
+                            /* 同步列表中的状态 */
+                            self._syncFileInList();
+                            swal('保存成功', {icon: 'success', buttons: false, timer: 1500});
+                        } else {
+                            swal('保存失败', json.msg, {icon: 'error'});
+                        }
+                    },
+                    error: function() {
+                        swal('网络错误', '保存失败,请重试', {icon: 'error'});
+                    }
+                });
+            });
+        },
+
+        /* 删除文件 */
+        deleteFile: function() {
+            if (!this.currentFile) return;
+            if (this.fileInfo.protected) {
+                mdui.snackbar({message: '受保护文件,禁止删除', position: 'top', timeout: 3000});
+                return;
+            }
+            var self = this;
+            swal({
+                title: '确认删除文件?',
+                text: '将永久删除「' + self.currentFile + '」,此操作不可恢复!',
+                icon: 'warning',
+                buttons: ['取消', '确认删除'],
+                dangerMode: true
+            }).then(function(ok){
+                if (!ok) return;
+                $.ajax({
+                    method: 'POST',
+                    url: './Data/code.php',
+                    data: {
+                        type: 'delete',
+                        file: self.currentFile
+                    },
+                    success: function(data) {
+                        var json = JSON.parse(data);
+                        if (json.code == 0) {
+                            swal('删除成功', {icon: 'success', buttons: false, timer: 1500});
+                            self.currentFile = '';
+                            self.codeContent = '';
+                            self.dirty = false;
+                            self.loadFiles();
+                        } else {
+                            swal('删除失败', json.msg, {icon: 'error'});
+                        }
+                    },
+                    error: function() {
+                        swal('网络错误', '删除失败,请重试', {icon: 'error'});
+                    }
+                });
+            });
+        },
+
+        /* 一键添加计费代码 */
+        addBilling: function() {
+            if (!this.currentFile) return;
+            if (this.fileInfo.has_billing) {
+                mdui.snackbar({message: '该接口已包含计费代码', position: 'top', timeout: 2500});
+                return;
+            }
+            if (this.fileInfo.protected) {
+                mdui.snackbar({message: '受保护文件,禁止修改', position: 'top', timeout: 3000});
+                return;
+            }
+            var self = this;
+            swal({
+                title: '一键添加计费代码?',
+                text: '将在「' + self.currentFile + '」的 <' + '?php 标签后自动注入计费中间件,启用 API Key 鉴权与计费功能。',
+                icon: 'info',
+                buttons: ['取消', '确认注入']
+            }).then(function(ok){
+                if (!ok) return;
+                /* 如果有未保存修改,先提示 */
+                if (self.dirty) {
+                    swal('请先保存修改', '当前文件有未保存的修改,请先保存再注入计费代码', {icon: 'warning'});
+                    return;
+                }
+                $.ajax({
+                    method: 'POST',
+                    url: './Data/code.php',
+                    data: {
+                        type: 'add_billing',
+                        file: self.currentFile
+                    },
+                    beforeSend: function() {
+                        swal('注入中...', {icon: 'info', buttons: false, timer: 1500});
+                    },
+                    success: function(data) {
+                        var json = JSON.parse(data);
+                        if (json.code == 0) {
+                            swal('注入成功', json.msg, {icon: 'success', buttons: false, timer: 1800});
+                            /* 重新读取文件内容 */
+                            self._doSelect(self.currentFile);
+                        } else {
+                            swal('注入失败', json.msg, {icon: 'error'});
+                        }
+                    },
+                    error: function() {
+                        swal('网络错误', '注入失败,请重试', {icon: 'error'});
+                    }
+                });
+            });
+        },
+
+        /* 重新加载当前文件 */
+        reloadFile: function() {
+            if (!this.currentFile) return;
+            var self = this;
+            if (self.dirty) {
+                swal({
+                    title: '放弃未保存的修改?',
+                    text: '将重新从磁盘加载「' + self.currentFile + '」',
+                    icon: 'warning',
+                    buttons: ['取消', '确认重载'],
+                    dangerMode: true
+                }).then(function(ok){
+                    if (ok) self._doSelect(self.currentFile);
+                });
+            } else {
+                self._doSelect(self.currentFile);
+            }
+        },
+
+        /* 打开新建对话框 */
+        openCreateDialog: function() {
+            this.newFileName = '';
+            this.newFileAddBilling = true;
+            new mdui.Dialog('#createDialog').open();
+        },
+
+        /* 创建文件 */
+        createFile: function() {
+            var name = (this.newFileName || '').trim();
+            if (!name) {
+                mdui.snackbar({message: '请输入文件名', position: 'top', timeout: 2500});
+                return;
+            }
+            var self = this;
+            $.ajax({
+                method: 'POST',
+                url: './Data/code.php',
+                data: {
+                    type: 'create',
+                    file: name,
+                    add_billing: self.newFileAddBilling ? 1 : 0
+                },
+                success: function(data) {
+                    var json = JSON.parse(data);
+                    if (json.code == 0) {
+                        mdui.Dialog.getInstance('#createDialog').close();
+                        swal('创建成功', '已创建文件: ' + json.data.name, {icon: 'success', buttons: false, timer: 1500});
+                        self.loadFiles();
+                        /* 自动选中新文件 */
+                        setTimeout(function(){
+                            self._doSelect(json.data.name);
+                        }, 300);
+                    } else {
+                        swal('创建失败', json.msg, {icon: 'error'});
+                    }
+                },
+                error: function() {
+                    swal('网络错误', '创建失败,请重试', {icon: 'error'});
+                }
+            });
+        },
+
+        /* 同步文件在列表中的状态 */
+        _syncFileInList: function() {
+            for (var i = 0; i < this.files.length; i++) {
+                if (this.files[i].name === this.currentFile) {
+                    this.files[i].has_billing = this.fileInfo.has_billing;
+                    this.files[i].lines = this.fileInfo.lines;
+                    this.files[i].size_text = this.fileInfo.size_text;
+                    break;
+                }
+            }
+        }
+    },
+    created: function() {
+        this.loadFiles();
+        /* Ctrl/Cmd + S 快捷键 */
+        var self = this;
+        document.addEventListener('keydown', function(e){
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (self.currentFile && !self.fileInfo.protected) {
+                    self.saveFile();
+                }
+            }
+        });
+    }
+});
+</script>
+</body>
+</html>

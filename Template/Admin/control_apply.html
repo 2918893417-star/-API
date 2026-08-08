@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>友链申请管理 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+    <div>
+        <h1 class="adm-page-title">友链申请</h1>
+        <p class="adm-page-desc">审核用户提交的友情链接申请</p>
+    </div>
+    <a href="?action=admin&page=control_link" class="adm-btn adm-btn-secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        返回友链管理
+    </a>
+</div>
+
+<div id="control_apply" class="adm-fade-in">
+    <div class="adm-table-wrap" v-if="applies && applies.length > 0">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>网站</th>
+                    <th>Logo</th>
+                    <th>描述</th>
+                    <th>IP / 提交时间</th>
+                    <th style="text-align:right;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="row in applies">
+                    <td><span class="adm-badge adm-badge-default">{{ row.id }}</span></td>
+                    <td>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <strong style="color:var(--adm-text);">{{ row.name }}</strong>
+                            <a :href="row.url" target="_blank" style="color:var(--adm-primary);text-decoration:none;font-size:12px;word-break:break-all;">{{ row.url }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <img :src="row.picurl"
+                             :alt="row.name"
+                             style="width:32px;height:32px;border-radius:8px;object-fit:cover;background:#f3f4f6;"
+                             @error="onImgError($event)" />
+                    </td>
+                    <td style="max-width:240px;">
+                        <div style="color:var(--adm-text-secondary);font-size:12px;word-break:break-all;">{{ row.desc || '—' }}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:12px;color:var(--adm-text-secondary);">
+                            <div>IP: {{ row.ip || '—' }}</div>
+                            <div>{{ getLocalTime(row.time) }}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="adm-table-actions" style="justify-content:flex-end;gap:8px;">
+                            <button class="adm-btn adm-btn-primary" @click="approve(row.id)" title="通过">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                通过
+                            </button>
+                            <button class="adm-btn adm-btn-danger" @click="del(row.id)" title="驳回">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                驳回
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="adm-card" v-else>
+        <div class="adm-empty">
+            <div class="adm-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div class="adm-empty-title">暂无待审核的友链申请</div>
+            <div style="font-size:13px;margin-top:4px;">有新的申请会出现在这里</div>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+    let control_apply = new Vue({
+        el: '#control_apply',
+        data: {
+            applies: []
+        },
+        methods: {
+            onImgError(e) {
+                e.target.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+                    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#e5e7eb"/><text x="50%" y="60%" text-anchor="middle" font-size="16" font-family="Arial" fill="#9ca3af">🔗</text></svg>'
+                );
+            },
+            getLocalTime(nS) {
+                if (!nS) return '—';
+                return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
+            },
+            approve(id) {
+                swal({
+                    title: '确定通过该申请？',
+                    text: '通过后将自动添加到正式友情链接',
+                    icon: 'warning',
+                    buttons: ['取消', '通过'],
+                    dangerMode: false,
+                }).then((willApprove) => {
+                    if (willApprove) {
+                        $.ajax({
+                            method: 'POST',
+                            url: './Data/post.php',
+                            data: { type: 'approve_apply', id: id },
+                            beforeSend: () => {
+                                swal('正在审核...', ' ', { icon: 'info', buttons: false });
+                            },
+                            success: function (data) {
+                                var json = JSON.parse(data);
+                                if (json.code == 0) {
+                                    swal(json.msg, '2 秒后刷新', { icon: 'success', buttons: false });
+                                    setTimeout(() => location.reload(), 2000);
+                                } else {
+                                    swal(json.msg, ' ', { icon: 'error', buttons: false });
+                                }
+                            }
+                        });
+                    }
+                });
+            },
+            del(id) {
+                swal({
+                    title: '确定驳回该申请？',
+                    text: '驳回后申请记录将被删除，不可恢复',
+                    icon: 'warning',
+                    buttons: ['取消', '驳回'],
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            method: 'POST',
+                            url: './Data/post.php',
+                            data: { type: 'del_apply', id: id },
+                            beforeSend: () => {
+                                swal('处理中...', ' ', { icon: 'info', buttons: false });
+                            },
+                            success: function (data) {
+                                var json = JSON.parse(data);
+                                if (json.code == 0) {
+                                    swal('已驳回', '2 秒后刷新', { icon: 'success', buttons: false });
+                                    setTimeout(() => location.reload(), 2000);
+                                } else {
+                                    swal(json.msg, ' ', { icon: 'error', buttons: false });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getAllApply')
+                .then(r => r.json())
+                .then(json => {
+                    if (json.code === 0) {
+                        this.applies = json.data || [];
+                    }
+                });
+        }
+    });
+</script>
+</body>
+</html>

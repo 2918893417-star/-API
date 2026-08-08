@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/style.css"/>
+    <link rel="stylesheet" href="./assets/css/admin.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+
+<body class="admin-body">
+
+<div class="adm-layout">
+
+    <!-- 侧边栏 -->
+    <aside class="adm-sidebar" id="admSidebar">
+        <div class="adm-sidebar-header">
+            <div class="adm-sidebar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <div>
+                <div class="adm-sidebar-title"><?php echo $config['title'];?></div>
+                <div class="adm-sidebar-subtitle">后台管理系统</div>
+            </div>
+        </div>
+
+        <div class="adm-sidebar-user">
+            <div class="adm-sidebar-avatar">
+                <?php echo mb_substr($_SESSION['admin_username'], 0, 1);?>
+            </div>
+            <div class="adm-sidebar-user-info">
+                <div class="adm-sidebar-user-name"><?php echo $_SESSION['admin_username'];?></div>
+                <div class="adm-sidebar-user-role">超级管理员</div>
+            </div>
+        </div>
+
+        <nav class="adm-sidebar-nav">
+            <div class="adm-sidebar-section-title">概览</div>
+            <a class="adm-nav-item <?php echo (!isset($_GET['page']) || $_GET['page']=='') ? 'active' : '';?>" href="?action=admin" data-tip="仪表盘">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span class="adm-nav-label">仪表盘</span>
+            </a>
+            <a class="adm-nav-item" href="?" target="_blank" data-tip="访问前台">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                <span class="adm-nav-label">访问前台</span>
+            </a>
+
+            <div class="adm-sidebar-section-title">系统管理</div>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='websetting') ? 'active' : '';?>" href="?action=admin&page=websetting" data-tip="网站配置">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </span>
+                <span class="adm-nav-label">网站配置</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='edit_user') ? 'active' : '';?>" href="?action=admin&page=edit_user" data-tip="用户信息">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </span>
+                <span class="adm-nav-label">用户信息</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='access_log') ? 'active' : '';?>" href="?action=admin&page=access_log" data-tip="访问日志">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </span>
+                <span class="adm-nav-label">访问日志</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='login_log') ? 'active' : '';?>" href="?action=admin&page=login_log" data-tip="登录日志">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </span>
+                <span class="adm-nav-label">登录日志</span>
+            </a>
+
+            <div class="adm-sidebar-section-title">接口管理</div>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='add') ? 'active' : '';?>" href="?action=admin&page=add" data-tip="添加接口">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <span class="adm-nav-label">添加接口</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='control') ? 'active' : '';?>" href="?action=admin&page=control" data-tip="管理接口">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                </span>
+                <span class="adm-nav-label">管理接口</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='api_doc') ? 'active' : '';?>" href="?action=admin&page=api_doc" data-tip="接口文档">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </span>
+                <span class="adm-nav-label">接口文档</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='code_manage') ? 'active' : '';?>" href="?action=admin&page=code_manage" data-tip="代码管理">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </span>
+                <span class="adm-nav-label">代码管理</span>
+            </a>
+
+            <div class="adm-sidebar-section-title">内容管理</div>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='add_link') ? 'active' : '';?>" href="?action=admin&page=add_link" data-tip="添加友链">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </span>
+                <span class="adm-nav-label">添加友链</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='control_link') ? 'active' : '';?>" href="?action=admin&page=control_link" data-tip="管理友链">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </span>
+                <span class="adm-nav-label">管理友链</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='control_apply') ? 'active' : '';?>" href="?action=admin&page=control_apply" data-tip="友链申请">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </span>
+                <span class="adm-nav-label">友链申请</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='control_post') ? 'active' : '';?>" href="?action=admin&page=control_post" data-tip="管理公告">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                </span>
+                <span class="adm-nav-label">管理公告</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='control_feedback') ? 'active' : '';?>" href="?action=admin&page=control_feedback" data-tip="管理反馈">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <span class="adm-nav-label">管理反馈</span>
+            </a>
+
+            <div class="adm-sidebar-section-title">会员中心</div>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='user_manage') ? 'active' : '';?>" href="?action=admin&page=user_manage" data-tip="会员管理">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </span>
+                <span class="adm-nav-label">会员管理</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='plan_manage') ? 'active' : '';?>" href="?action=admin&page=plan_manage" data-tip="套餐管理">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </span>
+                <span class="adm-nav-label">套餐管理</span>
+            </a>
+            <a class="adm-nav-item <?php echo (isset($_GET['page']) && $_GET['page']=='order_manage') ? 'active' : '';?>" href="?action=admin&page=order_manage" data-tip="订单管理">
+                <span class="adm-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </span>
+                <span class="adm-nav-label">订单管理</span>
+            </a>
+        </nav>
+
+        <div class="adm-sidebar-footer">
+            <?php if($config['copyright']){ echo $config['copyright'].'<br>';}?>
+            <?php if($config['icp']){ echo $config['icp'].'<br>';}?>
+            <a href="https://api.nanyinet.com" target="_blank">© 2024 MXGAPI</a>
+        </div>
+    </aside>
+
+    <!-- 移动端遮罩层 -->
+    <div class="adm-overlay" id="admOverlay"></div>
+
+    <!-- 主内容区 -->
+    <div class="adm-main">
+
+        <!-- 顶栏 -->
+        <header class="adm-topbar">
+            <div class="adm-topbar-left">
+                <button class="adm-menu-toggle" id="admSidebarToggle" title="折叠/展开侧边栏">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <?php
+                /* 动态面包屑：根据当前 page 参数生成 */
+                $adm_page_map = array(
+                    ''              => '仪表盘',
+                    'websetting'    => '网站配置',
+                    'edit_user'     => '用户信息',
+                    'edit_pwd'      => '修改密码',
+                    'access_log'    => '访问日志',
+                    'login_log'     => '登录日志',
+                    'add'           => '添加接口',
+                    'control'       => '管理接口',
+                    'edit'          => '编辑接口',
+                    'api_doc'       => '接口文档',
+                    'code_manage'   => '代码管理',
+                    'add_link'      => '添加友链',
+                    'control_link'  => '管理友链',
+                    'control_apply' => '友链申请',
+                    'control_post'  => '管理公告',
+                    'control_feedback' => '管理反馈',
+                    'user_manage'   => '会员管理',
+                    'plan_manage'   => '套餐管理',
+                    'order_manage'  => '订单管理',
+                );
+                $adm_current_page = isset($_GET['page']) ? $_GET['page'] : '';
+                $adm_current_title = isset($adm_page_map[$adm_current_page]) ? $adm_page_map[$adm_current_page] : '后台管理';
+                ?>
+                <div class="adm-breadcrumb">
+                    <a class="adm-breadcrumb-item" href="?action=admin">首页</a>
+                    <span class="adm-breadcrumb-separator">/</span>
+                    <span class="adm-breadcrumb-item is-active"><?php echo $adm_current_title; ?></span>
+                </div>
+            </div>
+            <div class="adm-topbar-right">
+                <a href="?" target="_blank" class="adm-topbar-btn" title="访问前台">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/></svg>
+                </a>
+                <button class="adm-topbar-btn" id="admToggleTheme" title="切换主题">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+                <button class="adm-topbar-btn" title="消息">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="adm-user-menu" onclick="document.getElementById('admUserDropdown').classList.toggle('adm-show')">
+                    <div class="adm-user-menu-avatar"><?php echo mb_substr($_SESSION['admin_username'], 0, 1);?></div>
+                    <span class="adm-user-menu-name"><?php echo $_SESSION['admin_username'];?></span>
+                </div>
+                <div class="adm-dropdown" id="admUserDropdown">
+                    <a href="?action=admin&page=login_log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>登录日志</a>
+                    <a href="?action=admin&page=edit_pwd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>修改密码</a>
+                    <div class="adm-dropdown-divider"></div>
+                    <a id="admExitLogin" style="color:#ef4444"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>退出登录</a>
+                </div>
+            </div>
+        </header>
+
+        <!-- 内容区 -->
+        <main class="adm-content">

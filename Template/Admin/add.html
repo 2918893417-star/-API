@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>添加接口 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">添加接口</h1>
+    <p class="adm-page-desc">创建新的 API 接口，填写完整的接口信息</p>
+</div>
+
+<div id="add_api" class="adm-fade-in">
+    <!-- 基本信息 -->
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </span>
+                基本信息
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">接口名称 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="name" v-model="info.name" placeholder="例如：IP查询" required/>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">接口英文名 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="enname" v-model="info.enname" placeholder="例如：ipQuery" required/>
+                </div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">接口简介 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="3" type="text" name="desc" maxlength="100" v-model="info.desc" placeholder="一句话描述接口功能..." required></textarea>
+            </div>
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">返回格式 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="format" v-model="info.format" placeholder="JSON" required/>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">请求方式 <span class="adm-form-required">*</span></label>
+                    <input class="adm-form-input" type="text" name="method" v-model="info.method" placeholder="GET/POST" required/>
+                </div>
+            </div>
+            <div class="adm-form-row">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">计费类型 <span class="adm-form-required">*</span></label>
+                    <select class="adm-form-select" v-model="info.charge_type" name="charge_type">
+                        <option value="0">会员专用（仅会员可调用，免费）</option>
+                        <option value="1">按次计费（普通用户扣费，会员免费）</option>
+                        <option value="2">免费公开（所有人可调用，无需 API Key）</option>
+                    </select>
+                    <div class="adm-form-hint">
+                        <strong style="color:#10b981;">免费公开</strong>：任何人无需 API Key 即可调用，适合公开演示接口；
+                        <strong style="color:#f59e0b;">会员专用</strong>：仅会员等级≥1可调用；
+                        <strong style="color:#06b6d4;">按次计费</strong>：普通用户扣余额，会员免费
+                    </div>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">单次调用价格（元）</label>
+                    <input class="adm-form-input" type="number" step="0.0001" min="0" name="price" v-model="info.price" placeholder="例如：0.01，仅按次计费生效" :disabled="info.charge_type != 1"/>
+                    <div class="adm-form-hint">仅<strong>按次计费</strong>模式需要填写，免费公开和会员专用设为0即可</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 接口地址 -->
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(16,185,129,0.1);color:#10b981;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </span>
+                接口地址
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-group">
+                <label class="adm-form-label">接口地址 <span class="adm-form-required">*</span></label>
+                <div style="display:flex;gap:8px;">
+                    <input class="adm-form-input" v-model="websetting.url+'API/'" type="text" disabled style="flex:2;"/>
+                    <input class="adm-form-input" type="text" name="url" v-model="info.url" placeholder="接口文件名" required style="flex:1;"/>
+                </div>
+                <div class="adm-form-hint">完整地址：{{ websetting.url }}API/{{ info.url }}</div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">接口示例地址 <span class="adm-form-required">*</span></label>
+                <div style="display:flex;gap:8px;">
+                    <input class="adm-form-input" v-model="websetting.url+'API/'" type="text" disabled style="flex:2;"/>
+                    <input class="adm-form-input" type="text" name="example_url" v-model="info.example_url" placeholder="示例文件名" required style="flex:1;"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 参数配置 -->
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11a7 7 0 0 0-7.07 0l-5.97 5.97a7 7 0 0 0 9.9 9.9l5.97-5.97a7 7 0 0 0 0-9.9z"/></svg>
+                </span>
+                参数配置
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-group">
+                <label class="adm-form-label">请求参数</label>
+                <textarea class="adm-form-textarea" rows="5" name="request_parameter" type="text" v-model="info.request_parameter" placeholder="[city--string--是--城市名称]&#10;[type--string--否--类型]"></textarea>
+                <div class="adm-form-hint">每行一个参数，格式：<code>[名称--类型--必填--备注]</code>。留空则表示无参数</div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">返回参数</label>
+                <textarea class="adm-form-textarea" rows="5" name="return_parameter" type="text" v-model="info.return_parameter" placeholder="[code--int--状态码]&#10;[msg--string--提示信息]"></textarea>
+                <div class="adm-form-hint">每行一个参数，格式：<code>[名称--类型--说明]</code>。留空则表示无参数</div>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">状态码</label>
+                <textarea class="adm-form-textarea" rows="5" name="error_code" type="text" v-model="info.error_code" placeholder="[0--成功]&#10;[-1--参数错误]"></textarea>
+                <div class="adm-form-hint">每行一个状态码，格式：<code>[状态码--状态信息]</code>。留空则表示无自定义状态码</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 示例代码 -->
+    <div class="adm-card">
+        <div class="adm-card-header">
+            <h3 class="adm-card-title">
+                <span class="adm-card-title-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </span>
+                示例代码与返回
+            </h3>
+        </div>
+        <div class="adm-card-body">
+            <div class="adm-form-group">
+                <label class="adm-form-label">PHP示例代码 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="8" name="PHP_example" type="text" v-model="info.PHP_example" required style="font-family:'SF Mono','Consolas',monospace;font-size:13px;"></textarea>
+            </div>
+            <div class="adm-form-group">
+                <label class="adm-form-label">返回示例 <span class="adm-form-required">*</span></label>
+                <textarea class="adm-form-textarea" rows="3" type="text" name="return" v-model="info.return" required style="font-family:'SF Mono','Consolas',monospace;font-size:13px;"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:30px;">
+        <a href="?action=admin&page=control" class="adm-btn adm-btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            返回
+        </a>
+        <button class="adm-btn adm-btn-primary adm-btn-lg" @click="add_api">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            提交添加
+        </button>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script>
+    // 为添加接口页面添加特殊 class
+    document.body.classList.add('page-add-api');
+
+    let add_api = new Vue({
+        el: '#add_api',
+        data: {
+            info: {
+                name: '',
+                enname: '',
+                desc: '',
+                url: '',
+                example_url: '',
+                format: '',
+                method: '',
+                request_parameter: '',
+                return_parameter: '',
+                error_code: '',
+                PHP_example: '',
+                'return': '',
+                charge_type: '0',
+                price: 0
+            },
+            websetting: []
+        },
+        methods: {
+            add_api: function() {
+                var charge_type = parseInt(this.info.charge_type) || 0;
+                // 仅按次计费(charge_type=1)时才使用价格，免费公开(2)和会员专用(0)强制为0
+                var price = charge_type === 1 ? (parseFloat(this.info.price) || 0) : 0;
+                fetch('./Data/post.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'type=add_api&name=' + encodeURIComponent(this.info.name) + '&enname=' + encodeURIComponent(this.info.enname) + '&desc=' + encodeURIComponent(this.info.desc) + '&url=' + encodeURIComponent(this.info.url) + '&example_url=' + encodeURIComponent(this.info.example_url) + '&format=' + encodeURIComponent(this.info.format) + '&method=' + encodeURIComponent(this.info.method) + '&request_parameter=' + encodeURIComponent(this.info.request_parameter) + '&return_parameter=' + encodeURIComponent(this.info.return_parameter) + '&error_code=' + encodeURIComponent(this.info.error_code) + '&PHP_example=' + encodeURIComponent(this.info.PHP_example) + '&return=' + encodeURIComponent(this.info.return) + '&charge_type=' + charge_type + '&price=' + price
+                    })
+                    .then(response => response.json())
+                    .then(json => {
+                        if (json.code == 0) {
+                            this.info = { charge_type: 0, price: 0 };
+                        }
+                        mdui.snackbar(json.msg)
+                    })
+                    .catch(function(error) {
+                        mdui.snackbar(error.message)
+                    })
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getWebSetting')
+                .then(response => response.json())
+                .then(json => {
+                    this.websetting = json.data;
+                });
+        }
+    });
+</script>
+</body>
+</html>

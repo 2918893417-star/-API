@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>关于我们 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="关于我们,建站初衷,技术架构,发展历程,<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['title'];?> —— 用开源连接世界，为开发者提供便捷数据。一个由个人开发者发起的公益 API 接口平台。" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ============================================
+           关于我们页 - 内嵌样式
+           现代科技感 · 极简 · 浅色明亮
+           主色: 科技蓝 #3b82f6 / 背景: #f8fafc
+           ============================================ */
+        :root {
+            --ab-primary: #3b82f6;
+            --ab-primary-dark: #2563eb;
+            --ab-primary-light: #eff6ff;
+            --ab-accent: #8b5cf6;
+            --ab-bg: #f8fafc;
+            --ab-card: #ffffff;
+            --ab-text: #0f172a;
+            --ab-text-secondary: #475569;
+            --ab-text-muted: #94a3b8;
+            --ab-border: #e2e8f0;
+            --ab-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+            --ab-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+            --ab-shadow-lg: 0 12px 40px rgba(15, 23, 42, 0.1);
+            --ab-radius: 14px;
+            --ab-radius-lg: 20px;
+        }
+
+        .about-page {
+            background: var(--ab-bg);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* ============================================
+           Hero 区域 - 浅色科技风
+           ============================================ */
+        .about-hero {
+            position: relative;
+            padding: 80px 40px 70px;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.1) 0%, transparent 55%),
+                linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        }
+
+        /* 网格纹理 */
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 100%);
+        }
+
+        /* 浮动光晕 */
+        .about-hero::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -5%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: abHeroFloat 18s ease-in-out infinite;
+        }
+
+        @keyframes abHeroFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 20px) scale(1.08); }
+        }
+
+        .about-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 48px;
+            align-items: center;
+        }
+
+        .about-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            background: var(--ab-primary-light);
+            color: var(--ab-primary-dark);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 22px;
+        }
+
+        .about-hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.15;
+            margin: 0 0 18px;
+            letter-spacing: -1px;
+            color: var(--ab-text);
+        }
+
+        .about-hero-title .gradient-text {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-hero-desc {
+            font-size: 17px;
+            line-height: 1.8;
+            color: var(--ab-text-secondary);
+            margin: 0 0 28px;
+            max-width: 540px;
+        }
+
+        .about-hero-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .about-hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 26px;
+            border-radius: 10px;
+            font-size: 14.5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .about-hero-btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+        }
+
+        .about-hero-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.45);
+        }
+
+        .about-hero-btn-secondary {
+            background: white;
+            color: var(--ab-text);
+            border: 1.5px solid var(--ab-border);
+        }
+
+        .about-hero-btn-secondary:hover {
+            border-color: var(--ab-primary);
+            color: var(--ab-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--ab-shadow);
+        }
+
+        /* 站长卡片 */
+        .about-author-card {
+            background: white;
+            border-radius: var(--ab-radius-lg);
+            padding: 32px 28px;
+            box-shadow: var(--ab-shadow-lg);
+            border: 1px solid var(--ab-border);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-author-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        }
+
+        .about-author-avatar {
+            position: relative;
+            width: 92px;
+            height: 92px;
+            margin: 18px auto 16px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+            background: var(--ab-primary-light);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .about-author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-author-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--ab-text);
+            margin: 0 0 4px;
+        }
+
+        .about-author-role {
+            font-size: 13px;
+            color: var(--ab-primary);
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .about-author-desc {
+            font-size: 13.5px;
+            color: var(--ab-text-secondary);
+            line-height: 1.7;
+            margin: 0 0 16px;
+        }
+
+        .about-author-tags {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .about-author-tag {
+            padding: 4px 12px;
+            background: var(--ab-primary-light);
+            color: var(--ab-primary-dark);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           通用区块
+           ============================================ */
+        .about-section {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 64px 20px;
+        }
+
+        .about-section-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .about-section-eyebrow {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ab-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            background: var(--ab-primary-light);
+            border-radius: 999px;
+        }
+
+        .about-section-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--ab-text);
+            margin: 0 0 14px;
+            letter-spacing: -0.5px;
+        }
+
+        .about-section-subtitle {
+            font-size: 16px;
+            color: var(--ab-text-secondary);
+            max-width: 640px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           数据统计栏
+           ============================================ */
+        .about-stats {
+            background: white;
+            border-top: 1px solid var(--ab-border);
+            border-bottom: 1px solid var(--ab-border);
+            padding: 40px 20px;
+        }
+
+        .about-stats-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .about-stat-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .about-stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1px;
+            height: 48px;
+            background: var(--ab-border);
+        }
+
+        .about-stat-num {
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+
+        .about-stat-label {
+            font-size: 14px;
+            color: var(--ab-text-secondary);
+            font-weight: 500;
+        }
+
+        .about-stat-icon {
+            font-size: 18px;
+            color: var(--ab-primary);
+            margin-bottom: 10px;
+            opacity: 0.6;
+        }
+
+        /* ============================================
+           建站初衷
+           ============================================ */
+        .about-story-card {
+            background: white;
+            border-radius: var(--ab-radius-lg);
+            padding: 48px;
+            box-shadow: var(--ab-shadow);
+            border: 1px solid var(--ab-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-story-card::before {
+            content: '"';
+            position: absolute;
+            top: -30px;
+            left: 24px;
+            font-size: 180px;
+            font-family: Georgia, serif;
+            color: var(--ab-primary-light);
+            line-height: 1;
+            font-weight: 700;
+        }
+
+        .about-story-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .about-story-text {
+            font-size: 16px;
+            line-height: 2;
+            color: var(--ab-text-secondary);
+            margin: 0 0 18px;
+        }
+
+        .about-story-text:last-child {
+            margin-bottom: 0;
+        }
+
+        .about-story-text strong {
+            color: var(--ab-text);
+            font-weight: 600;
+        }
+
+        .about-story-text .highlight {
+            color: var(--ab-primary);
+            font-weight: 600;
+        }
+
+        .about-story-signature {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px dashed var(--ab-border);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .about-story-signature img {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--ab-primary-light);
+        }
+
+        .about-story-signature-text {
+            font-size: 14px;
+            color: var(--ab-text-secondary);
+        }
+
+        .about-story-signature-text strong {
+            display: block;
+            color: var(--ab-text);
+            font-size: 15px;
+            margin-bottom: 2px;
+        }
+
+        /* ============================================
+           核心服务承诺 - 网格
+           ============================================ */
+        .about-promise-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .about-promise-card {
+            background: white;
+            border-radius: var(--ab-radius);
+            padding: 32px 24px;
+            box-shadow: var(--ab-shadow-sm);
+            border: 1px solid var(--ab-border);
+            text-align: center;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .about-promise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        .about-promise-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--ab-shadow-lg);
+            border-color: transparent;
+        }
+
+        .about-promise-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .about-promise-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 18px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            color: var(--ab-primary);
+            transition: transform 0.35s ease;
+        }
+
+        .about-promise-card:hover .about-promise-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .about-promise-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--ab-text);
+            margin: 0 0 10px;
+        }
+
+        .about-promise-desc {
+            font-size: 13.5px;
+            color: var(--ab-text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* 不同卡片配色 */
+        .about-promise-card:nth-child(2) .about-promise-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 184, 166, 0.1));
+            color: #059669;
+        }
+        .about-promise-card:nth-child(3) .about-promise-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.1));
+            color: #d97706;
+        }
+        .about-promise-card:nth-child(4) .about-promise-icon {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+            color: #7c3aed;
+        }
+
+        /* ============================================
+           技术架构
+           ============================================ */
+        .about-tech-card {
+            background: white;
+            border-radius: var(--ab-radius-lg);
+            padding: 48px;
+            box-shadow: var(--ab-shadow);
+            border: 1px solid var(--ab-border);
+        }
+
+        .about-tech-intro {
+            font-size: 16px;
+            line-height: 1.9;
+            color: var(--ab-text-secondary);
+            margin: 0 0 32px;
+            text-align: center;
+            max-width: 760px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .about-tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .about-tech-item {
+            padding: 24px;
+            background: var(--ab-bg);
+            border-radius: var(--ab-radius);
+            border: 1px solid var(--ab-border);
+            transition: all 0.3s ease;
+        }
+
+        .about-tech-item:hover {
+            background: white;
+            box-shadow: var(--ab-shadow);
+            transform: translateY(-3px);
+        }
+
+        .about-tech-item-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .about-tech-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+            background: var(--ab-primary-light);
+            color: var(--ab-primary);
+            flex-shrink: 0;
+        }
+
+        .about-tech-item-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ab-text);
+            margin: 0;
+        }
+
+        .about-tech-item-desc {
+            font-size: 13px;
+            color: var(--ab-text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ============================================
+           发展历程 - 时间轴
+           ============================================ */
+        .about-timeline {
+            position: relative;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        .about-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, #3b82f6 10%, #8b5cf6 90%, transparent);
+            transform: translateX(-50%);
+        }
+
+        .about-timeline-item {
+            position: relative;
+            width: 50%;
+            padding: 0 40px 40px 0;
+            left: 0;
+        }
+
+        .about-timeline-item:nth-child(even) {
+            left: 50%;
+            padding: 0 0 40px 40px;
+        }
+
+        .about-timeline-dot {
+            position: absolute;
+            top: 6px;
+            right: -9px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--ab-primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .about-timeline-item:nth-child(even) .about-timeline-dot {
+            left: -9px;
+            right: auto;
+        }
+
+        .about-timeline-item:hover .about-timeline-dot {
+            background: var(--ab-primary);
+            box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.2);
+        }
+
+        .about-timeline-card {
+            background: white;
+            border-radius: var(--ab-radius);
+            padding: 22px 26px;
+            box-shadow: var(--ab-shadow-sm);
+            border: 1px solid var(--ab-border);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .about-timeline-item:hover .about-timeline-card {
+            box-shadow: var(--ab-shadow);
+            transform: translateY(-3px);
+        }
+
+        .about-timeline-date {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ab-primary);
+            background: var(--ab-primary-light);
+            padding: 3px 12px;
+            border-radius: 999px;
+            margin-bottom: 10px;
+        }
+
+        .about-timeline-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ab-text);
+            margin: 0 0 8px;
+        }
+
+        .about-timeline-desc {
+            font-size: 13.5px;
+            color: var(--ab-text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ============================================
+           开发者心里话
+           ============================================ */
+        .about-heart {
+            background: linear-gradient(135deg, #0c1d36 0%, #132f5c 50%, #312e81 100%);
+            border-radius: var(--ab-radius-lg);
+            padding: 56px 48px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .about-heart::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        .about-heart::after {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .about-heart-icon {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #fca5a5;
+        }
+
+        .about-heart-title {
+            position: relative;
+            font-size: 26px;
+            font-weight: 700;
+            margin: 0 0 18px;
+        }
+
+        .about-heart-text {
+            position: relative;
+            font-size: 15.5px;
+            line-height: 2;
+            opacity: 0.88;
+            max-width: 680px;
+            margin: 0 auto 18px;
+        }
+
+        .about-heart-text strong {
+            color: #fde68a;
+            font-weight: 600;
+        }
+
+        .about-heart-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 999px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .about-heart-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           联系与支持
+           ============================================ */
+        .about-contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .about-contact-card {
+            background: white;
+            border-radius: var(--ab-radius-lg);
+            padding: 36px;
+            box-shadow: var(--ab-shadow);
+            border: 1px solid var(--ab-border);
+        }
+
+        .about-contact-card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--ab-text);
+            margin: 0 0 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .about-contact-card-title i {
+            color: var(--ab-primary);
+        }
+
+        .about-contact-card-desc {
+            font-size: 14px;
+            color: var(--ab-text-secondary);
+            line-height: 1.7;
+            margin: 0 0 22px;
+        }
+
+        .about-contact-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .about-contact-list li {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--ab-border);
+        }
+
+        .about-contact-list li:last-child {
+            border-bottom: none;
+        }
+
+        .about-contact-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            background: var(--ab-primary-light);
+            color: var(--ab-primary);
+            flex-shrink: 0;
+        }
+
+        .about-contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .about-contact-label {
+            font-size: 12px;
+            color: var(--ab-text-muted);
+            margin-bottom: 2px;
+        }
+
+        .about-contact-value {
+            font-size: 14px;
+            color: var(--ab-text);
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .about-contact-value a {
+            color: var(--ab-primary);
+            text-decoration: none;
+        }
+
+        .about-contact-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* 打赏二维码 */
+        .about-support-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .about-support-item {
+            text-align: center;
+        }
+
+        .about-support-item img {
+            width: 100%;
+            max-width: 150px;
+            border-radius: 12px;
+            border: 1px solid var(--ab-border);
+            transition: transform 0.3s ease;
+        }
+
+        .about-support-item:hover img {
+            transform: scale(1.04);
+        }
+
+        .about-support-name {
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--ab-text-secondary);
+            font-weight: 600;
+        }
+
+        .about-support-name i {
+            margin-right: 5px;
+        }
+
+        .about-support-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 32px;
+            color: var(--ab-text-muted);
+            font-size: 14px;
+            background: var(--ab-bg);
+            border-radius: 12px;
+        }
+
+        /* 页脚分隔 */
+        .about-divider {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .about-divider hr {
+            border: none;
+            border-top: 1px solid var(--ab-border);
+            margin: 0;
+        }
+
+        /* ============================================
+           响应式
+           ============================================ */
+        @media (max-width: 968px) {
+            .about-hero-content {
+                grid-template-columns: 1fr;
+                gap: 36px;
+            }
+            .about-hero-title {
+                font-size: 38px;
+            }
+            .about-promise-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .about-tech-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px 20px;
+            }
+            .about-stat-item:nth-child(2)::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-hero {
+                padding: 56px 22px 48px;
+            }
+            .about-hero-title {
+                font-size: 32px;
+            }
+            .about-hero-desc {
+                font-size: 15px;
+            }
+            .about-section {
+                padding: 48px 16px;
+            }
+            .about-section-title {
+                font-size: 26px;
+            }
+            .about-story-card,
+            .about-tech-card {
+                padding: 32px 24px;
+            }
+            .about-story-card::before {
+                font-size: 120px;
+                top: -20px;
+            }
+            .about-heart {
+                padding: 40px 26px;
+            }
+            .about-heart-title {
+                font-size: 22px;
+            }
+            /* 时间轴改为单侧 */
+            .about-timeline::before {
+                left: 18px;
+            }
+            .about-timeline-item,
+            .about-timeline-item:nth-child(even) {
+                width: 100%;
+                left: 0;
+                padding: 0 0 32px 50px;
+            }
+            .about-timeline-dot,
+            .about-timeline-item:nth-child(even) .about-timeline-dot {
+                left: 9px;
+                right: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-hero-title {
+                font-size: 28px;
+            }
+            .about-promise-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-stats-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+            .about-stat-item::after {
+                display: none !important;
+            }
+            .about-support-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-hero-actions {
+                flex-direction: column;
+            }
+            .about-hero-btn {
+                justify-content: center;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+        }
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<div class="about-page" id="about">
+
+    <!-- ============ Hero 区域 ============ -->
+    <section class="about-hero">
+        <div class="about-hero-content">
+            <div>
+                <div class="about-hero-badge">
+                    <i class="fas fa-rocket"></i> 开源 · 公益 · 部分免费
+                </div>
+                <h1 class="about-hero-title">
+                    关于 <span class="gradient-text"><?php echo $config['title'];?></span>
+                </h1>
+                <p class="about-hero-desc">
+                    用开源连接世界，为开发者提供便捷数据。我们致力于打造一个干净、稳定的 API 接口聚合平台，提供部分免费接口与会员专属接口，让每一位开发者都能聚焦于创造。
+                </p>
+                <div class="about-hero-actions">
+                    <a href="?action=apilist" class="about-hero-btn about-hero-btn-primary">
+                        <i class="fas fa-code"></i> 浏览接口
+                    </a>
+                    <a href="#story" class="about-hero-btn about-hero-btn-secondary">
+                        <i class="fas fa-book-open"></i> 了解故事
+                    </a>
+                </div>
+            </div>
+
+            <!-- 站长卡片 -->
+            <div class="about-author-card">
+                <div class="about-author-avatar">
+                    <img :src="info.qqhead || ''" alt="站长头像" onerror="this.src='data:image/svg+xml;utf8,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;rect width=%22100%22 height=%22100%22 fill=%22%23eff6ff%22/&gt;&lt;text x=%2250%22 y=%2258%22 font-size=%2240%22 text-anchor=%22middle%22 fill=%22%233b82f6%22&gt;⚡&lt;/text&gt;&lt;/svg&gt;'">
+                </div>
+                <h3 class="about-author-name" v-cloak>{{ info.username || '站长' }}</h3>
+                <div class="about-author-role">创始人 &amp; 全栈维护者</div>
+                <p class="about-author-desc">一个人，一台服务器，一份热爱。用业余时间守护这个小小的开源接口站。</p>
+                <div class="about-author-tags">
+                    <span class="about-author-tag"><i class="fas fa-heart"></i> 用爱发电</span>
+                    <span class="about-author-tag"><i class="fas fa-code"></i> 全栈开发</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 数据统计栏 ============ -->
+    <section class="about-stats">
+        <div class="about-stats-grid">
+            <div class="about-stat-item">
+                <div class="about-stat-icon"><i class="fas fa-cubes"></i></div>
+                <div class="about-stat-num" v-cloak>{{ formatNum(stats.api_count) }}</div>
+                <div class="about-stat-label">开放接口数</div>
+            </div>
+            <div class="about-stat-item">
+                <div class="about-stat-icon"><i class="fas fa-bolt"></i></div>
+                <div class="about-stat-num" v-cloak>{{ formatNum(stats.access_count) }}</div>
+                <div class="about-stat-label">累计调用次数</div>
+            </div>
+            <div class="about-stat-item">
+                <div class="about-stat-icon"><i class="fas fa-users"></i></div>
+                <div class="about-stat-num" v-cloak>{{ formatNum(stats.user_count) }}</div>
+                <div class="about-stat-label">注册开发者</div>
+            </div>
+            <div class="about-stat-item">
+                <div class="about-stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="about-stat-num" v-cloak>{{ stats.online_hours }}</div>
+                <div class="about-stat-label">稳定运行时长</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 建站初衷与故事 ============ -->
+    <section class="about-section" id="story">
+        <div class="about-section-header">
+            <span class="about-section-eyebrow">OUR STORY</span>
+            <h2 class="about-section-title">建站初衷与故事</h2>
+            <p class="about-section-subtitle">每一个公益项目的背后，都有一个真实的痛点与一份朴素的执念。</p>
+        </div>
+
+        <div class="about-story-card">
+            <div class="about-story-content">
+                <p class="about-story-text">
+                    作为一个经常与代码打交道的开发者，我深知<span class="highlight">寻找免费、稳定、可用的 API 接口</span>是一件多么令人头疼的事。要么收费高昂，要么文档残缺，要么今天能用明天就挂，要么需要繁琐的实名认证。开发者在调试一个简单功能时，往往要花费大量时间在「找数据」而非「写代码」上。
+                </p>
+                <p class="about-story-text">
+                    于是，<strong><?php echo $config['title'];?></strong> 诞生了。这是一个由<strong>个人开发者独立发起的公益项目</strong>，初衷很简单：把散落在互联网各处的优质公开数据接口聚合起来，统一规范、统一文档、统一调用方式，<span class="highlight">部分接口免费开放给所有开发者使用</span>。
+                </p>
+                <p class="about-story-text">
+                    我们不追求商业回报，不投放广告，不售卖用户数据。这里只有纯粹的代码、干净的文档，和一颗愿意分享的心。希望这个小小的平台，能为开发者社区贡献一点微薄但实在的力量——<span class="highlight">让创造变得更简单</span>。
+                </p>
+
+                <div class="about-story-signature">
+                    <img :src="info.qqhead || ''" alt="站长头像" onerror="this.style.display='none'">
+                    <div class="about-story-signature-text">
+                        <strong v-cloak>{{ info.username || '站长' }}</strong>
+                        <?php echo $config['title'];?> 创始人 · 写于服务器深夜
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"><hr></div>
+
+    <!-- ============ 核心服务承诺 ============ -->
+    <section class="about-section">
+        <div class="about-section-header">
+            <span class="about-section-eyebrow">OUR PROMISE</span>
+            <h2 class="about-section-title">核心服务承诺</h2>
+            <p class="about-section-subtitle">我们用四条承诺，定义这个平台该有的样子。</p>
+        </div>
+
+        <div class="about-promise-grid">
+            <div class="about-promise-card">
+                <div class="about-promise-icon"><i class="fas fa-gift"></i></div>
+                <h3 class="about-promise-title">部分免费</h3>
+                <p class="about-promise-desc">核心接口永久免费开放，同时提供高级会员接口与按次付费接口，多元选择满足不同需求。</p>
+            </div>
+            <div class="about-promise-card">
+                <div class="about-promise-icon"><i class="fas fa-user-shield"></i></div>
+                <h3 class="about-promise-title">隐私保护</h3>
+                <p class="about-promise-desc">不主动存储调用日志，不收集个人信息，除司法调查外绝不泄露任何用户数据。</p>
+            </div>
+            <div class="about-promise-card">
+                <div class="about-promise-icon"><i class="fas fa-arrows-rotate"></i></div>
+                <h3 class="about-promise-title">持续维护</h3>
+                <p class="about-promise-desc">用业余时间长期维护，定期修复故障、更新文档、扩充接口库，让平台持续焕发活力。</p>
+            </div>
+            <div class="about-promise-card">
+                <div class="about-promise-icon"><i class="fas fa-bolt"></i></div>
+                <h3 class="about-promise-title">高效稳定</h3>
+                <p class="about-promise-desc">轻量架构 + 缓存加速，毫秒级响应，多重容错机制保障接口的高可用性与响应速度。</p>
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"><hr></div>
+
+    <!-- ============ 技术架构说明 ============ -->
+    <section class="about-section">
+        <div class="about-section-header">
+            <span class="about-section-eyebrow">TECH STACK</span>
+            <h2 class="about-section-title">技术架构说明</h2>
+            <p class="about-section-subtitle">轻量、快速、可扩展——为稳定服务而生的技术选型。</p>
+        </div>
+
+        <div class="about-tech-card">
+            <p class="about-tech-intro">
+                本站采用<strong>轻量级 PHP 架构</strong>构建，遵循「简单即高效」的工程哲学。通过 Redis 缓存加速、数据库索引优化、接口限流防护等多层技术手段，在有限的服务器资源下，尽可能保障每一个接口的<strong>响应速度</strong>与<strong>可用性</strong>。
+            </p>
+
+            <div class="about-tech-grid">
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fab fa-php"></i></div>
+                        <h4 class="about-tech-item-title">轻量 PHP 架构</h4>
+                    </div>
+                    <p class="about-tech-item-desc">原生 PHP + MySQL，无重型框架负担，启动快、占用低，请求直达数据层。</p>
+                </div>
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fas fa-bolt-lightning"></i></div>
+                        <h4 class="about-tech-item-title">Redis 缓存加速</h4>
+                    </div>
+                    <p class="about-tech-item-desc">热点数据命中缓存即返回，毫秒级响应，大幅降低数据库压力与重复请求开销。</p>
+                </div>
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fas fa-shield-halved"></i></div>
+                        <h4 class="about-tech-item-title">多层防护机制</h4>
+                    </div>
+                    <p class="about-tech-item-desc">内置防 CC、防 SQL 注入、接口限流与 API Key 鉴权，守护服务稳定与数据安全。</p>
+                </div>
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fas fa-database"></i></div>
+                        <h4 class="about-tech-item-title">数据索引优化</h4>
+                    </div>
+                    <p class="about-tech-item-desc">合理设计表结构与索引，配合慢查询监控，确保即便数据增长也保持快速检索。</p>
+                </div>
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fas fa-code-branch"></i></div>
+                        <h4 class="about-tech-item-title">标准化接口规范</h4>
+                    </div>
+                    <p class="about-tech-item-desc">统一 JSON 响应格式、统一错误码、统一鉴权流程，降低接入成本，提升开发体验。</p>
+                </div>
+                <div class="about-tech-item">
+                    <div class="about-tech-item-header">
+                        <div class="about-tech-item-icon"><i class="fas fa-gauge-high"></i></div>
+                        <h4 class="about-tech-item-title">前端性能优化</h4>
+                    </div>
+                    <p class="about-tech-item-desc">静态资源压缩、懒加载、CDN 分发，让文档与控制台加载又快又流畅。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="about-divider"><hr></div>
+
+    <!-- ============ 发展历程 - 时间轴 ============ -->
+    <section class="about-section">
+        <div class="about-section-header">
+            <span class="about-section-eyebrow">MILESTONES</span>
+            <h2 class="about-section-title">发展历程</h2>
+            <p class="about-section-subtitle">从一行代码到一个平台，每一步都算数。</p>
+        </div>
+
+        <div class="about-timeline">
+            <div class="about-timeline-item">
+                <div class="about-timeline-dot"></div>
+                <div class="about-timeline-card">
+                    <span class="about-timeline-date"><i class="fas fa-flag"></i> 立项筹备</span>
+                    <h4 class="about-timeline-title">项目萌芽</h4>
+                    <p class="about-timeline-desc">因厌倦反复寻找免费 API，萌生自建接口聚合平台的想法，完成需求调研与技术选型。</p>
+                </div>
+            </div>
+            <div class="about-timeline-item">
+                <div class="about-timeline-dot"></div>
+                <div class="about-timeline-card">
+                    <span class="about-timeline-date"><i class="fas fa-rocket"></i> 正式上线</span>
+                    <h4 class="about-timeline-title">首版发布</h4>
+                    <p class="about-timeline-desc">首批 10 余个接口上线，完成基础架构搭建、文档系统与 API Key 鉴权机制，对外公开访问。</p>
+                </div>
+            </div>
+            <div class="about-timeline-item">
+                <div class="about-timeline-dot"></div>
+                <div class="about-timeline-card">
+                    <span class="about-timeline-date"><i class="fas fa-gear"></i> 技术优化</span>
+                    <h4 class="about-timeline-title">架构升级</h4>
+                    <p class="about-timeline-desc">引入 Redis 缓存加速、防 CC 与防 SQL 注入防火墙，接口响应速度提升数倍，稳定性显著增强。</p>
+                </div>
+            </div>
+            <div class="about-timeline-item">
+                <div class="about-timeline-dot"></div>
+                <div class="about-timeline-card">
+                    <span class="about-timeline-date"><i class="fas fa-cubes-stacked"></i> 持续扩充</span>
+                    <h4 class="about-timeline-title">接口库扩张</h4>
+                    <p class="about-timeline-desc">接口数量突破 50+，新增会员体系、套餐中心与代码管理功能，开发者使用量持续增长。</p>
+                </div>
+            </div>
+            <div class="about-timeline-item">
+                <div class="about-timeline-dot"></div>
+                <div class="about-timeline-card">
+                    <span class="about-timeline-date"><i class="fas fa-infinity"></i> 持续运营中</span>
+                    <h4 class="about-timeline-title">面向未来</h4>
+                    <p class="about-timeline-desc">持续维护、倾听反馈、扩充接口、优化体验。用爱发电，步履不停，与开发者共同成长。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 开发者心里话 ============ -->
+    <section class="about-section">
+        <div class="about-heart">
+            <div class="about-heart-icon"><i class="fas fa-heart"></i></div>
+            <h3 class="about-heart-title">来自开发者的一段心里话</h3>
+            <p class="about-heart-text">
+                这个平台由我一个人在业余时间维护，服务器资源有限、精力也有限。我把它当作一份礼物送给开发者社区，<strong>无冤无仇，恳请各位大佬高抬贵手</strong>——请不要对它发起 CC 攻击、恶意刷量或逆向工程。
+            </p>
+            <p class="about-heart-text">
+                每一次恶意请求，都可能让这个本就脆弱的公益服务多一分停摆的风险。维护一个良好的开源与分享环境，需要大家共同的努力。<strong>感谢您的理解与支持，愿我们都能在代码的世界里彼此善待。</strong>
+            </p>
+            <a href="?action=disclaimer" class="about-heart-link">
+                <i class="fas fa-scroll"></i> 查看完整免责声明
+            </a>
+        </div>
+    </section>
+
+    <div class="about-divider"><hr></div>
+
+    <!-- ============ 联系与支持 ============ -->
+    <section class="about-section">
+        <div class="about-section-header">
+            <span class="about-section-eyebrow">CONTACT &amp; SUPPORT</span>
+            <h2 class="about-section-title">联系与支持</h2>
+            <p class="about-section-subtitle">有任何建议、反馈或合作意向，欢迎随时联系；如果这个平台帮到了你，也可以请站长喝杯咖啡。</p>
+        </div>
+
+        <div class="about-contact-grid">
+            <!-- 联系方式 -->
+            <div class="about-contact-card">
+                <h3 class="about-contact-card-title">
+                    <i class="fas fa-paper-plane"></i> 联系方式
+                </h3>
+                <p class="about-contact-card-desc">通过以下任意方式与我交流，反馈接口问题、建议新接口或单纯聊聊天都可以。</p>
+                <ul class="about-contact-list">
+                    <li>
+                        <div class="about-contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="about-contact-info">
+                            <div class="about-contact-label">反馈邮箱</div>
+                            <div class="about-contact-value">
+                                <a :href="'mailto:' + (info.email || '692836721@qq.com')" v-cloak>{{ info.email || '692836721@qq.com' }}</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="about-contact-icon"><i class="fab fa-qq"></i></div>
+                        <div class="about-contact-info">
+                            <div class="about-contact-label">QQ 号码</div>
+                            <div class="about-contact-value" v-cloak>{{ info.qq || '692836721' }}</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="about-contact-icon"><i class="fas fa-blog"></i></div>
+                        <div class="about-contact-info">
+                            <div class="about-contact-label">开发者博客</div>
+                            <div class="about-contact-value">
+                                <a href="<?php echo $config['url'];?>" target="_blank" rel="noopener"><?php echo $config['url'];?></a>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="about-contact-icon"><i class="fas fa-link"></i></div>
+                        <div class="about-contact-info">
+                            <div class="about-contact-label">友情链接</div>
+                            <div class="about-contact-value">
+                                <a href="?action=friendlinks">查看友情链接列表</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 支持开发者 -->
+            <div class="about-contact-card">
+                <h3 class="about-contact-card-title">
+                    <i class="fas fa-mug-hot"></i> 支持开发者
+                </h3>
+                <p class="about-contact-card-desc">如果这个平台对你有帮助，欢迎请站长喝杯咖啡，你的支持是我持续维护的动力（请备注 QQ）。</p>
+                <div class="about-support-grid" v-if="info.qqqrcode || info.vxqrcode || info.aliqrcode">
+                    <div class="about-support-item" v-if="info.qqqrcode">
+                        <img :src="info.qqqrcode" alt="QQ收款码">
+                        <div class="about-support-name"><i class="fab fa-qq" style="color:#12b7f5;"></i>QQ 收款</div>
+                    </div>
+                    <div class="about-support-item" v-if="info.vxqrcode">
+                        <img :src="info.vxqrcode" alt="微信收款码">
+                        <div class="about-support-name"><i class="fab fa-weixin" style="color:#07c160;"></i>微信收款</div>
+                    </div>
+                    <div class="about-support-item" v-if="info.aliqrcode">
+                        <img :src="info.aliqrcode" alt="支付宝收款码">
+                        <div class="about-support-name"><i class="fab fa-alipay" style="color:#1677ff;"></i>支付宝收款</div>
+                    </div>
+                </div>
+                <div class="about-support-empty" v-else>
+                    <i class="fas fa-mug-hot" style="font-size:24px;margin-bottom:8px;display:block;color:var(--ab-text-muted);"></i>
+                    站长暂未上传收款码，感谢您的善意 ❤
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let about = new Vue({
+        el: '#about',
+        data: {
+            info: [],
+            stats: {
+                api_count: 0,
+                user_count: 0,
+                access_count: 0,
+                online_hours: '--'
+            }
+        },
+        methods: {
+            formatNum(num) {
+                if (!num && num !== 0) return '0';
+                num = Number(num);
+                if (num >= 10000) {
+                    return (num / 10000).toFixed(1).replace(/\.0$/, '') + 'w+';
+                } else if (num >= 1000) {
+                    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k+';
+                } else {
+                    return num + '+';
+                }
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getUserInfo')
+                .then(response => response.json())
+                .then(json => {
+                    this.info = json.data || {};
+                })
+                .catch(() => {
+                    this.info = {};
+                });
+                
+            fetch('./Data/api.php?type=getSiteStats')
+                .then(response => response.json())
+                .then(json => {
+                    if (json.code === 0 && json.data) {
+                        this.stats = json.data;
+                    }
+                })
+                .catch(() => {});
+        }
+    });
+</script>
+</body>
+
+</html>

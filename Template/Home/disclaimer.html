@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>免责声明 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="免责声明,责任限制,隐私保护,<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['title'];?>免责声明：数据来源与合法性、免费服务与责任限制、禁止违规用途、服务稳定性说明、隐私保护、友好交流请求、条款修改与解释。" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ============================================
+           免责声明页 - 内嵌样式
+           科技感 · 极简 · 玻璃拟态
+           ============================================ */
+        .disclaimer-page {
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* Hero 头部 */
+        .disclaimer-hero {
+            position: relative;
+            padding: 80px 40px 70px;
+            color: white;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.3) 0%, transparent 55%),
+                linear-gradient(135deg, #0c1d36 0%, #132f5c 35%, #1e3a8a 65%, #312e81 100%);
+        }
+
+        .disclaimer-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+        }
+
+        .disclaimer-hero::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(59, 130, 246, 0.15) 40%, transparent 70%);
+            border-radius: 50%;
+            animation: heroFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 20px) scale(1.05); }
+        }
+
+        .disclaimer-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .disclaimer-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            opacity: 0.75;
+            margin-bottom: 22px;
+        }
+
+        .disclaimer-breadcrumb a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .disclaimer-breadcrumb a:hover {
+            opacity: 1;
+            color: #fff;
+        }
+
+        .disclaimer-breadcrumb .separator { opacity: 0.5; }
+        .disclaimer-breadcrumb .current { opacity: 1; font-weight: 500; color: #fff; }
+
+        .disclaimer-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .disclaimer-hero-title {
+            font-size: 44px;
+            font-weight: 800;
+            margin: 0 0 16px;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 30px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #ffffff 0%, #dbeafe 60%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .disclaimer-hero-desc {
+            font-size: 16px;
+            opacity: 0.85;
+            margin: 0;
+            line-height: 1.7;
+            max-width: 760px;
+        }
+
+        .disclaimer-hero-meta {
+            display: flex;
+            gap: 24px;
+            margin-top: 28px;
+            flex-wrap: wrap;
+        }
+
+        .disclaimer-hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .disclaimer-hero-meta-item i {
+            color: #93c5fd;
+            font-size: 14px;
+        }
+
+        /* 主体内容 */
+        .disclaimer-main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 48px 20px 60px;
+        }
+
+        /* 条款卡片 */
+        .disclaimer-card {
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: box-shadow 0.35s ease, transform 0.35s ease;
+        }
+
+        .disclaimer-card:hover {
+            box-shadow: 0 12px 36px rgba(24, 144, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .disclaimer-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #1890ff, #722ed1);
+        }
+
+        .disclaimer-card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .disclaimer-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(24, 144, 255, 0.1), rgba(114, 46, 209, 0.1));
+            color: var(--primary-color);
+        }
+
+        .disclaimer-card-num {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .disclaimer-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            letter-spacing: 0.3px;
+        }
+
+        .disclaimer-card-body {
+            font-size: 14.5px;
+            line-height: 1.85;
+            color: var(--text-secondary);
+        }
+
+        .disclaimer-card-body p {
+            margin: 0 0 12px;
+        }
+
+        .disclaimer-card-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        .disclaimer-card-body strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .disclaimer-card-body a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dashed var(--primary-color);
+            transition: all 0.2s;
+        }
+
+        .disclaimer-card-body a:hover {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .disclaimer-card-body ul {
+            margin: 10px 0 12px;
+            padding-left: 4px;
+            list-style: none;
+        }
+
+        .disclaimer-card-body ul li {
+            position: relative;
+            padding: 6px 0 6px 24px;
+            line-height: 1.75;
+        }
+
+        .disclaimer-card-body ul li::before {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 16px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+
+        /* 不同条款的图标颜色 */
+        .disclaimer-card.icon-blue .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(24, 144, 255, 0.12), rgba(59, 130, 246, 0.12));
+            color: #1890ff;
+        }
+        .disclaimer-card.icon-green .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(82, 196, 26, 0.12));
+            color: #059669;
+        }
+        .disclaimer-card.icon-red .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(255, 77, 79, 0.12));
+            color: #dc2626;
+        }
+        .disclaimer-card.icon-orange .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(250, 173, 20, 0.12));
+            color: #d97706;
+        }
+        .disclaimer-card.icon-purple .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.12), rgba(114, 46, 209, 0.12));
+            color: #7c3aed;
+        }
+        .disclaimer-card.icon-cyan .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(13, 148, 136, 0.12));
+            color: #0891b2;
+        }
+        .disclaimer-card.icon-pink .disclaimer-card-icon {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.12), rgba(235, 47, 150, 0.12));
+            color: #db2777;
+        }
+
+        /* 高亮提示框 */
+        .disclaimer-alert {
+            display: flex;
+            gap: 14px;
+            padding: 16px 18px;
+            margin: 14px 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(24, 144, 255, 0.06), rgba(114, 46, 209, 0.06));
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .disclaimer-alert.alert-danger {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.06), rgba(220, 38, 38, 0.06));
+            border-left-color: #dc2626;
+        }
+
+        .disclaimer-alert i {
+            font-size: 18px;
+            color: var(--primary-color);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .disclaimer-alert.alert-danger i {
+            color: #dc2626;
+        }
+
+        .disclaimer-alert-text {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            flex: 1;
+        }
+
+        /* 联系邮箱卡片 */
+        .disclaimer-contact {
+            position: relative;
+            background: linear-gradient(135deg, #0c1d36 0%, #132f5c 50%, #312e81 100%);
+            border-radius: 18px;
+            padding: 44px 36px;
+            margin-top: 36px;
+            color: white;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(49, 46, 129, 0.25);
+        }
+
+        .disclaimer-contact::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        .disclaimer-contact-icon {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 18px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #dbeafe;
+        }
+
+        .disclaimer-contact-title {
+            position: relative;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0 0 10px;
+        }
+
+        .disclaimer-contact-desc {
+            position: relative;
+            font-size: 14.5px;
+            opacity: 0.8;
+            line-height: 1.7;
+            margin: 0 0 22px;
+            max-width: 560px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .disclaimer-contact-email {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #1890ff, #722ed1);
+            border-radius: 999px;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(24, 144, 255, 0.4);
+        }
+
+        .disclaimer-contact-email:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(24, 144, 255, 0.55);
+        }
+
+        /* 底部说明 */
+        .disclaimer-footer-note {
+            margin-top: 40px;
+            padding: 24px 28px;
+            background: white;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        .disclaimer-footer-note i {
+            color: var(--primary-color);
+            margin-right: 6px;
+        }
+
+        .disclaimer-footer-note .update-date {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 3px 12px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .disclaimer-hero {
+                padding: 56px 22px 44px;
+            }
+            .disclaimer-hero-title {
+                font-size: 30px;
+            }
+            .disclaimer-hero-desc {
+                font-size: 14px;
+            }
+            .disclaimer-hero-meta {
+                gap: 14px;
+            }
+            .disclaimer-main {
+                padding: 32px 16px 48px;
+            }
+            .disclaimer-card {
+                padding: 24px 22px;
+            }
+            .disclaimer-card-header {
+                gap: 12px;
+            }
+            .disclaimer-card-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+            .disclaimer-card-title {
+                font-size: 17px;
+            }
+            .disclaimer-card-body {
+                font-size: 14px;
+            }
+            .disclaimer-contact {
+                padding: 32px 22px;
+            }
+            .disclaimer-contact-title {
+                font-size: 19px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .disclaimer-hero-title {
+                font-size: 26px;
+            }
+            .disclaimer-card {
+                padding: 20px 18px;
+            }
+            .disclaimer-card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+        }
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<div class="disclaimer-page">
+
+    <!-- Hero 区域 -->
+    <section class="disclaimer-hero">
+        <div class="disclaimer-hero-content">
+            <div class="disclaimer-breadcrumb">
+                <a href="<?php echo $config['url'];?>">首页</a>
+                <span class="separator">/</span>
+                <span class="current">免责声明</span>
+            </div>
+            <div class="disclaimer-hero-badge">
+                <i class="fas fa-shield-halved"></i> 法律声明 · 责任条款
+            </div>
+            <h1 class="disclaimer-hero-title">免责声明</h1>
+            <p class="disclaimer-hero-desc">
+                在使用本站服务前，请您仔细阅读并充分理解以下免责声明。一旦您开始使用本站所提供的任何接口或服务，即视为您已阅读、理解并同意接受本声明的全部条款。
+            </p>
+            <div class="disclaimer-hero-meta">
+                <span class="disclaimer-hero-meta-item"><i class="fas fa-file-shield"></i> 共 7 条条款</span>
+                <span class="disclaimer-hero-meta-item"><i class="fas fa-clock"></i> 阅读约需 5 分钟</span>
+                <span class="disclaimer-hero-meta-item"><i class="fas fa-gavel"></i> 最终解释权归本站所有</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主体内容 -->
+    <div class="disclaimer-main">
+
+        <!-- 1. 数据来源与合法性 -->
+        <div class="disclaimer-card icon-blue" id="section-1">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 01</div>
+                    <h2 class="disclaimer-card-title">数据来源与合法性</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站所有接口数据均来源于<strong>互联网公开渠道</strong>或<strong>第三方授权</strong>，本站仅作为技术展示与学习交流平台，不提供非文档内容的相关数据存储。</p>
+                <p>若本站相关接口 <em>inadvertently（无意地）</em>侵犯了贵司或个人的相关权益（包括但不限于版权、商标权、隐私权等），请编辑相关接口内容说明并声明所涉及的侵权内容，发送至邮箱：<a href="mailto:692836721@qq.com">692836721@qq.com</a>。</p>
+                <div class="disclaimer-alert">
+                    <i class="fas fa-circle-info"></i>
+                    <span class="disclaimer-alert-text">我们在核实后将在<strong>第一时间进行处理</strong>（如下线接口或删除数据）并回复告知相关处理结果。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 免费服务与责任限制 -->
+        <div class="disclaimer-card icon-green" id="section-2">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 02</div>
+                    <h2 class="disclaimer-card-title">免费服务与责任限制</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站所有接口目前均<strong>免费向公众开放调用</strong>。本站不对接口的准确性、完整性、及时性或适用性做任何明示或暗示的保证。</p>
+                <p>用户基于本站接口做出的任何决策或操作，<strong>风险由用户自行承担</strong>。因使用本站服务而产生的任何直接、间接、偶然或特殊的损害（包括但不限于数据丢失、业务中断、利润损失），本站不承担任何连带及主从责任。</p>
+            </div>
+        </div>
+
+        <!-- 3. 禁止违规用途 -->
+        <div class="disclaimer-card icon-red" id="section-3">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-ban"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 03</div>
+                    <h2 class="disclaimer-card-title">禁止违规用途</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>切勿利用本网站所提供的接口进行相关的违法违规操作，包括但不限于：</p>
+                <ul>
+                    <li>爬取、窃取公民个人隐私信息；</li>
+                    <li>用于网络诈骗、赌博、色情等非法活动；</li>
+                    <li>对本站服务器进行高频恶意请求、DDoS攻击或逆向工程。</li>
+                </ul>
+                <div class="disclaimer-alert alert-danger">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span class="disclaimer-alert-text">由此造成的任何法律后果由<strong>用户自行承担</strong>，本站保留配合司法机关调查并提供用户调用日志的权利。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. 服务稳定性说明 -->
+        <div class="disclaimer-card icon-orange" id="section-4">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-server"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 04</div>
+                    <h2 class="disclaimer-card-title">服务稳定性说明</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站为<strong>个人业余时间维护经营</strong>，受限于服务器资源与维护精力，无法保证服务 24 小时不间断运行。</p>
+                <p>接口可能会随时发生变动、暂停或终止，且<strong>无需提前通知</strong>。请各位开发者在接入时做好异常处理机制，<strong>不要将本站接口用于生产环境或关键业务中</strong>。</p>
+            </div>
+        </div>
+
+        <!-- 5. 隐私保护 -->
+        <div class="disclaimer-card icon-purple" id="section-5">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 05</div>
+                    <h2 class="disclaimer-card-title">隐私保护</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站承诺<strong>尊重用户隐私</strong>。除法律法规要求或配合司法调查外，本站不会主动收集、存储或泄露用户的调用记录与个人信息。</p>
+                <p>但鉴于网络环境的复杂性，本站不保证数据传输过程中的<strong>绝对安全</strong>，请用户在调用敏感数据时自行加密处理。</p>
+            </div>
+        </div>
+
+        <!-- 6. 友好交流请求 -->
+        <div class="disclaimer-card icon-cyan" id="section-6">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 06</div>
+                    <h2 class="disclaimer-card-title">友好交流请求</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站纯属个人<strong>用爱发电</strong>，若无冤无仇，请各位大佬高抬贵手，不要恶意攻击、CC攻击或滥用本站资源。</p>
+                <p>维护一个良好的开源/分享环境需要大家的共同努力，<strong>感谢您的理解与支持！</strong></p>
+            </div>
+        </div>
+
+        <!-- 7. 条款修改与解释 -->
+        <div class="disclaimer-card icon-pink" id="section-7">
+            <div class="disclaimer-card-header">
+                <div class="disclaimer-card-icon">
+                    <i class="fas fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <div class="disclaimer-card-num">SECTION 07</div>
+                    <h2 class="disclaimer-card-title">条款修改与解释</h2>
+                </div>
+            </div>
+            <div class="disclaimer-card-body">
+                <p>本站有权根据业务发展或法律法规的变化随时修改本声明，<strong>修改后的条款一旦公布即有效代替原来的条款</strong>。</p>
+                <p>本声明的<strong>最终解释权</strong>归本站所有。</p>
+            </div>
+        </div>
+
+        <!-- 联系邮箱 -->
+        <div class="disclaimer-contact">
+            <div class="disclaimer-contact-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h3 class="disclaimer-contact-title">侵权举报与联系</h3>
+            <p class="disclaimer-contact-desc">
+                若您发现本站内容存在侵权或其他问题，欢迎通过以下邮箱与我们联系，我们将在核实后第一时间处理并回复。
+            </p>
+            <a href="mailto:692836721@qq.com" class="disclaimer-contact-email">
+                <i class="fas fa-paper-plane"></i>
+                692836721@qq.com
+            </a>
+        </div>
+
+        <!-- 底部说明 -->
+        <div class="disclaimer-footer-note">
+            <p><i class="fas fa-info-circle"></i> 本声明自发布之日起生效，建议您定期查阅以了解任何变更。</p>
+            <span class="update-date"><i class="fas fa-calendar-day"></i> 最后更新：<?php echo date('Y-m-d');?></span>
+        </div>
+
+    </div>
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+</body>
+
+</html>

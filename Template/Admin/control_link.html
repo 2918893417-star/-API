@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>管理友链 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+    <div>
+        <h1 class="adm-page-title">友情链接</h1>
+        <p class="adm-page-desc">管理网站友情链接</p>
+    </div>
+    <div style="display:flex;gap:12px;">
+        <a href="?action=admin&page=control_apply" class="adm-btn adm-btn-secondary" id="apply-entry" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            友链申请 <span id="apply-count" style="display:inline-block;margin-left:6px;padding:0 8px;background:#ef4444;color:#fff;border-radius:999px;font-size:12px;font-weight:700;">0</span>
+        </a>
+        <a href="?action=admin&page=add_link" class="adm-btn adm-btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            添加友链
+        </a>
+    </div>
+</div>
+
+<div id="control_link" class="adm-fade-in">
+    <div class="adm-table-wrap" v-if="links">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>名称</th>
+                    <th>地址</th>
+                    <th>图片地址</th>
+                    <th>添加时间</th>
+                    <th style="text-align:right;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="link in links">
+                    <td><span class="adm-badge adm-badge-default">{{ link.id }}</span></td>
+                    <td><strong style="color:var(--adm-text);">{{ link.name }}</strong></td>
+                    <td><a :href="link.url" target="_blank" style="color:var(--adm-primary);text-decoration:none;">{{ link.url }}</a></td>
+                    <td><code style="background:var(--adm-border-light);color:var(--adm-text-secondary);padding:2px 8px;border-radius:4px;font-size:12px;">{{ link.picurl }}</code></td>
+                    <td>{{ getLocalTime(link.time) }}</td>
+                    <td>
+                        <div class="adm-table-actions" style="justify-content:flex-end;">
+                            <a class="adm-btn-icon" :href="'?action=admin&page=edit_link&id='+link.id" title="修改">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </a>
+                            <button class="adm-btn-icon" @click="deleteLink(link.id)" title="删除" style="color:var(--adm-danger);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="adm-card" v-else>
+        <div class="adm-empty">
+            <div class="adm-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div class="adm-empty-title">尚未任何友情链接</div>
+            <div style="font-size:13px;margin-top:4px;">快去添加一个吧</div>
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+    let control_link = new Vue({
+        el: '#control_link',
+        data: {
+            links: [],
+        },
+        methods: {
+            deleteLink: function(id) {
+                swal({
+                        title: "确定删除该链接?",
+                        text: "请注意数据删除后将不可恢复！",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                method: 'POST',
+                                url: './Data/post.php',
+                                data: {
+                                    type: 'del_link',
+                                    id: id
+                                },
+                                beforeSend: function() {
+                                    swal("删除中......", " ", {
+                                        icon: "info",
+                                        buttons: false
+                                    });
+                                },
+                                success: function(data) {
+                                    var code = JSON.parse(data).code;
+                                    var msg = JSON.parse(data).msg;
+                                    if (code == 0) {
+                                        swal(msg, "2秒后自动刷新页面......", {
+                                            icon: "success",
+                                            buttons: false
+                                        });
+                                        setTimeout(function() {
+                                            location.reload();
+                                        }, 2000);
+                                    } else {
+                                        swal(msg, " ", {
+                                            icon: "error",
+                                            buttons: false
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+            },
+            getLocalTime: function(nS) {
+                return new Date(parseInt(nS) * 1000).toLocaleString().replace(/:\d{1,2}$/, ' ');
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getAllLink')
+                .then(response => response.json())
+                .then(json => {
+                    this.links = json.data;
+                });
+
+            // 获取待审核申请数量
+            fetch('./Data/api.php?type=getApplyCount')
+                .then(r => r.json())
+                .then(json => {
+                    const cnt = (json && json.data && json.data.count) ? Number(json.data.count) : 0;
+                    if (cnt > 0) {
+                        const entry = document.getElementById('apply-entry');
+                        const cntEl = document.getElementById('apply-count');
+                        if (entry) entry.style.display = 'inline-flex';
+                        if (cntEl) cntEl.textContent = cnt > 99 ? '99+' : String(cnt);
+                    }
+                });
+        }
+    });
+</script>
+</body>
+</html>

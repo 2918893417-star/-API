@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>第一步 - 数据库配置 | MXGAPI 管理系统</title>
+    <link rel="stylesheet" href="./assets/css/install.css">
+</head>
+<body class="install-page">
+
+<div class="install-aurora"></div>
+
+<div class="install-container">
+
+    <div class="install-header">
+        <div class="install-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <h1 class="install-title">MXGAPI 管理系统</h1>
+        <p class="install-subtitle">配置数据库连接信息</p>
+    </div>
+
+    <div class="install-steps">
+        <div class="install-step completed">
+            <div class="install-step-circle">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <span class="install-step-label">准备</span>
+        </div>
+        <div class="install-step-line completed"></div>
+        <div class="install-step active">
+            <div class="install-step-circle">2</div>
+            <span class="install-step-label">数据库</span>
+        </div>
+        <div class="install-step-line"></div>
+        <div class="install-step">
+            <div class="install-step-circle">3</div>
+            <span class="install-step-label">网站信息</span>
+        </div>
+        <div class="install-step-line"></div>
+        <div class="install-step">
+            <div class="install-step-circle">4</div>
+            <span class="install-step-label">邮件配置</span>
+        </div>
+        <div class="install-step-line"></div>
+        <div class="install-step">
+            <div class="install-step-circle">5</div>
+            <span class="install-step-label">完成</span>
+        </div>
+    </div>
+
+    <div class="install-card">
+        <div class="install-card-header">
+            <div class="install-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+            </div>
+            <h2 class="install-card-title">数据库配置</h2>
+            <p class="install-card-desc">请填写您的 MySQL 数据库连接信息，系统将自动创建所需的数据表。</p>
+        </div>
+
+        <div class="install-alert install-alert-warning">
+            <svg class="install-alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <div class="install-alert-content">
+                请确保数据库已创建，并且当前用户拥有 <strong>CREATE / INSERT / UPDATE / DELETE</strong> 权限。
+            </div>
+        </div>
+
+        <form action="./Core/install.php" method="post" class="install-form">
+            <div class="install-form-row">
+                <div class="install-form-group">
+                    <label class="install-form-label">数据库地址 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="text" name="host" value="localhost" required placeholder="localhost 或 IP 地址">
+                    <div class="install-form-hint">通常为 localhost 或 127.0.0.1</div>
+                </div>
+                <div class="install-form-group">
+                    <label class="install-form-label">数据库端口 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="text" name="port" value="3306" required placeholder="3306">
+                    <div class="install-form-hint">MySQL 默认端口为 3306</div>
+                </div>
+            </div>
+
+            <div class="install-form-group">
+                <label class="install-form-label">数据库名 <span class="install-form-required">*</span></label>
+                <input class="install-form-input" type="text" name="dbname" required placeholder="请输入数据库名称">
+                <div class="install-form-hint">系统将在此数据库中创建全部所需的表</div>
+            </div>
+
+            <div class="install-form-row">
+                <div class="install-form-group">
+                    <label class="install-form-label">数据库用户名 <span class="install-form-required">*</span></label>
+                    <input class="install-form-input" type="text" name="username" required placeholder="请输入数据库用户名">
+                </div>
+                <div class="install-form-group">
+                    <label class="install-form-label">数据库密码</label>
+                    <input class="install-form-input" type="password" name="password" placeholder="请输入数据库密码">
+                    <div class="install-form-hint">如无密码请留空</div>
+                </div>
+            </div>
+
+            <input type="hidden" name="step" value="1">
+
+            <div class="install-actions">
+                <a href="javascript:history.back()" class="install-btn install-btn-secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"/>
+                        <polyline points="12 19 5 12 12 5"/>
+                    </svg>
+                    返回
+                </a>
+                <button type="submit" class="install-btn install-btn-primary">
+                    测试连接并继续
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="install-footer">
+        <p>© 2024 MXGAPI 管理系统 · 数据库配置</p>
+    </div>
+
+</div>
+
+</body>
+</html>

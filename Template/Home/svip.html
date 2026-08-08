@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>套餐中心 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="套餐中心,会员,订阅,VIP,<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['title'];?> 套餐中心 - 透明定价，无隐藏费用，支持多种支付方式。升级会员，解锁无限可能。" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        /* ============================================
+           套餐中心页 - 现代 SaaS 风格
+           主色: 科技蓝 #3b82f6 / 背景: #f8fafc
+           ============================================ */
+        :root {
+            --sv-primary: #3b82f6;
+            --sv-primary-dark: #2563eb;
+            --sv-primary-light: #eff6ff;
+            --sv-accent: #8b5cf6;
+            --sv-bg: #f8fafc;
+            --sv-card: #ffffff;
+            --sv-text: #0f172a;
+            --sv-text-secondary: #475569;
+            --sv-text-muted: #94a3b8;
+            --sv-border: #e2e8f0;
+            --sv-success: #10b981;
+            --sv-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+            --sv-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+            --sv-shadow-lg: 0 24px 60px rgba(59, 130, 246, 0.18);
+            [v-cloak] { display: none; }
+        }
+
+        .svip-page {
+            background: var(--sv-bg);
+            min-height: 100vh;
+            padding-top: 64px;
+        }
+
+        /* ============================================
+           Hero 区域
+           ============================================ */
+        .svip-hero {
+            position: relative;
+            padding: 88px 40px 72px;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+            background:
+                radial-gradient(ellipse at top left, rgba(59, 130, 246, 0.35) 0%, transparent 55%),
+                radial-gradient(ellipse at bottom right, rgba(139, 92, 246, 0.3) 0%, transparent 55%),
+                linear-gradient(135deg, #0c1d36 0%, #132f5c 35%, #1e3a8a 65%, #312e81 100%);
+        }
+
+        .svip-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            mask-image: radial-gradient(ellipse at center, black 45%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 45%, transparent 100%);
+        }
+
+        .svip-hero::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.32) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: svHeroFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes svHeroFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 25px) scale(1.08); }
+        }
+
+        .svip-hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .svip-hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .svip-hero-title {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 0 0 18px;
+            letter-spacing: -1px;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #ffffff 0%, #dbeafe 60%, #c7d2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .svip-hero-desc {
+            font-size: 17px;
+            opacity: 0.88;
+            line-height: 1.8;
+            margin: 0 auto 32px;
+            max-width: 620px;
+        }
+
+        .svip-hero-trust {
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .svip-hero-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .svip-hero-trust-item i {
+            color: #86efac;
+        }
+
+        /* ============================================
+           通用区块
+           ============================================ */
+        .svip-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 72px 20px;
+        }
+
+        .svip-section-header {
+            text-align: center;
+            margin-bottom: 52px;
+        }
+
+        .svip-section-eyebrow {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--sv-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            padding: 4px 14px;
+            background: var(--sv-primary-light);
+            border-radius: 999px;
+        }
+
+        .svip-section-title {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--sv-text);
+            margin: 0 0 14px;
+            letter-spacing: -0.5px;
+        }
+
+        .svip-section-subtitle {
+            font-size: 16px;
+            color: var(--sv-text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ============================================
+           价格卡片区域
+           ============================================ */
+        .svip-pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 28px;
+            align-items: stretch;
+        }
+
+        .svip-pricing-card {
+            position: relative;
+            background: var(--sv-card);
+            border-radius: 20px;
+            padding: 40px 32px;
+            border: 1.5px solid var(--sv-border);
+            box-shadow: var(--sv-shadow-sm);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .svip-pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--sv-shadow);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        /* 推荐卡片高亮 */
+        .svip-pricing-card-featured {
+            background: linear-gradient(180deg, #ffffff 0%, #f0f7ff 100%);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            transform: scale(1.04);
+            box-shadow: var(--sv-shadow-lg);
+            position: relative;
+            z-index: 2;
+        }
+
+        .svip-pricing-card-featured::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #3b82f6);
+            background-size: 200% 200%;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: svBorderFlow 6s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes svBorderFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .svip-pricing-card-featured:hover {
+            transform: scale(1.04) translateY(-8px);
+        }
+
+        .svip-pricing-badge {
+            position: absolute;
+            top: 20px;
+            right: -32px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 38px;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            letter-spacing: 1px;
+            z-index: 3;
+        }
+
+        .svip-pricing-header {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 24px;
+        }
+
+        .svip-pricing-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--sv-text);
+            margin: 0 0 6px;
+        }
+
+        .svip-pricing-desc {
+            font-size: 13.5px;
+            color: var(--sv-text-muted);
+            margin: 0;
+        }
+
+        .svip-pricing-price {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed var(--sv-border);
+        }
+
+        .svip-price-currency {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--sv-text);
+            margin-bottom: 12px;
+        }
+
+        .svip-price-amount {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -2px;
+            color: var(--sv-text);
+        }
+
+        .svip-pricing-card-featured .svip-price-amount {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .svip-price-unit {
+            font-size: 14px;
+            color: var(--sv-text-muted);
+            margin-bottom: 10px;
+            margin-left: 4px;
+        }
+
+        .svip-pricing-features {
+            position: relative;
+            z-index: 1;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 32px;
+            flex: 1;
+        }
+
+        .svip-pricing-features li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            font-size: 14px;
+            color: var(--sv-text-secondary);
+            line-height: 1.6;
+            border-bottom: 1px solid var(--sv-bg);
+        }
+
+        .svip-pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .svip-feature-check {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--sv-success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            margin-top: 1px;
+        }
+
+        .svip-pricing-card-featured .svip-feature-check {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+        }
+
+        .svip-pricing-features li strong {
+            color: var(--sv-text);
+            font-weight: 700;
+        }
+
+        .svip-pricing-btn {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .svip-pricing-btn-outline {
+            background: var(--sv-bg);
+            color: var(--sv-text);
+            border: 1.5px solid var(--sv-border);
+        }
+
+        .svip-pricing-btn-outline:hover {
+            border-color: var(--sv-primary);
+            color: var(--sv-primary);
+            background: var(--sv-primary-light);
+            transform: translateY(-2px);
+        }
+
+        .svip-pricing-btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .svip-pricing-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(59, 130, 246, 0.55);
+        }
+
+        /* 空状态 */
+        .svip-pricing-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid var(--sv-border);
+            color: var(--sv-text-muted);
+        }
+
+        .svip-pricing-empty i {
+            font-size: 40px;
+            margin-bottom: 16px;
+            color: var(--sv-text-muted);
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           会员专属特权
+           ============================================ */
+        .svip-perks-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .svip-perk-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            border: 1px solid var(--sv-border);
+            box-shadow: var(--sv-shadow-sm);
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .svip-perk-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.35s ease;
+        }
+
+        .svip-perk-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--sv-shadow);
+        }
+
+        .svip-perk-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .svip-perk-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 18px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            color: var(--sv-primary);
+            transition: transform 0.35s ease;
+        }
+
+        .svip-perk-card:hover .svip-perk-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .svip-perk-card:nth-child(2) .svip-perk-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(20, 184, 166, 0.1));
+            color: #059669;
+        }
+
+        .svip-perk-card:nth-child(3) .svip-perk-icon {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(234, 179, 8, 0.1));
+            color: #d97706;
+        }
+
+        .svip-perk-card:nth-child(4) .svip-perk-icon {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+            color: #7c3aed;
+        }
+
+        .svip-perk-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--sv-text);
+            margin: 0 0 10px;
+        }
+
+        .svip-perk-desc {
+            font-size: 13.5px;
+            color: var(--sv-text-secondary);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        /* ============================================
+           FAQ 常见问题
+           ============================================ */
+        .svip-faq-list {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+
+        .svip-faq-item {
+            background: white;
+            border-radius: 14px;
+            margin-bottom: 14px;
+            border: 1px solid var(--sv-border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: var(--sv-shadow-sm);
+        }
+
+        .svip-faq-item:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: var(--sv-shadow);
+        }
+
+        .svip-faq-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            cursor: pointer;
+            font-size: 15.5px;
+            font-weight: 600;
+            color: var(--sv-text);
+            user-select: none;
+            transition: color 0.2s ease;
+        }
+
+        .svip-faq-question:hover {
+            color: var(--sv-primary);
+        }
+
+        .svip-faq-question-icon {
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--sv-primary-light);
+            color: var(--sv-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            margin-left: 16px;
+        }
+
+        .svip-faq-item.active .svip-faq-question-icon {
+            background: var(--sv-primary);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .svip-faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+            padding: 0 24px;
+        }
+
+        .svip-faq-item.active .svip-faq-answer {
+            max-height: 300px;
+            padding: 0 24px 22px;
+        }
+
+        .svip-faq-answer p {
+            margin: 0;
+            font-size: 14.5px;
+            line-height: 1.85;
+            color: var(--sv-text-secondary);
+        }
+
+        .svip-faq-answer a {
+            color: var(--sv-primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .svip-faq-answer a:hover {
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           底部 CTA
+           ============================================ */
+        .svip-cta {
+            background: linear-gradient(135deg, #0c1d36 0%, #132f5c 50%, #312e81 100%);
+            border-radius: 24px;
+            padding: 56px 40px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-top: 40px;
+        }
+
+        .svip-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        .svip-cta-title {
+            position: relative;
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0 0 12px;
+        }
+
+        .svip-cta-desc {
+            position: relative;
+            font-size: 15px;
+            opacity: 0.85;
+            margin: 0 0 26px;
+        }
+
+        .svip-cta-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 34px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 700;
+            border-radius: 999px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .svip-cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.55);
+        }
+
+        /* ============================================
+           响应式
+           ============================================ */
+        @media (max-width: 968px) {
+            .svip-pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 460px;
+                margin: 0 auto;
+                gap: 24px;
+            }
+            .svip-pricing-card-featured {
+                transform: scale(1);
+                order: -1;
+            }
+            .svip-pricing-card-featured:hover {
+                transform: translateY(-8px);
+            }
+            .svip-perks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .svip-hero-title {
+                font-size: 36px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .svip-hero {
+                padding: 60px 22px 52px;
+            }
+            .svip-hero-title {
+                font-size: 30px;
+            }
+            .svip-hero-desc {
+                font-size: 15px;
+            }
+            .svip-hero-trust {
+                gap: 16px;
+            }
+            .svip-section {
+                padding: 56px 16px;
+            }
+            .svip-section-title {
+                font-size: 26px;
+            }
+            .svip-pricing-card,
+            .svip-pricing-card-featured {
+                padding: 32px 24px;
+            }
+            .svip-price-amount {
+                font-size: 44px;
+            }
+            .svip-cta {
+                padding: 40px 24px;
+            }
+            .svip-cta-title {
+                font-size: 22px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .svip-perks-grid {
+                grid-template-columns: 1fr;
+            }
+            .svip-hero-title {
+                font-size: 26px;
+            }
+            .svip-pricing-features li {
+                font-size: 13.5px;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 90px;
+        }
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<div class="svip-page" id="svip">
+
+    <!-- ============ Hero 区域 ============ -->
+    <section class="svip-hero">
+        <div class="svip-hero-content">
+            <div class="svip-hero-badge">
+                <i class="fas fa-crown"></i> 套餐中心 · 透明定价
+            </div>
+            <h1 class="svip-hero-title">升级会员，解锁无限可能</h1>
+            <p class="svip-hero-desc">
+                透明定价，无隐藏费用，支持多种支付方式。选择适合您的套餐，享受更高的配额、极速通道与专属技术支持。
+            </p>
+            <div class="svip-hero-trust">
+                <span class="svip-hero-trust-item"><i class="fas fa-check-circle"></i> 即时开通</span>
+                <span class="svip-hero-trust-item"><i class="fas fa-check-circle"></i> 7天无理由退款</span>
+                <span class="svip-hero-trust-item"><i class="fas fa-check-circle"></i> 安全支付</span>
+                <span class="svip-hero-trust-item"><i class="fas fa-check-circle"></i> 终身技术支持</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 价格卡片区域 ============ -->
+    <section class="svip-section">
+        <div class="svip-section-header">
+            <span class="svip-section-eyebrow">PRICING</span>
+            <h2 class="svip-section-title">选择适合您的套餐</h2>
+            <p class="svip-section-subtitle">三种灵活方案，从月度订阅到终身买断，总有一款适合您。</p>
+        </div>
+
+        <div class="svip-pricing-grid" v-cloak>
+            <!-- 动态加载套餐 -->
+            <div
+                v-for="plan in plans"
+                :key="plan.id"
+                class="svip-pricing-card"
+                :class="{ 'svip-pricing-card-featured': isFeatured(plan) }"
+            >
+                <div class="svip-pricing-badge" v-if="isFeatured(plan)">推荐</div>
+
+                <div class="svip-pricing-header">
+                    <h3 class="svip-pricing-name">{{ plan.name }}</h3>
+                    <p class="svip-pricing-desc">{{ plan.description }}</p>
+                </div>
+
+                <div class="svip-pricing-price">
+                    <span class="svip-price-currency">¥</span>
+                    <span class="svip-price-amount">{{ formatPrice(plan.price) }}</span>
+                    <span class="svip-price-unit">/ {{ getUnit(plan) }}</span>
+                </div>
+
+                <ul class="svip-pricing-features">
+                    <li v-for="(feature, idx) in getFeatures(plan)" :key="idx">
+                        <span class="svip-feature-check"><i class="fas fa-check"></i></span>
+                        <span v-html="feature"></span>
+                    </li>
+                </ul>
+
+                <button
+                    class="svip-pricing-btn"
+                    :class="isFeatured(plan) ? 'svip-pricing-btn-primary' : 'svip-pricing-btn-outline'"
+                    @click="handleSubscribe(plan)"
+                >
+                    <i :class="isFeatured(plan) ? 'fas fa-star' : 'fas fa-rocket'"></i>
+                    立即订阅
+                </button>
+            </div>
+
+            <!-- 空状态 -->
+            <div class="svip-pricing-empty" v-if="!loading && plans.length === 0">
+                <i class="fas fa-box-open"></i>
+                <p>暂无可订阅的套餐，请稍后再来查看。</p>
+            </div>
+
+            <!-- 加载骨架 -->
+            <div class="svip-pricing-empty" v-if="loading">
+                <i class="fas fa-circle-notch fa-spin"></i>
+                <p>正在加载套餐信息...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 会员专属特权 ============ -->
+    <section class="svip-section" style="padding-top: 0;">
+        <div class="svip-section-header">
+            <span class="svip-section-eyebrow">PERKS</span>
+            <h2 class="svip-section-title">会员专属特权</h2>
+            <p class="svip-section-subtitle">加入会员，体验与众不同的服务品质。</p>
+        </div>
+
+        <div class="svip-perks-grid">
+            <div class="svip-perk-card">
+                <div class="svip-perk-icon"><i class="fas fa-bolt"></i></div>
+                <h3 class="svip-perk-title">极速响应</h3>
+                <p class="svip-perk-desc">享有 QoS 优先队列，API 请求响应速度提升 50% 以上。</p>
+            </div>
+            <div class="svip-perk-card">
+                <div class="svip-perk-icon"><i class="fas fa-layer-group"></i></div>
+                <h3 class="svip-perk-title">超高配额</h3>
+                <p class="svip-perk-desc">每日 999999+ 次调用，满足高并发业务需求。</p>
+            </div>
+            <div class="svip-perk-card">
+                <div class="svip-perk-icon"><i class="fas fa-headset"></i></div>
+                <h3 class="svip-perk-title">优先支持</h3>
+                <p class="svip-perk-desc">7x24 小时技术团队待命，故障优先排查处理。</p>
+            </div>
+            <div class="svip-perk-card">
+                <div class="svip-perk-icon"><i class="fas fa-shield-halved"></i></div>
+                <h3 class="svip-perk-title">稳定保障</h3>
+                <p class="svip-perk-desc">99.99% SLA 服务可用性承诺，业务运行无忧。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 常见问题 ============ -->
+    <section class="svip-section" style="padding-top: 0;">
+        <div class="svip-section-header">
+            <span class="svip-section-eyebrow">FAQ</span>
+            <h2 class="svip-section-title">常见问题</h2>
+            <p class="svip-section-subtitle">关于订阅、支付与退款的常见疑问，都在这里。</p>
+        </div>
+
+        <div class="svip-faq-list">
+            <div class="svip-faq-item" :class="{ active: faqOpen === 0 }">
+                <div class="svip-faq-question" @click="toggleFaq(0)">
+                    <span>如何支付？支持哪些支付方式？</span>
+                    <span class="svip-faq-question-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="svip-faq-answer">
+                    <p>目前支持<strong>账户余额支付</strong>、<strong>支付宝</strong>和<strong>微信支付</strong>三种方式。您可以在用户中心先充值余额，再使用余额订阅套餐，享受即时开通；也可在创建订单后选择在线支付完成交易。所有交易均通过官方支付渠道，安全可靠。</p>
+                </div>
+            </div>
+
+            <div class="svip-faq-item" :class="{ active: faqOpen === 1 }">
+                <div class="svip-faq-question" @click="toggleFaq(1)">
+                    <span>退款政策是怎样的？</span>
+                    <span class="svip-faq-question-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="svip-faq-answer">
+                    <p>我们提供<strong>7 天无理由退款保障</strong>。如果您在购买后 7 天内对服务不满意，且期间未产生异常大量调用，可联系站长申请全额退款。超过 7 天的订单原则上不予退款，但遇特殊情况可联系客服协商处理。</p>
+                </div>
+            </div>
+
+            <div class="svip-faq-item" :class="{ active: faqOpen === 2 }">
+                <div class="svip-faq-question" @click="toggleFaq(2)">
+                    <span>永久会员包含未来所有新接口吗？</span>
+                    <span class="svip-faq-question-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="svip-faq-answer">
+                    <p>是的。永久会员享有<strong>全站接口 100% 折扣</strong>权益，包括未来新增的所有会员专属接口。我们将持续扩充接口库，永久会员无需为任何新接口额外付费，真正实现一次购买、终身受益。</p>
+                </div>
+            </div>
+
+            <div class="svip-faq-item" :class="{ active: faqOpen === 3 }">
+                <div class="svip-faq-question" @click="toggleFaq(3)">
+                    <span>会员到期后，我的权益会怎样？</span>
+                    <span class="svip-faq-question-icon"><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="svip-faq-answer">
+                    <p>月会员和年会员到期后，账户将自动恢复为普通用户等级，调用配额恢复至免费额度。您可以在到期前随时续费，续费后服务时间在原有基础上顺延，不会浪费任何剩余时长。永久会员则永久享有所有权益，无需续费。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部 CTA -->
+        <div class="svip-cta">
+            <h3 class="svip-cta-title">准备好升级了吗？</h3>
+            <p class="svip-cta-desc">加入会员，与 1000+ 开发者一起享受极速、稳定的 API 服务。</p>
+            <a href="?action=register" class="svip-cta-btn">
+                <i class="fas fa-rocket"></i> 立即开通会员
+            </a>
+        </div>
+    </section>
+
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let svip = new Vue({
+        el: '#svip',
+        data: {
+            plans: [],
+            loading: true,
+            faqOpen: 0
+        },
+        created() {
+            this.loadPlans();
+        },
+        methods: {
+            loadPlans() {
+                fetch('./Data/user.php?type=getPlans')
+                    .then(response => response.json())
+                    .then(json => {
+                        this.loading = false;
+                        if (json.code === 0 && Array.isArray(json.data)) {
+                            this.plans = json.data;
+                        }
+                    })
+                    .catch(() => {
+                        this.loading = false;
+                    });
+            },
+            // 判断是否为推荐套餐（duration=0 为永久会员，自动标记为推荐）
+            isFeatured(plan) {
+                return parseInt(plan.duration) === 0;
+            },
+            // 格式化价格
+            formatPrice(price) {
+                return parseFloat(price || 0).toFixed(2);
+            },
+            // 获取单位（/月、/年、/永久）
+            getUnit(plan) {
+                const duration = parseInt(plan.duration);
+                if (duration === 0) return '永久';
+                if (duration >= 365) return '年';
+                if (duration >= 30) return '年';
+                return '月';
+            },
+            // 获取权益列表
+            getFeatures(plan) {
+                // 后台配置了 features 字段（JSON 数组）
+                if (Array.isArray(plan.features) && plan.features.length > 0) {
+                    return plan.features;
+                }
+                // 兜底默认权益
+                if (this.isFeatured(plan)) {
+                    return [
+                        '<strong>无限频率</strong> API 调用',
+                        '每日 <strong>999999+</strong> 次调用',
+                        '全站接口 <strong>100%</strong> 折扣',
+                        '故障优先排查',
+                        '<strong>终身</strong>技术支持服务'
+                    ];
+                }
+                return [
+                    '<strong>无限频率</strong> API 调用',
+                    '每日 <strong>999999</strong> 次调用',
+                    '全站接口 <strong>100%</strong> 折扣',
+                    '故障优先排查',
+                    '技术支持服务'
+                ];
+            },
+            // 跳转订阅（用户中心）
+            handleSubscribe(plan) {
+                window.location.href = '?action=user_center&plan_id=' + plan.id;
+            },
+            // FAQ 折叠
+            toggleFaq(idx) {
+                this.faqOpen = this.faqOpen === idx ? -1 : idx;
+            }
+        }
+    });
+</script>
+</body>
+
+</html>
+v

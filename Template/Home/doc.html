@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <title><?php echo $result['name']." - ".$config['title'];?></title>
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $apiSelect['desc'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./assets/css/mdui.min.css"/>
+    <link rel="stylesheet" href="./assets/css/newstyle.css"/>
+    <link rel="stylesheet" href="./assets/css/doc.css"/>
+    <link rel="stylesheet" href="./assets/css/highlight.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="./assets/js/highlight.min.js"></script>
+</head>
+
+<?php require "header.html";?>
+
+<div class="doc-page" id="doc">
+
+    <!-- Hero 区域 -->
+    <section class="doc-hero">
+        <!-- 动态粒子背景 -->
+        <div class="doc-hero-particles" aria-hidden="true">
+            <span style="top: 20%; left: 10%; animation-delay: 0s;"></span>
+            <span style="top: 40%; left: 25%; animation-delay: 1s;"></span>
+            <span style="top: 70%; left: 50%; animation-delay: 2s;"></span>
+            <span style="top: 30%; left: 70%; animation-delay: 0.5s;"></span>
+            <span style="top: 80%; left: 85%; animation-delay: 1.5s;"></span>
+            <span style="top: 55%; left: 90%; animation-delay: 2.5s;"></span>
+            <span style="top: 15%; left: 45%; animation-delay: 3s;"></span>
+            <span style="top: 65%; left: 15%; animation-delay: 1.8s;"></span>
+        </div>
+        <div class="doc-hero-content">
+            <div class="doc-breadcrumb">
+                <a href="<?php echo $config['url'];?>">首页</a>
+                <span class="separator">/</span>
+                <a href="?action=apilist">API 列表</a>
+                <span class="separator">/</span>
+                <span class="current" v-cloak>{{ info.name }}</span>
+            </div>
+            <h1 class="doc-hero-title" v-cloak>{{ info.name }}</h1>
+            <p class="doc-hero-desc" v-cloak>{{ info.desc }}</p>
+            <div class="doc-hero-meta">
+                <span class="doc-hero-tag" :class="{'method-get': info.method === 'GET', 'method-post': info.method === 'POST'}" v-cloak>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    {{ info.method }}
+                </span>
+                <span class="doc-hero-tag" v-cloak>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    {{ info.format }}
+                </span>
+                <span v-if="parseInt(info.charge_type) === 0" class="doc-hero-tag" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;border-color:transparent;" v-cloak>
+                    <i class="fas fa-crown" style="margin-right:4px;"></i> 会员专用（免费）
+                </span>
+                <span v-else-if="parseInt(info.charge_type) === 1" class="doc-hero-tag" style="background:linear-gradient(135deg,#06b6d4,#0891b2);color:white;border-color:transparent;" v-cloak>
+                    <i class="fas fa-coins" style="margin-right:4px;"></i> ¥{{ parseFloat(info.price).toFixed(info.price >= 1 ? 2 : 4) }}/次（会员免费）
+                </span>
+                <span v-else-if="parseInt(info.charge_type) === 2" class="doc-hero-tag" style="background:linear-gradient(135deg,#10b981,#059669);color:white;border-color:transparent;" v-cloak>
+                    <i class="fas fa-gift" style="margin-right:4px;"></i> 免费公开（无需 API Key）
+                </span>
+                <span v-else class="doc-hero-tag" style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;border-color:transparent;" v-cloak>
+                    <i class="fas fa-crown" style="margin-right:4px;"></i> 会员专用（免费）
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 主体布局 -->
+    <div class="doc-main">
+
+        <!-- 侧边导航 -->
+        <aside class="doc-sidebar">
+            <div class="doc-sidebar-card">
+                <div class="doc-sidebar-title">目录导航</div>
+                <ul class="doc-sidebar-nav">
+                    <li>
+                        <a href="#api_explanation">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                            接口说明
+                        </a>
+                        <ul>
+                            <li><a href="#request_explanation">请求说明</a></li>
+                            <li><a href="#request_param">请求参数</a></li>
+                            <li><a href="#return_param">返回参数</a></li>
+                            <li><a href="#return_example">返回示例</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#error_code">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            错误码
+                        </a>
+                        <ul>
+                            <li><a href="#error_code_status">状态码说明</a></li>
+                            <li><a href="#error_code_system">系统级错误</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#example_code">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            PHP 代码示例
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 内容区域 -->
+        <div class="doc-content">
+
+            <!-- 接口说明 -->
+            <div class="doc-section" id="api_explanation">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    </div>
+                    <h2 class="doc-section-title">接口说明</h2>
+                </div>
+                <div class="doc-section-body">
+
+                    <div id="request_explanation">
+                        <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 16px;">请求说明</h3>
+                        <div class="doc-grid-2">
+                            <div>
+                                <ul class="doc-info-list">
+                                    <li class="doc-info-item">
+                                        <span class="doc-info-label">请求地址</span>
+                                        <span class="doc-info-value doc-link-group">
+                                            <a class="doc-link" :href="websetting.url+'API/'+info.url" v-cloak>{{ websetting.url }}API/{{ info.url }}</a>
+                                            <button class="doc-copy-btn" :data-clipboard-text="websetting.url+'API/'+info.url" @click="copyUrl" title="复制">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            </button>
+                                        </span>
+                                    </li>
+                                    <li class="doc-info-item">
+                                        <span class="doc-info-label">返回格式</span>
+                                        <span class="doc-info-value"><span class="doc-badge doc-badge-format" v-cloak>{{ info.format }}</span></span>
+                                    </li>
+                                    <li class="doc-info-item">
+                                        <span class="doc-info-label">请求方式</span>
+                                        <span class="doc-info-value"><span class="doc-badge doc-badge-method" v-cloak>{{ info.method }}</span></span>
+                                    </li>
+                                    <li class="doc-info-item" v-if="info.example_url">
+                                        <span class="doc-info-label">请求示例</span>
+                                        <span class="doc-info-value doc-link-group">
+                                            <a class="doc-link" :href="websetting.url+'API/'+info.example_url" v-cloak>{{ websetting.url }}API/{{ info.example_url }}</a>
+                                            <button class="doc-copy-btn" :data-clipboard-text="websetting.url+'API/'+info.example_url" title="复制">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            </button>
+                                        </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 12px;" id="return_example">返回示例</h3>
+                                <div class="doc-code-block" v-if="info.return">
+                                    <div class="doc-code-block-header">
+                                        <div class="doc-code-block-dots">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                        <span class="doc-code-block-lang">JSON 响应</span>
+                                        <button class="doc-code-block-copy" :data-clipboard-text="info.return" @click="copyReturn">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                            复制
+                                        </button>
+                                    </div>
+                                    <highlightjs :code="info.return" />
+                                </div>
+                                <div v-else style="color:var(--doc-text-muted);font-size:13px;padding:16px;background:var(--doc-border-light);border-radius:8px;">暂无示例</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 请求参数 & 返回参数 -->
+            <div class="doc-section">
+                <div class="doc-section-body">
+                    <div class="doc-grid-2">
+
+                        <!-- 请求参数 -->
+                        <div id="request_param">
+                            <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+                                <span style="width:24px;height:24px;background:var(--doc-primary-bg);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--doc-primary);">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 11a7 7 0 0 0-7.07 0l-5.97 5.97a7 7 0 0 0 9.9 9.9l5.97-5.97a7 7 0 0 0 0-9.9z"/></svg>
+                                </span>
+                                请求参数
+                            </h3>
+                            <table class="doc-table">
+                                <thead>
+                                    <tr>
+                                        <th>参数名称</th>
+                                        <th>参数类型</th>
+                                        <th>是否必填</th>
+                                        <th>备注内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="request_parameter in info.request_parameter" v-cloak>
+                                        <td><code>{{ request_parameter.name }}</code></td>
+                                        <td><code>{{ request_parameter.type }}</code></td>
+                                        <td>
+                                            <span class="required-badge" :class="request_parameter.required == '是' ? 'required-yes' : 'required-no'">
+                                                {{ request_parameter.required }}
+                                            </span>
+                                        </td>
+                                        <td>{{ request_parameter.info }}</td>
+                                    </tr>
+                                    <tr v-if="!info.request_parameter || info.request_parameter.length === 0">
+                                        <td colspan="4" style="text-align:center;color:var(--doc-text-muted);padding:24px;">暂无参数</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 返回参数 -->
+                        <div id="return_param">
+                            <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 12px;display:flex;align-items:center;gap:8px;">
+                                <span style="width:24px;height:24px;background:rgba(16,185,129,0.1);border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#059669;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                </span>
+                                返回参数
+                            </h3>
+                            <table class="doc-table">
+                                <thead>
+                                    <tr>
+                                        <th>参数名称</th>
+                                        <th>参数类型</th>
+                                        <th>参数说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="return_parameter in info.return_parameter" v-cloak>
+                                        <td><code>{{ return_parameter.name }}</code></td>
+                                        <td><code>{{ return_parameter.type }}</code></td>
+                                        <td>{{ return_parameter.msg }}</td>
+                                    </tr>
+                                    <tr v-if="!info.return_parameter || info.return_parameter.length === 0">
+                                        <td colspan="3" style="text-align:center;color:var(--doc-text-muted);padding:24px;">暂无参数</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 错误码 -->
+            <div class="doc-section" id="error_code">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon" style="background:rgba(245,158,11,0.1);color:#b45309;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h2 class="doc-section-title">错误码说明</h2>
+                </div>
+                <div class="doc-section-body">
+                    <div class="doc-grid-2">
+
+                        <!-- 状态码说明 -->
+                        <div id="error_code_status">
+                            <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 12px;">状态码说明</h3>
+                            <table class="doc-table">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="error_code in info.error_code" v-cloak>
+                                        <td><code>{{ error_code.code }}</code></td>
+                                        <td>{{ error_code.msg }}</td>
+                                    </tr>
+                                    <tr v-if="!info.error_code || info.error_code.length === 0">
+                                        <td colspan="2" style="text-align:center;color:var(--doc-text-muted);padding:24px;">暂无错误码</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 系统级错误 -->
+                        <div id="error_code_system">
+                            <h3 style="font-size:15px;font-weight:600;color:var(--doc-text);margin:0 0 12px;">系统级错误</h3>
+                            <table class="doc-table">
+                                <thead>
+                                    <tr>
+                                        <th>状态码</th>
+                                        <th>说明</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><code>400</code></td><td>请求错误！</td></tr>
+                                    <tr><td><code>403</code></td><td>请求被服务器拒绝！</td></tr>
+                                    <tr><td><code>405</code></td><td>客户端请求的方法被禁止！</td></tr>
+                                    <tr><td><code>408</code></td><td>请求时间过长！</td></tr>
+                                    <tr><td><code>500</code></td><td>服务器内部出现错误！</td></tr>
+                                    <tr><td><code>501</code></td><td>服务器不支持请求的功能，无法完成请求！</td></tr>
+                                    <tr><td><code>503</code></td><td>系统维护中！</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHP 代码示例 -->
+            <div class="doc-section" id="example_code" v-if="info.PHP_example">
+                <div class="doc-section-header">
+                    <div class="doc-section-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    </div>
+                    <h2 class="doc-section-title">PHP 代码示例</h2>
+                </div>
+                <div class="doc-section-body">
+                    <div class="doc-code-block">
+                        <div class="doc-code-block-header">
+                            <div class="doc-code-block-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="doc-code-block-lang">PHP</span>
+                            <button class="doc-code-block-copy" :data-clipboard-text="info.PHP_example">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                复制
+                            </button>
+                        </div>
+                        <highlightjs language="php" :code="info.PHP_example" />
+                    </div>
+                </div>
+            </div>
+
+            <div v-if="!info.PHP_example" style="display:none;"></div>
+
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/index.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/clipboard.min.js"></script>
+<script>
+/* 注册一个highlightjs插件 */
+Vue.use(hljs.vuePlugin);
+
+let doc = new Vue({
+    el: '#doc',
+    data: {
+        info: {
+            request_parameter: [],
+            return_parameter: [],
+            error_code: []
+        },
+        websetting: [],
+    },
+    methods: {
+        copyUrl(e) {
+            mdui.snackbar("复制成功！");
+        },
+        copyReturn(e) {
+            mdui.snackbar("复制成功！");
+        },
+        // 为代码块添加行号
+        applyLineNumbers() {
+            const blocks = this.$el.querySelectorAll('.doc-code-block');
+            blocks.forEach(block => {
+                // 如果已经处理过就跳过
+                if (block.querySelector('.code-wrapper')) return;
+
+                const pre = block.querySelector('pre');
+                if (!pre) return;
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                const codeText = code.textContent || '';
+                const lineCount = codeText.split('\n').length;
+
+                // 创建行号列
+                const gutter = document.createElement('div');
+                gutter.className = 'gutter';
+                const frag = document.createDocumentFragment();
+                for (let i = 1; i <= lineCount; i++) {
+                    const span = document.createElement('span');
+                    span.textContent = i;
+                    frag.appendChild(span);
+                }
+                gutter.appendChild(frag);
+
+                // 创建结构包装
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-wrapper';
+                const codeArea = document.createElement('div');
+                codeArea.className = 'code-area';
+
+                // 移动 pre 到 codeArea 中
+                pre.parentNode.removeChild(pre);
+                codeArea.appendChild(pre);
+
+                wrapper.appendChild(gutter);
+                wrapper.appendChild(codeArea);
+
+                // 找到 header 将 wrapper 插到 header 后面
+                const header = block.querySelector('.doc-code-block-header');
+                if (header && header.nextSibling) {
+                    block.insertBefore(wrapper, header.nextSibling);
+                } else {
+                    block.appendChild(wrapper);
+                }
+            });
+        }
+    },
+    created (){
+        var id = getRequestParam('id');
+        fetch('./Data/api.php?type=getOneApi&id='+id)
+            .then(response => response.json())
+            .then(json => {
+                if(json.code !== 0){
+                    mdui.snackbar(json.msg || '获取数据失败');
+                    return;
+                }
+
+                var data = json.data || {};
+                
+                // 辅助函数：解析数据库中的JSON参数为数组
+                var parseParams = function(raw) {
+                    try {
+                        if(!raw) return [];
+                        var rp = JSON.parse(raw);
+                        var list = rp.data || rp;
+                        if(Array.isArray(list)) return list;
+                        return [];
+                    } catch(e) {
+                        return [];
+                    }
+                };
+
+                // 先构建完整的info对象，再一次性赋值给Vue以保证响应式
+                var fullInfo = {
+                    name: data.name || '',
+                    enname: data.enname || '',
+                    desc: data.desc || '',
+                    url: data.url || '',
+                    format: data.format || '',
+                    method: data.method || '',
+                    example_url: data.example_url || '',
+                    'return': data['return'] || '',
+                    PHP_example: data.PHP_example || '',
+                    charge_type: data.charge_type || 0,
+                    price: data.price || 0,
+                    request_parameter: parseParams(data.request_parameter),
+                    return_parameter: parseParams(data.return_parameter),
+                    error_code: parseParams(data.error_code)
+                };
+
+                this.info = fullInfo;
+                this.$nextTick(() => {
+                    this.applyLineNumbers();
+                });
+            });
+        fetch('./Data/api.php?type=getWebSetting')
+            .then(response => response.json())
+            .then(json => {
+                this.websetting = json.data;
+            });
+    },
+    mounted() {
+        // 初始渲染后尝试一次（针对可能已存在的静态内容）
+        this.$nextTick(() => {
+            this.applyLineNumbers();
+        });
+    }
+});
+
+var clipboard = new ClipboardJS('.doc-copy-btn, .doc-code-block-copy');
+clipboard.on('success', function(e) {
+    if(e.trigger.tagName === 'BUTTON') {
+        // 已通过 Vue 方法显示提示
+    } else {
+        mdui.snackbar("复制成功！");
+    }
+    e.clearSelection();
+});
+clipboard.on('error', function(e) {
+    mdui.snackbar("复制失败！");
+});
+
+/* 滚动监听：高亮侧边栏当前章节 */
+(function() {
+    var sections = document.querySelectorAll('.doc-content [id]');
+    var links = document.querySelectorAll('.doc-sidebar-nav a[href^="#"]');
+    if (!sections.length || !links.length) return;
+
+    var linkMap = {};
+    links.forEach(function(link) {
+        var id = link.getAttribute('href').slice(1);
+        if (id) linkMap[id] = link;
+    });
+
+    function updateActive() {
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+        var currentId = null;
+        sections.forEach(function(section) {
+            if (section.offsetTop - 120 <= scrollY) {
+                currentId = section.id;
+            }
+        });
+        if (currentId && linkMap[currentId]) {
+            links.forEach(function(l) { l.classList.remove('active'); });
+            linkMap[currentId].classList.add('active');
+            // 同时激活父级
+            var parentLi = linkMap[currentId].closest('li') ? linkMap[currentId].closest('ul') && linkMap[currentId].closest('ul').previousElementSibling : null;
+            // 向上找包含该 ul 的 li，再找其第一个 a
+            var ul = linkMap[currentId].closest('ul');
+            if (ul) {
+                var parentUl = ul.parentElement.closest('ul');
+                if (!parentUl) {
+                    var parentLi = ul.parentElement; // li
+                    if (parentLi) {
+                        var topLink = parentLi.querySelector(':scope > a');
+                        if (topLink) topLink.classList.add('active');
+                    }
+                }
+            }
+        }
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    window.addEventListener('load', updateActive);
+})();
+</script>
+</body>
+</html>

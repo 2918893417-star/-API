@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>接口开发文档 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        /* ===== 文档专用样式 ===== */
+        .doc-wrap{max-width:1080px;margin:0 auto;padding:0 4px;}
+
+        /* Hero 区 */
+        .doc-hero{
+            background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            border-radius:18px;padding:40px 36px;color:#fff;margin-bottom:28px;
+            box-shadow:0 12px 40px rgba(102,126,234,.35);
+            position:relative;overflow:hidden;
+        }
+        .doc-hero::before{content:"";position:absolute;top:-50%;right:-20%;width:400px;height:400px;
+            background:radial-gradient(circle,rgba(255,255,255,.15) 0%,transparent 70%);border-radius:50%;}
+        .doc-hero::after{content:"";position:absolute;bottom:-30%;left:-10%;width:300px;height:300px;
+            background:radial-gradient(circle,rgba(124,58,237,.25) 0%,transparent 70%);border-radius:50%;}
+        .doc-hero h1{font-size:28px;font-weight:700;margin-bottom:10px;position:relative;z-index:1;}
+        .doc-hero p{font-size:15px;opacity:.92;line-height:1.8;position:relative;z-index:1;}
+
+        /* 卡片 */
+        .doc-card{
+            background:#fff;border-radius:16px;padding:28px 30px;margin-bottom:24px;
+            box-shadow:0 2px 16px rgba(0,0,0,.06);border:1px solid #eef2f7;
+        }
+        .doc-card-title{
+            font-size:20px;font-weight:700;margin-bottom:18px;color:var(--adm-text);
+            display:flex;align-items:center;gap:12px;padding-bottom:14px;
+            border-bottom:2px solid #f1f5f9;
+        }
+        .doc-card-title .num{
+            width:34px;height:34px;border-radius:10px;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            color:#fff;display:flex;align-items:center;justify-content:center;
+            font-size:15px;font-weight:700;flex-shrink:0;
+            box-shadow:0 4px 12px rgba(102,126,234,.3);
+        }
+
+        /* 章节标题 */
+        .doc-section-title{
+            font-size:15px;font-weight:600;margin:22px 0 12px;color:#334155;
+            display:flex;align-items:center;gap:10px;
+        }
+        .doc-section-title i{
+            color:#667eea;font-size:14px;
+            width:28px;height:28px;border-radius:8px;
+            background:rgba(102,126,234,.1);
+            display:flex;align-items:center;justify-content:center;
+        }
+
+        /* 段落 */
+        .doc-p{font-size:14px;line-height:1.9;color:#64748b;margin-bottom:12px;}
+
+        /* 代码块 */
+        .doc-code{
+            background:#1e1e2e;color:#d4d4d4;border-radius:12px;
+            padding:20px 24px;margin:16px 0;position:relative;
+            overflow-x:auto;border:1px solid rgba(255,255,255,.06);
+            box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+        }
+        .doc-code pre{
+            margin:0;padding:0;
+            font-family:'JetBrains Mono','Fira Code','Consolas','Monaco','Courier New',monospace;
+            font-size:13px;line-height:1.85;white-space:pre;
+            tab-size:4;
+        }
+        .doc-code .copy-btn{
+            position:absolute;top:12px;right:12px;
+            background:rgba(255,255,255,.1);color:#cbd5e1;
+            border:none;border-radius:8px;padding:6px 14px;
+            font-size:12px;font-weight:500;cursor:pointer;
+            transition:all .2s;backdrop-filter:blur(4px);
+        }
+        .doc-code .copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+        /* 语法高亮 */
+        .doc-code .c-comment{color:#6b7280;font-style:italic;}
+        .doc-code .c-keyword{color:#c084fc;font-weight:600;}
+        .doc-code .c-string{color:#86efac;}
+        .doc-code .c-var{color:#fbbf24;}
+        .doc-code .c-func{color:#93c5fd;}
+        .doc-code .c-const{color:#fca5a5;}
+        .doc-code .c-tag{color:#f87171;}
+        .doc-code .c-prop{color:#a5f3fc;}
+
+        /* 表格 */
+        .doc-table{
+            width:100%;border-collapse:collapse;margin:14px 0;
+            font-size:13.5px;overflow:hidden;border-radius:12px;
+            box-shadow:0 1px 3px rgba(0,0,0,.05);
+        }
+        .doc-table th{
+            background:linear-gradient(135deg,#f8fafc,#f1f5f9);
+            color:#1e293b;padding:12px 16px;text-align:left;font-weight:600;
+            border-bottom:2px solid #e2e8f0;font-size:13px;
+        }
+        .doc-table td{
+            padding:12px 16px;border-bottom:1px solid #f1f5f9;
+            color:#475569;line-height:1.6;
+        }
+        .doc-table tr:last-child td{border-bottom:none;}
+        .doc-table tbody tr:hover{background:rgba(102,126,234,.04);}
+
+        /* 徽章 */
+        .doc-badge{
+            display:inline-flex;align-items:center;gap:5px;
+            padding:4px 12px;border-radius:20px;
+            font-size:12px;font-weight:600;white-space:nowrap;
+        }
+        .doc-badge-free{background:linear-gradient(135deg,#10b981,#059669);color:#fff;}
+        .doc-badge-vip{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff;}
+        .doc-badge-charge{background:linear-gradient(135deg,#06b6d4,#0891b2);color:#fff;}
+
+        /* 提示框 */
+        .doc-tip{
+            border-left:4px solid #667eea;background:rgba(102,126,234,.08);
+            padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;
+            font-size:13.5px;line-height:1.8;color:#475569;
+        }
+        .doc-tip strong{color:#667eea;}
+        .doc-warn{
+            border-left:4px solid #f59e0b;background:rgba(245,158,11,.08);
+            padding:14px 18px;border-radius:0 12px 12px 0;margin:16px 0;
+            font-size:13.5px;line-height:1.8;color:#475569;
+        }
+        .doc-warn strong{color:#f59e0b;}
+
+        /* 步骤 */
+        .doc-step{display:flex;gap:16px;margin:18px 0;align-items:flex-start;}
+        .doc-step-num{
+            width:30px;height:30px;border-radius:50%;
+            background:linear-gradient(135deg,#667eea,#764ba2);
+            color:#fff;display:flex;align-items:center;justify-content:center;
+            font-size:13px;font-weight:700;flex-shrink:0;
+            box-shadow:0 4px 10px rgba(102,126,234,.25);
+        }
+        .doc-step-content{flex:1;padding-top:2px;}
+        .doc-step-content h4{font-size:14px;font-weight:600;margin-bottom:6px;color:#1e293b;}
+        .doc-step-content p{font-size:13.5px;line-height:1.8;color:#64748b;}
+
+        /* Tab */
+        .doc-tabs{
+            display:flex;gap:6px;margin:20px 0 0;
+            background:#f1f5f9;padding:6px;border-radius:12px;width:fit-content;
+        }
+        .doc-tab{
+            padding:10px 20px;font-size:13.5px;font-weight:600;
+            cursor:pointer;border:none;background:transparent;
+            color:#64748b;border-radius:9px;
+            transition:all .2s;margin-bottom:0;
+        }
+        .doc-tab:hover{color:#334155;background:rgba(255,255,255,.7);}
+        .doc-tab.active{
+            color:#fff;background:linear-gradient(135deg,#667eea,#764ba2);
+            box-shadow:0 4px 12px rgba(102,126,234,.3);
+        }
+        .doc-tab-content{display:none;padding-top:18px;}
+        .doc-tab-content.active{display:block;}
+
+        /* 按钮 */
+        .doc-cta{display:flex;gap:14px;margin-top:28px;flex-wrap:wrap;}
+        .doc-btn{
+            display:inline-flex;align-items:center;gap:8px;
+            padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;
+            cursor:pointer;text-decoration:none;transition:all .25s;border:none;
+        }
+        .doc-btn-primary{
+            background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;
+            box-shadow:0 6px 20px rgba(102,126,234,.3);
+        }
+        .doc-btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(102,126,234,.4);}
+        .doc-btn-secondary{
+            background:#fff;color:#334155;border:1.5px solid #e2e8f0;
+        }
+        .doc-btn-secondary:hover{border-color:#667eea;color:#667eea;transform:translateY(-1px);}
+
+        /* FAQ */
+        .doc-faq{
+            border:1px solid #e2e8f0;border-radius:12px;margin:12px 0;
+            overflow:hidden;transition:all .2s;
+        }
+        .doc-faq:hover{border-color:#cbd5e1;}
+        .doc-faq-q{
+            padding:16px 20px;font-size:14px;font-weight:600;cursor:pointer;
+            display:flex;justify-content:space-between;align-items:center;
+            color:#1e293b;background:#fff;transition:background .2s;
+        }
+        .doc-faq-q:hover{background:#f8fafc;}
+        .doc-faq-q i{transition:transform .25s;color:#667eea;font-size:12px;}
+        .doc-faq-q.open i{transform:rotate(180deg);}
+        .doc-faq-a{
+            padding:0 20px;max-height:0;overflow:hidden;transition:all .35s ease;
+            font-size:13.5px;line-height:1.9;color:#475569;
+            background:linear-gradient(135deg,#f8fafc,#f1f5f9);
+        }
+        .doc-faq-a.open{padding:16px 20px;max-height:500px;border-top:1px solid #e2e8f0;}
+
+        /* 内联代码 */
+        .doc-code-inline{
+            background:linear-gradient(135deg,#f1f5f9,#e2e8f0);
+            color:#667eea;padding:2px 8px;border-radius:5px;
+            font-size:13px;font-weight:500;
+            font-family:'JetBrains Mono','Fira Code','Consolas',monospace;
+        }
+
+        /* 深色适配 */
+        @media (prefers-color-scheme:dark){}
+    </style>
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">接口开发文档</h1>
+    <p class="adm-page-desc">手把手教你创建带计费功能的 API 接口，小白也能看懂</p>
+</div>
+
+<div class="doc-wrap adm-fade-in">
+
+    <!-- Hero 区 -->
+    <div class="doc-hero">
+        <h1><i class="fas fa-rocket"></i> 快速上手：5分钟创建一个带计费的接口</h1>
+        <p>本系统支持 3 种计费模式：<strong style="color:#fff">免费公开 / 会员专用 / 按次计费</strong>。你只需写一行验证代码，系统自动处理鉴权、扣费、限流等所有逻辑。</p>
+    </div>
+
+    <!-- 第1步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">1</span> 认识三种计费类型</div>
+        <p class="doc-p">在「添加接口」或「管理接口」页面，你会看到 3 种计费类型。它们的区别如下：</p>
+
+        <table class="doc-table">
+            <thead>
+                <tr><th>计费类型</th><th>调用要求</th><th>是否扣费</th><th>适用场景</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="doc-badge doc-badge-free"><i class="fas fa-gift"></i> 免费公开</span></td>
+                    <td>无需 API Key，任何人可调用</td>
+                    <td>免费</td>
+                    <td>公开演示接口、公共服务</td>
+                </tr>
+                <tr>
+                    <td><span class="doc-badge doc-badge-vip"><i class="fas fa-crown"></i> 会员专用</span></td>
+                    <td>需要 API Key + 会员等级≥1</td>
+                    <td>免费（需会员身份）</td>
+                    <td>会员专属高级接口</td>
+                </tr>
+                <tr>
+                    <td><span class="doc-badge doc-badge-charge"><i class="fas fa-coins"></i> 按次计费</span></td>
+                    <td>需要 API Key，普通用户扣余额</td>
+                    <td>每次扣 ¥价格（会员免费）</td>
+                    <td>付费商业接口、消耗资源接口</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="doc-tip">
+            <strong>💡 小提示：</strong>计费类型可以在「管理接口」列表中随时切换，<strong>立即生效</strong>。比如把"按次计费"改成"免费公开"，下一秒用户调用就不需要 API Key 了。
+        </div>
+    </div>
+
+    <!-- 第2步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">2</span> 创建接口文件</div>
+        <p class="doc-p">在服务器的 <span class="doc-code-inline">/API/</span> 目录下创建一个 PHP 文件，比如 <span class="doc-code-inline">weather.php</span>。</p>
+
+        <div class="doc-tabs">
+            <button class="doc-tab active" onclick="switchTab(this,'tab-min')">极简版（推荐新手）</button>
+            <button class="doc-tab" onclick="switchTab(this,'tab-full')">完整版（含统计与用户信息）</button>
+            <button class="doc-tab" onclick="switchTab(this,'tab-free')">免费公开版</button>
+        </div>
+
+        <!-- 极简版 -->
+        <div class="doc-tab-content active" id="tab-min">
+            <p class="doc-p" style="margin-top:16px;">只需 3 步：引入验证 → 写逻辑 → 输出 JSON。验证代码<strong style="color:#ef4444">必须在最顶部</strong>。</p>
+            <div class="doc-code">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment">&lt;?php
+// ① 引入 API Key 验证中间件（必须在最顶部）</span>
+<span class="c-keyword">require_once</span> <span class="c-var">__DIR__</span> . <span class="c-string">'/../Core/api_key_auth.php'</span>;
+
+<span class="c-comment">// ② 你的业务逻辑代码</span>
+<span class="c-var">$city</span> = <span class="c-var">$_GET</span>[<span class="c-string">'city'</span>] ?? <span class="c-string">'北京'</span>;
+<span class="c-var">$weather</span> = <span class="c-string">'晴天，25°C'</span>;
+
+<span class="c-comment">// ③ 输出 JSON 结果</span>
+<span class="c-func">header</span>(<span class="c-string">'Content-Type: application/json; charset=utf-8'</span>);
+<span class="c-keyword">echo</span> <span class="c-func">json_encode</span>([
+    <span class="c-string">'code'</span> => <span class="c-var">0</span>,
+    <span class="c-string">'msg'</span>  => <span class="c-string">'success'</span>,
+    <span class="c-string">'data'</span> => [
+        <span class="c-string">'city'</span>    => <span class="c-var">$city</span>,
+        <span class="c-string">'weather'</span> => <span class="c-var">$weather</span>
+    ]
+], <span class="c-const">JSON_UNESCAPED_UNICODE</span>);</pre>
+            </div>
+        </div>
+
+        <!-- 完整版 -->
+        <div class="doc-tab-content" id="tab-full">
+            <p class="doc-p" style="margin-top:16px;">包含调用统计、获取用户信息、错误处理等完整功能。</p>
+            <div class="doc-code">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment">&lt;?php
+/**
+ * 天气查询接口 - 完整版
+ * 计费类型由后台数据库配置决定
+ */
+
+// ① 引入验证中间件（必须在最顶部）</span>
+<span class="c-keyword">require_once</span> <span class="c-var">__DIR__</span> . <span class="c-string">'/../Core/api_key_auth.php'</span>;
+<span class="c-keyword">require_once</span> <span class="c-var">__DIR__</span> . <span class="c-string">'/function.php'</span>;
+
+<span class="c-comment">// ② 获取当前调用用户信息</span>
+<span class="c-var">$user</span> = <span class="c-var">$GLOBALS</span>[<span class="c-string">'api_auth'</span>];
+
+<span class="c-comment">// ③ 业务逻辑</span>
+<span class="c-var">$city</span> = <span class="c-var">$_GET</span>[<span class="c-string">'city'</span>] ?? <span class="c-string">'北京'</span>;
+<span class="c-keyword">if</span> (<span class="c-keyword">empty</span>(<span class="c-var">$city</span>)) {
+    <span class="c-func">header</span>(<span class="c-string">'Content-Type: application/json; charset=utf-8'</span>);
+    <span class="c-keyword">echo</span> <span class="c-func">json_encode</span>([<span class="c-string">'code'</span> => -<span class="c-var">1</span>, <span class="c-string">'msg'</span> => <span class="c-string">'缺少城市参数'</span>]);
+    <span class="c-keyword">exit</span>;
+}
+
+<span class="c-var">$result</span> = <span class="c-func">getWeather</span>(<span class="c-var">$city</span>);
+
+<span class="c-comment">// ④ 输出结果</span>
+<span class="c-func">header</span>(<span class="c-string">'Content-Type: application/json; charset=utf-8'</span>);
+<span class="c-keyword">echo</span> <span class="c-func">json_encode</span>([
+    <span class="c-string">'code'</span> => <span class="c-var">0</span>,
+    <span class="c-string">'msg'</span>  => <span class="c-string">'success'</span>,
+    <span class="c-string">'data'</span> => [
+        <span class="c-string">'city'</span>        => <span class="c-var">$city</span>,
+        <span class="c-string">'weather'</span>     => <span class="c-var">$result</span>[<span class="c-string">'weather'</span>],
+        <span class="c-string">'temperature'</span> => <span class="c-var">$result</span>[<span class="c-string">'temp'</span>]
+    ],
+    <span class="c-string">'user'</span> => [
+        <span class="c-string">'username'</span>    => <span class="c-var">$user</span>[<span class="c-string">'username'</span>],
+        <span class="c-string">'level'</span>       => <span class="c-var">$user</span>[<span class="c-string">'level_name'</span>],
+        <span class="c-string">'calls_today'</span> => <span class="c-var">$user</span>[<span class="c-string">'calls_today'</span>],
+        <span class="c-string">'daily_limit'</span> => <span class="c-var">$user</span>[<span class="c-string">'daily_limit'</span>]
+    ]
+], <span class="c-const">JSON_UNESCAPED_UNICODE</span> | <span class="c-const">JSON_PRETTY_PRINT</span>);</pre>
+            </div>
+        </div>
+
+        <!-- 免费公开版 -->
+        <div class="doc-tab-content" id="tab-free">
+            <p class="doc-p" style="margin-top:16px;">如果你的接口在后台设置为「免费公开」，即使不写验证代码也能访问。但<strong style="color:#f59e0b">强烈建议依然写上验证代码</strong>，这样可以自动统计调用次数、将来切换计费类型不用改代码。</p>
+            <div class="doc-code">
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment">&lt;?php
+// 免费公开接口示例
+// 即使后台设为"免费公开"，这行代码也建议保留：
+// - 会自动统计调用次数
+// - 将来想改成"会员专用"或"按次计费"，无需修改代码</span>
+<span class="c-keyword">require_once</span> <span class="c-var">__DIR__</span> . <span class="c-string">'/../Core/api_key_auth.php'</span>;
+
+<span class="c-var">$data</span> = [
+    <span class="c-string">'ip'</span>   => <span class="c-var">$_SERVER</span>[<span class="c-string">'REMOTE_ADDR'</span>],
+    <span class="c-string">'time'</span> => <span class="c-func">time</span>()
+];
+
+<span class="c-func">header</span>(<span class="c-string">'Content-Type: application/json; charset=utf-8'</span>);
+<span class="c-keyword">echo</span> <span class="c-func">json_encode</span>([
+    <span class="c-string">'code'</span> => <span class="c-var">0</span>,
+    <span class="c-string">'msg'</span>  => <span class="c-string">'success'</span>,
+    <span class="c-string">'data'</span> => <span class="c-var">$data</span>
+], <span class="c-const">JSON_UNESCAPED_UNICODE</span>);</pre>
+            </div>
+            <div class="doc-tip">
+                <strong>💡 为什么建议保留验证代码？</strong>因为验证中间件会自动判断当前接口的计费类型：如果是"免费公开"就跳过验证；如果是"会员专用"或"按次计费"就检查 API Key。<strong>你写一次代码，三种模式通用。</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第3步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">3</span> 在后台添加接口记录</div>
+        <p class="doc-p">创建好 PHP 文件后，还需要在后台「添加接口」页面登记，系统才能识别和管理它。</p>
+
+        <div class="doc-step">
+            <div class="doc-step-num">1</div>
+            <div class="doc-step-content">
+                <h4>填写接口名称和英文名</h4>
+                <p>英文名必须和 PHP 文件名一致（不带 .php）。比如你创建了 <span class="doc-code-inline">weather.php</span>，英文名就填 <span class="doc-code-inline">weather</span>。</p>
+            </div>
+        </div>
+        <div class="doc-step">
+            <div class="doc-step-num">2</div>
+            <div class="doc-step-content">
+                <h4>选择计费类型</h4>
+                <p>根据需求选择：免费公开 / 会员专用 / 按次计费。如果选"按次计费"，还需要填写单次调用价格。</p>
+            </div>
+        </div>
+        <div class="doc-step">
+            <div class="doc-step-num">3</div>
+            <div class="doc-step-content">
+                <h4>填写接口说明和参数</h4>
+                <p>按格式填写请求参数、返回参数、错误码说明，方便用户查阅文档。</p>
+            </div>
+        </div>
+        <div class="doc-step">
+            <div class="doc-step-num">4</div>
+            <div class="doc-step-content">
+                <h4>保存即可</h4>
+                <p>保存后接口立即生效，用户就可以通过 <span class="doc-code-inline">/API/weather.php</span> 调用了。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第4步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">4</span> 用户如何调用接口</div>
+        <p class="doc-p">对于「会员专用」和「按次计费」的接口，用户调用时需要提供 API Key。有两种传递方式：</p>
+
+        <div class="doc-section-title"><i class="fas fa-link"></i> 方式一：GET 参数（最简单）</div>
+        <div class="doc-code">
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment"># 直接在 URL 后加 ?apikey=你的密钥</span>
+https://你的域名/API/weather.php?city=北京<span class="c-var">&amp;</span>apikey=sk_xxxxxxxxxxxxx</pre>
+        </div>
+
+        <div class="doc-section-title"><i class="fas fa-code"></i> 方式二：Header 头（更安全，推荐）</div>
+        <div class="doc-code">
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment"># cURL 示例</span>
+curl -X GET <span class="c-string">"https://你的域名/API/weather.php?city=北京"</span> \
+     -H <span class="c-string">"X-API-Key: sk_xxxxxxxxxxxxx"</span>
+
+<span class="c-comment"># PHP 示例</span>
+<span class="c-var">$ch</span> = <span class="c-func">curl_init</span>();
+<span class="c-func">curl_setopt</span>(<span class="c-var">$ch</span>, <span class="c-var">CURLOPT_URL</span>, <span class="c-string">"https://你的域名/API/weather.php?city=北京"</span>);
+<span class="c-func">curl_setopt</span>(<span class="c-var">$ch</span>, <span class="c-var">CURLOPT_HTTPHEADER</span>, [
+    <span class="c-string">"X-API-Key: sk_xxxxxxxxxxxxx"</span>
+]);
+<span class="c-var">$response</span> = <span class="c-func">curl_exec</span>(<span class="c-var">$ch</span>);</pre>
+        </div>
+
+        <div class="doc-section-title"><i class="fab fa-js"></i> JavaScript 调用示例</div>
+        <div class="doc-code">
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-keyword">fetch</span>(<span class="c-string">'https://你的域名/API/weather.php?city=北京'</span>, {
+    headers: {
+        <span class="c-string">'X-API-Key'</span>: <span class="c-string">'sk_xxxxxxxxxxxxx'</span>
+    }
+})
+.<span class="c-func">then</span>(res => res.<span class="c-func">json</span>())
+.<span class="c-func">then</span>(data => console.<span class="c-func">log</span>(data));</pre>
+        </div>
+
+        <div class="doc-tip">
+            <strong>免费公开接口</strong>不需要传 API Key，直接访问 <span class="doc-code-inline">/API/weather.php</span> 即可。
+        </div>
+    </div>
+
+    <!-- 第5步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">5</span> 响应格式与错误码</div>
+
+        <div class="doc-section-title"><i class="fas fa-check-circle"></i> 成功响应</div>
+        <div class="doc-code">
+<pre><span class="c-comment">// HTTP 状态码 200</span>
+{
+    <span class="c-string">"code"</span>: <span class="c-var">0</span>,
+    <span class="c-string">"msg"</span>: <span class="c-string">"success"</span>,
+    <span class="c-string">"data"</span>: {
+        <span class="c-string">"city"</span>: <span class="c-string">"北京"</span>,
+        <span class="c-string">"weather"</span>: <span class="c-string">"晴天，25°C"</span>
+    }
+}</pre>
+        </div>
+
+        <div class="doc-section-title"><i class="fas fa-times-circle"></i> 常见错误码</div>
+        <table class="doc-table">
+            <thead>
+                <tr><th>code</th><th>HTTP 状态码</th><th>含义</th><th>原因与解决</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>-1</td><td>401</td><td>缺少 API Key</td><td>未传 apikey 参数或 X-API-Key 头</td></tr>
+                <tr><td>-2</td><td>401</td><td>API Key 无效</td><td>密钥错误或已被禁用/删除</td></tr>
+                <tr><td>-3</td><td>403</td><td>今日调用次数已达上限</td><td>超过会员等级的每日限额，升级会员即可</td></tr>
+                <tr><td>403</td><td>403</td><td>需要会员身份</td><td>会员专用接口，非会员无法调用</td></tr>
+                <tr><td>402</td><td>402</td><td>余额不足</td><td>按次计费接口，用户余额不够扣费，需充值</td></tr>
+                <tr><td>0</td><td>200</td><td>成功</td><td>调用成功</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 第6步 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">6</span> 完整实战：创建"每日一言"接口</div>
+        <p class="doc-p">下面演示从创建文件到后台登记的完整流程，计费类型设为「会员专用」。</p>
+
+        <div class="doc-section-title"><i class="fas fa-file-code"></i> 1. 创建文件 <span class="doc-code-inline">/API/yiyan.php</span></div>
+        <div class="doc-code">
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment">&lt;?php
+// 引入验证中间件（自动支持三种计费模式）</span>
+<span class="c-keyword">require_once</span> <span class="c-var">__DIR__</span> . <span class="c-string">'/../Core/api_key_auth.php'</span>;
+
+<span class="c-comment">// 一言数据</span>
+<span class="c-var">$sentences</span> = [
+    <span class="c-string">'人生如逆旅，我亦是行人。'</span>,
+    <span class="c-string">'千里之行，始于足下。'</span>,
+    <span class="c-string">'不积跬步，无以至千里。'</span>,
+    <span class="c-string">'长风破浪会有时，直挂云帆济沧海。'</span>
+];
+<span class="c-var">$yiyan</span> = <span class="c-var">$sentences</span>[<span class="c-func">array_rand</span>(<span class="c-var">$sentences</span>)];
+
+<span class="c-comment">// 获取调用者信息</span>
+<span class="c-var">$user</span> = <span class="c-var">$GLOBALS</span>[<span class="c-string">'api_auth'</span>] ?? [];
+
+<span class="c-comment">// 输出结果</span>
+<span class="c-func">header</span>(<span class="c-string">'Content-Type: application/json; charset=utf-8'</span>);
+<span class="c-keyword">echo</span> <span class="c-func">json_encode</span>([
+    <span class="c-string">'code'</span> => <span class="c-var">0</span>,
+    <span class="c-string">'msg'</span>  => <span class="c-string">'success'</span>,
+    <span class="c-string">'data'</span> => [
+        <span class="c-string">'yiyan'</span> => <span class="c-var">$yiyan</span>,
+        <span class="c-string">'from'</span>  => <span class="c-string">'古诗词'</span>
+    ],
+    <span class="c-string">'caller'</span> => <span class="c-var">$user</span>[<span class="c-string">'username'</span>] ?? <span class="c-string">'游客'</span>
+], <span class="c-const">JSON_UNESCAPED_UNICODE</span>);</pre>
+        </div>
+
+        <div class="doc-section-title"><i class="fas fa-cog"></i> 2. 在后台「添加接口」登记</div>
+        <table class="doc-table">
+            <thead><tr><th>字段</th><th>填写内容</th></tr></thead>
+            <tbody>
+                <tr><td>接口名称</td><td>每日一言</td></tr>
+                <tr><td>英文名</td><td>yiyan</td></tr>
+                <tr><td>接口地址</td><td>（自动生成）/API/yiyan.php</td></tr>
+                <tr><td>计费类型</td><td><span class="doc-badge doc-badge-vip"><i class="fas fa-crown"></i> 会员专用</span></td></tr>
+                <tr><td>接口说明</td><td>随机返回一句古诗词，陶冶情操</td></tr>
+                <tr><td>请求参数</td><td>无</td></tr>
+                <tr><td>返回参数</td><td>yiyan:一言内容 / from:出处</td></tr>
+            </tbody>
+        </table>
+
+        <div class="doc-section-title"><i class="fas fa-play"></i> 3. 调用测试</div>
+        <div class="doc-code">
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+<pre><span class="c-comment"># 会员用户调用（带 API Key）</span>
+curl <span class="c-string">"https://你的域名/API/yiyan.php"</span> \
+     -H <span class="c-string">"X-API-Key: sk_xxxxxx"</span>
+
+<span class="c-comment"># 返回结果</span>
+{
+    <span class="c-string">"code"</span>: <span class="c-var">0</span>,
+    <span class="c-string">"msg"</span>: <span class="c-string">"success"</span>,
+    <span class="c-string">"data"</span>: {
+        <span class="c-string">"yiyan"</span>: <span class="c-string">"长风破浪会有时，直挂云帆济沧海。"</span>,
+        <span class="c-string">"from"</span>: <span class="c-string">"古诗词"</span>
+    },
+    <span class="c-string">"caller"</span>: <span class="c-string">"张三"</span>
+}</pre>
+        </div>
+
+        <div class="doc-tip">
+            <strong>💡 想改成免费接口？</strong>不用改代码！去「管理接口」列表，把计费类型下拉框选成「免费公开」即可，立即生效。
+        </div>
+    </div>
+
+    <!-- 常见问题 -->
+    <div class="doc-card">
+        <div class="doc-card-title"><span class="num">?</span> 常见问题</div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：为什么我的接口提示"缺少 API Key"？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：说明这个接口在后台设置了「会员专用」或「按次计费」，调用时需要传 API Key。两种传参方式：<br>
+                ① URL 参数：<span class="doc-code-inline">?apikey=sk_xxx</span><br>
+                ② Header 头：<span class="doc-code-inline">X-API-Key: sk_xxx</span><br>
+                如果想让所有人免费调用，去「管理接口」把计费类型改成「免费公开」。
+            </div>
+        </div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：我在后台改了计费类型，为什么不生效？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：请检查接口文件（/API/xxx.php）顶部是否有这行代码：<br>
+                <span class="doc-code-inline">require_once __DIR__ . '/../Core/api_key_auth.php';</span><br>
+                如果没有引入验证中间件，后台的计费配置就不会起作用。所有接口文件都必须引入这行代码。
+            </div>
+        </div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：免费公开接口还需要写验证代码吗？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：强烈建议写。虽然不写也能访问，但写了有两个好处：<br>
+                ① 自动统计调用次数，后台能看到数据<br>
+                ② 将来想改成收费/会员专用，无需修改代码，后台切换即可
+            </div>
+        </div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：按次计费接口，会员用户也要扣费吗？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：不需要。按次计费接口的规则是：<strong>普通用户扣余额，会员免费调用</strong>。系统会自动判断用户身份，会员等级≥1 的用户调用不扣费。
+            </div>
+        </div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：用户在哪里获取 API Key？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：用户在前台注册登录后，进入「用户中心 → API Key 管理」页面生成密钥。密钥格式为 <span class="doc-code-inline">sk_</span> 开头的字符串。管理员可以在后台「会员管理」查看所有用户的密钥。
+            </div>
+        </div>
+
+        <div class="doc-faq">
+            <div class="doc-faq-q" onclick="toggleFaq(this)">Q：用户每日调用次数限制是多少？<i class="fas fa-chevron-down"></i></div>
+            <div class="doc-faq-a">
+                A：根据会员等级自动限制，在「后台 → 套餐管理」中配置：<br>
+                • 普通用户（等级0）：默认 0 次（需升级会员）<br>
+                • 月度会员（等级1）：1000 次/天<br>
+                • 年度会员（等级2）：10000 次/天<br>
+                免费公开接口不受此限制。
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部按钮 -->
+    <div class="doc-cta">
+        <a href="?action=admin&page=add" class="doc-btn doc-btn-primary">
+            <i class="fas fa-plus"></i> 立即添加接口
+        </a>
+        <a href="?action=admin&page=control" class="doc-btn doc-btn-secondary">
+            <i class="fas fa-cog"></i> 管理现有接口
+        </a>
+        <a href="./API/example.php?apikey=sk_demo" target="_blank" class="doc-btn doc-btn-secondary">
+            <i class="fas fa-flask"></i> 查看示例接口
+        </a>
+    </div>
+
+</div>
+
+<script>
+    function switchTab(btn, tabId){
+        btn.parentElement.querySelectorAll('.doc-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        btn.closest('.doc-card').querySelectorAll('.doc-tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function toggleFaq(q){
+        q.classList.toggle('open');
+        q.nextElementSibling.classList.toggle('open');
+    }
+
+    function copyCode(btn){
+        var pre = btn.parentElement.querySelector('pre');
+        var code = pre ? pre.innerText : btn.parentElement.innerText.replace('复制','').trim();
+        navigator.clipboard.writeText(code).then(function(){
+            var orig = btn.innerText;
+            btn.innerText = '✓ 已复制';
+            btn.style.background = 'rgba(16,185,129,.3)';
+            setTimeout(function(){ btn.innerText = orig; btn.style.background = ''; }, 2000);
+        }).catch(function(){
+            btn.innerText = '复制失败';
+            setTimeout(function(){ btn.innerText = '复制'; }, 2000);
+        });
+    }
+</script>
+
+<?php require "footer.html";?>

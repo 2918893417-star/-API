@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>管理接口 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in">
+    <h1 class="adm-page-title">接口管理</h1>
+    <p class="adm-page-desc">管理所有 API 接口，包括查看、编辑、删除等操作</p>
+</div>
+
+<div id="control">
+    <!-- 操作工具栏 -->
+    <div class="adm-card adm-fade-in" style="margin-bottom:20px;">
+        <div class="adm-card-body" style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div class="adm-search" style="margin:0;flex:1;min-width:240px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" v-model="searchContent" @focus="focus" placeholder="搜索接口名称..." mdui-dialog="{target: '#search'}" readonly>
+            </div>
+            <a href="?action=admin&page=add" class="adm-btn adm-btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                添加接口
+            </a>
+        </div>
+    </div>
+
+    <!-- 接口列表 -->
+    <div class="adm-table-wrap adm-fade-in" v-if="apis">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>接口名称</th>
+                    <th>英文名</th>
+                    <th>计费类型</th>
+                    <th>单价(元)</th>
+                    <th>添加时间</th>
+                    <th style="text-align:right;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="api in apis">
+                    <td><span class="adm-badge adm-badge-default">{{ api.id }}</span></td>
+                    <td><strong style="color:var(--adm-text);">{{ api.name }}</strong></td>
+                    <td><code style="background:var(--adm-primary-bg);color:var(--adm-primary-dark);padding:2px 8px;border-radius:4px;font-size:13px;">{{ api.enname }}</code></td>
+                    <td>
+                        <select class="adm-charge-select" v-model="api.charge_type" @change="quickChangeChargeType(api)" :style="getChargeStyle(api.charge_type)">
+                            <option value="0">👑 会员专用</option>
+                            <option value="1">💰 按次计费</option>
+                            <option value="2">🎁 免费公开</option>
+                        </select>
+                    </td>
+                    <td>
+                        <span v-if="parseInt(api.charge_type) === 1" style="color:#0891b2;font-weight:600;">¥{{ parseFloat(api.price).toFixed(4) }}</span>
+                        <span v-else-if="parseInt(api.charge_type) === 2" style="color:#10b981;font-weight:600;">免费</span>
+                        <span v-else style="color:#9ca3af;">-</span>
+                    </td>
+                    <td>{{ api.time }}</td>
+                    <td>
+                        <div class="adm-table-actions" style="justify-content:flex-end;">
+                            <a class="adm-btn-icon" mdui-tooltip="{content: '修改'}" :href="'?action=admin&page=edit&id='+api.id" title="修改">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </a>
+                            <button class="adm-btn-icon" mdui-tooltip="{content: '删除'}" @click="deleteApi(api.id)" title="删除" style="color:var(--adm-danger);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 空状态 -->
+    <div class="adm-card adm-fade-in" v-else>
+        <div class="adm-empty">
+            <div class="adm-empty-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <div class="adm-empty-title">尚未任何接口</div>
+            <div style="font-size:13px;margin-top:4px;">添加接口后，这里就可以进行管理了</div>
+        </div>
+    </div>
+</div>
+
+<!-- 搜索接口Dialog -->
+<div id="search" class="mdui-dialog">
+    <div class="mdui-dialog-title mdui-p-y-2" style="background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;">
+        <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button> 搜索接口
+    </div>
+    <div class="mdui-dialog-content mdui-p-x-3">
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">搜索</label>
+            <input class="mdui-textfield-input" type="text" v-model="searchContent" @focus="focus" required/>
+            <div class="mdui-textfield-error">搜索内容不能为空</div>
+        </div>
+        <div v-if="searchResult">
+            <ul class="mdui-list">
+                <a class="mdui-list-item mdui-ripple" v-for="api in apis" :href="'?action=admin&page=edit&id='+api.id">
+                    <div class="mdui-list-item-content">
+                        <div class="mdui-list-item-title">ID:{{ api.id }} {{ api.name }}</div>
+                    </div>
+                    <i class="mdui-list-item-icon mdui-icon material-icons mdui-text-color-theme-a200">equalizer</i> {{ api.access }}
+                </a>
+            </ul>
+        </div>
+        <div class="mdui-text-center mdui-m-t-5" v-else style="color:var(--adm-text-muted);font-size:14px;padding:24px;">
+            没有搜到相关接口
+        </div>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+
+<script src="./assets/js/vue.js"></script>
+<script src="./assets/js/sweetalert.min.js"></script>
+<script>
+    let control = new Vue({
+        el: '#control',
+        data: {
+            apis: [],
+            searchContent: ''
+        },
+        methods: {
+            /* 快速切换计费类型 */
+            quickChangeChargeType: function(api) {
+                var id = api.id;
+                var charge_type = parseInt(api.charge_type);
+                var typeNames = {0: '会员专用', 1: '按次计费', 2: '免费公开'};
+                var typeName = typeNames[charge_type] || '未知';
+
+                swal({
+                        title: "确认切换计费类型?",
+                        text: "接口「" + api.name + "」将切换为：" + typeName,
+                        icon: "info",
+                        buttons: ["取消", "确认切换"],
+                    })
+                    .then((willChange) => {
+                        if (willChange) {
+                            $.ajax({
+                                method: 'POST',
+                                url: './Data/post.php',
+                                data: {
+                                    type: 'quick_charge_type',
+                                    id: id,
+                                    charge_type: charge_type
+                                },
+                                success: function(data) {
+                                    var json = JSON.parse(data);
+                                    if (json.code == 0) {
+                                        mdui.snackbar({
+                                            message: json.msg,
+                                            position: 'top',
+                                            timeout: 2000
+                                        });
+                                        // 如果切换为非按次计费，前端同步清空价格显示
+                                        if (charge_type !== 1) {
+                                            api.price = 0;
+                                        }
+                                    } else {
+                                        mdui.snackbar({
+                                            message: json.msg,
+                                            position: 'top',
+                                            timeout: 3000
+                                        });
+                                        // 失败时重新加载数据恢复原值
+                                        location.reload();
+                                    }
+                                },
+                                error: function() {
+                                    mdui.snackbar({
+                                        message: '网络错误，切换失败',
+                                        position: 'top',
+                                        timeout: 3000
+                                    });
+                                    location.reload();
+                                }
+                            });
+                        } else {
+                            // 用户取消，重新加载数据恢复原值
+                            location.reload();
+                        }
+                    });
+            },
+            /* 根据计费类型返回下拉框样式 */
+            getChargeStyle: function(charge_type) {
+                var ct = parseInt(charge_type);
+                if (ct === 1) {
+                    return 'background:linear-gradient(135deg,#06b6d4,#0891b2);color:white;border:none;padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;outline:none;';
+                } else if (ct === 2) {
+                    return 'background:linear-gradient(135deg,#10b981,#059669);color:white;border:none;padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;outline:none;';
+                } else {
+                    return 'background:linear-gradient(135deg,#fbbf24,#f59e0b);color:white;border:none;padding:6px 10px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;outline:none;';
+                }
+            },
+            deleteApi: function(id) {
+                swal({
+                        title: "确定删除该接口?",
+                        text: "请注意数据删除后将不可恢复！",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    })
+                    .then((willDelete) => {
+                        if (willDelete) {
+                            $.ajax({
+                                method: 'POST',
+                                url: './Data/post.php',
+                                data: {
+                                    type: 'del_api',
+                                    id: id
+                                },
+                                beforeSend: function() {
+                                    swal("删除中......", " ", {
+                                        icon: "info",
+                                        buttons: false
+                                    });
+                                },
+                                success: function(data) {
+                                    var code = JSON.parse(data).code;
+                                    var msg = JSON.parse(data).msg;
+                                    if (code == 0) {
+                                        swal(msg, "2秒后自动刷新页面......", {
+                                            icon: "success",
+                                            buttons: false
+                                        });
+                                        setTimeout(function() {
+                                            location.reload();
+                                        }, 2000);
+                                    } else {
+                                        swal(msg, " ", {
+                                            icon: "error",
+                                            buttons: false
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+            }
+        },
+        created() {
+            fetch('./Data/api.php?type=getAllApi')
+                .then(response => response.json())
+                .then(json => {
+                    this.apis = json.data;
+                })
+        }
+    });
+
+    let search = new Vue({
+        el: '#search',
+        data: {
+            apis: [],
+            searchContent: '',
+            searchResult: true,
+            msg: false
+        },
+        methods: {
+            focus: function() {
+                this.code = true;
+            }
+        },
+        watch: {
+            searchContent: function(val) {
+                if (val) {
+                    fetch('./Data/api.php?type=searchApi&s=' + val)
+                        .then(response => response.json())
+                        .then(json => {
+                            if (json.code == 0) {
+                                this.searchResult = true;
+                                this.apis = json.data;
+                            } else {
+                                this.searchResult = false;
+                                this.msg = json.msg;
+                            }
+                        });
+                } else {
+                    this.searchResult = true;
+                    this.apis = [];
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

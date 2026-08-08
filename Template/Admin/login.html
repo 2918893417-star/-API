@@ -1,0 +1,61 @@
+<?php
+if(isAdmin()){
+	jump('?action=admin');
+}
+?>
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <title>后台登录 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="keywords" content="<?php echo $config['keywords'];?>" />
+    <meta name="description" content="<?php echo $config['description'];?>" />
+    <link rel="icon" href="<?php echo $config['favicon'];?>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+
+<body class="admin-login-body">
+
+    <div class="admin-login-container">
+        <div class="admin-login-card">
+            <div class="admin-login-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            <h1 class="admin-login-title">欢迎回来</h1>
+            <p class="admin-login-subtitle">登录 <?php echo $config['title'];?> 后台管理系统</p>
+
+            <form class="admin-login-form" method="post" action="./Data/login.php">
+                <div class="adm-form-group">
+                    <label class="adm-form-label">用户名</label>
+                    <input class="adm-form-input" type="text" name="username" placeholder="请输入用户名" required>
+                </div>
+                <div class="adm-form-group">
+                    <label class="adm-form-label">密码</label>
+                    <input class="adm-form-input" type="password" name="password" placeholder="请输入密码" required>
+                </div>
+                <button class="adm-btn adm-btn-primary adm-login-btn" type="submit">
+                    登 录
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </form>
+        </div>
+        <div class="admin-login-footer">
+            <?php if($config['copyright']){ echo $config['copyright'].'<br>';}?>
+            Powered by MXGAPI · 企业级 API 管理系统
+        </div>
+    </div>
+
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/mdui.min.js"></script>
+    <script src="./assets/js/index.js"></script>
+</body>
+
+</html>

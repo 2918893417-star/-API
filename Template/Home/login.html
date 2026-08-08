@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/newstyle.css" />
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .auth-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 3rem;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-logo {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 1rem 0;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+        .auth-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .auth-form-group {
+            margin-bottom: 1.25rem;
+        }
+        .auth-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+        .auth-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: #f9fafb;
+        }
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+            background: white;
+        }
+        .auth-input-wrapper {
+            position: relative;
+        }
+        .auth-input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .auth-input {
+            padding-left: 2.75rem;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        .auth-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .auth-back {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .alert-msg {
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .alert-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .alert-success {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <a href="<?php echo $config['url'];?>" class="auth-back">
+            <i class="fas fa-arrow-left"></i> 返回首页
+        </a>
+        <div class="auth-card" id="app">
+            <div class="auth-header">
+                <div class="auth-logo">⚡</div>
+                <h1 class="auth-title">欢迎回来</h1>
+                <p class="auth-subtitle">登录以使用全部 API 功能</p>
+            </div>
+
+            <div class="auth-tabs">
+                <div class="auth-tab active" @click="activeTab = 'login'">登录</div>
+                <div class="auth-tab" @click="activeTab = 'register'">注册</div>
+            </div>
+
+            <!-- 登录表单 -->
+            <div v-if="activeTab === 'login'">
+                <div class="auth-form-group">
+                    <label class="auth-label">用户名</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-user auth-input-icon"></i>
+                        <input type="text" class="auth-input" v-model="loginForm.username" placeholder="请输入用户名" required>
+                    </div>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">密码</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input type="password" class="auth-input" v-model="loginForm.password" placeholder="请输入密码" required>
+                    </div>
+                </div>
+                <button class="auth-btn" @click="doLogin" :disabled="loading">
+                    <span v-if="!loading">登录</span>
+                    <span v-else>登录中...</span>
+                </button>
+            </div>
+
+            <!-- 注册表单 -->
+            <div v-else>
+                <div class="auth-form-group">
+                    <label class="auth-label">用户名</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-user auth-input-icon"></i>
+                        <input type="text" class="auth-input" v-model="registerForm.username" placeholder="3-20位字符" required>
+                    </div>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">邮箱</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-envelope auth-input-icon"></i>
+                        <input type="email" class="auth-input" v-model="registerForm.email" placeholder="your@email.com" required>
+                    </div>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">密码</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input type="password" class="auth-input" v-model="registerForm.password" placeholder="至少6位" required>
+                    </div>
+                </div>
+                <div class="auth-form-group">
+                    <label class="auth-label">确认密码</label>
+                    <div class="auth-input-wrapper">
+                        <i class="fas fa-lock auth-input-icon"></i>
+                        <input type="password" class="auth-input" v-model="registerForm.confirm_password" placeholder="再次输入密码" required>
+                    </div>
+                </div>
+                <button class="auth-btn" @click="doRegister" :disabled="loading">
+                    <span v-if="!loading">注册账号</span>
+                    <span v-else>注册中...</span>
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p>注册即表示同意我们的 <a href="#">服务条款</a> 和 <a href="#">隐私政策</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="./assets/js/jquery.min.js"></script>
+    <script src="./assets/js/mdui.min.js"></script>
+    <script src="./assets/js/vue.js"></script>
+    <script>
+        // Check if URL has tab parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialTab = urlParams.get('tab') === 'register' ? 'register' : 'login';
+        
+        let app = new Vue({
+            el: '#app',
+            data: {
+                activeTab: initialTab,
+                loading: false,
+                loginForm: {
+                    username: '',
+                    password: ''
+                },
+                registerForm: {
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirm_password: ''
+                }
+            },
+            methods: {
+                doLogin() {
+                    if(!this.loginForm.username || !this.loginForm.password){
+                        mdui.snackbar('请填写完整信息');
+                        return;
+                    }
+                    this.loading = true;
+                    fetch('./Data/user.php?type=login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'username=' + encodeURIComponent(this.loginForm.username) + '&password=' + encodeURIComponent(this.loginForm.password)
+                    })
+                    .then(r => r.json())
+                    .then(json => {
+                        this.loading = false;
+                        if(json.code === 0){
+                            mdui.snackbar('登录成功');
+                            setTimeout(() => {
+                                window.location.href = '?action=user_center';
+                            }, 500);
+                        } else {
+                            mdui.snackbar(json.msg);
+                        }
+                    })
+                    .catch(() => {
+                        this.loading = false;
+                        mdui.snackbar('网络错误');
+                    });
+                },
+                doRegister() {
+                    const f = this.registerForm;
+                    if(!f.username || !f.email || !f.password){
+                        mdui.snackbar('请填写完整信息');
+                        return;
+                    }
+                    if(f.password.length < 6){
+                        mdui.snackbar('密码至少6位');
+                        return;
+                    }
+                    if(f.password !== f.confirm_password){
+                        mdui.snackbar('两次密码不一致');
+                        return;
+                    }
+                    this.loading = true;
+                    fetch('./Data/user.php?type=register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'username=' + encodeURIComponent(f.username) + '&email=' + encodeURIComponent(f.email) + '&password=' + encodeURIComponent(f.password)
+                    })
+                    .then(r => r.json())
+                    .then(json => {
+                        this.loading = false;
+                        if(json.code === 0){
+                            mdui.snackbar('注册成功,请登录');
+                            this.activeTab = 'login';
+                            this.loginForm.username = f.username;
+                            this.registerForm = { username: '', email: '', password: '', confirm_password: '' };
+                        } else {
+                            mdui.snackbar(json.msg);
+                        }
+                    })
+                    .catch(() => {
+                        this.loading = false;
+                        mdui.snackbar('网络错误');
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

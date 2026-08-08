@@ -1,0 +1,92 @@
+<body class="new-theme" id="top">
+    <?php if(session_status() === PHP_SESSION_NONE) session_start(); ?>
+    <!-- 顶部导航 -->
+    <nav class="new-navbar">
+        <div class="new-nav-container">
+            <a href="<?php echo $config['url'];?>" class="new-logo">
+                <span class="new-logo-icon">⚡</span>
+                <span class="new-logo-text"><?php echo $config['title'];?></span>
+            </a>
+            
+            <div class="new-nav-menu">
+                <a href="<?php echo $config['url'];?>" class="new-nav-link" data-active="home">首页</a>
+                <a href="?action=apilist" class="new-nav-link" data-active="apilist">API列表</a>
+                <a href="?action=svip" class="new-nav-link" data-active="svip">套餐中心</a>
+                <a href="?action=about" class="new-nav-link" data-active="about">关于我们</a>
+                <a href="?action=disclaimer" class="new-nav-link" data-active="disclaimer">免责声明</a>
+            </div>
+
+            <div class="new-nav-actions">
+                <?php if(!empty($_SESSION['user_login'])): ?>
+                <div class="nav-user-group">
+                    <a href="?action=user_center" class="nav-user-badge">
+                        <i class="fa-solid fa-circle-user"></i>
+                        <span><?php echo $_SESSION['user_login_name'] ?? '用户中心'; ?></span>
+                    </a>
+                    <a href="./Data/user.php?type=logout" class="nav-logout-btn" title="退出">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+                <?php else: ?>
+                <a href="?action=login" class="new-btn new-btn-login">登录</a>
+                <a href="?action=login&tab=register" class="new-btn new-btn-register">立即注册</a>
+                <?php endif; ?>
+            </div>
+
+            <button class="new-mobile-toggle" mdui-drawer="{target: '#main-drawer', swipe: true}">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 移动端抽屉 -->
+    <div class="mc-drawer mdui-drawer mdui-drawer-close new-drawer" id="main-drawer">
+        <div class="new-drawer-header">
+            <div class="drawer-logo"><span>⚡</span></div>
+            <div class="drawer-title-group">
+                <div class="drawer-title"><?php echo $config['title'];?></div>
+                <div class="drawer-subtitle"><?php echo $config['subtitle'];?></div>
+            </div>
+        </div>
+        <nav class="drawer-nav">
+            <a class="drawer-link" href="<?php echo $config['url'];?>" data-nav="home"><i class="fa-solid fa-house"></i>首页</a>
+            <a class="drawer-link" href="?action=apilist" data-nav="apilist"><i class="fa-solid fa-code"></i>API列表</a>
+            <a class="drawer-link" href="?action=svip" data-nav="svip"><i class="fa-solid fa-crown"></i>套餐中心</a>
+            <a class="drawer-link" href="?action=about" data-nav="about"><i class="fa-solid fa-circle-info"></i>关于我们</a>
+            <a class="drawer-link" href="?action=disclaimer" data-nav="disclaimer"><i class="fa-solid fa-shield-halved"></i>免责声明</a>
+            <a class="drawer-link" href="?action=friendlinks" data-nav="friendlinks"><i class="fa-solid fa-link"></i>友情链接</a>
+        </nav>
+        <div class="drawer-bottom">
+            <p>© <?php echo date('Y');?> <?php echo $config['title'];?></p>
+        </div>
+    </div>
+
+    <!-- 登录对话框 -->
+    <div id="login" class="mc-user-edit mdui-dialog" style="height: 380px;">
+        <div class="mdui-dialog-title new-dialog-header">
+            <button class="mdui-btn mdui-btn-icon" mdui-dialog-close><i class="mdui-icon material-icons">close</i></button> 
+            后台登录
+        </div>
+        <div class="mdui-dialog-content mdui-p-a-2">
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">用户名</label>
+                <input class="mdui-textfield-input" type="text" id="username" />
+            </div>
+            <div class="mdui-textfield mdui-textfield-floating-label">
+                <label class="mdui-textfield-label">密码</label>
+                <input class="mdui-textfield-input" type="password" id="password" />
+            </div>
+            <br>
+            <button class="mdui-btn mdui-color-theme-accent mdui-btn-raised mdui-ripple mdui-float-right" id="submit">登录</button>
+        </div>
+    </div>
+
+    <div class="mdui-dialog" id="loading">
+        <div class="mdui-m-y-2 mdui-m-x-1">
+            <center style="font-size:17px">加载中......</center>
+            <br>
+            <div class="mdui-progress">
+                <div class="mdui-progress-indeterminate"></div>
+            </div>
+        </div>
+    </div>

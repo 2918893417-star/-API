@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>套餐管理 - <?php echo $config['title'];?></title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="./assets/css/mdui.min.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+</head>
+<?php require "header.html";?>
+
+<!-- 页面标题 -->
+<div class="adm-page-header adm-fade-in" style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;">
+    <div>
+        <h1 class="adm-page-title">套餐管理</h1>
+        <p class="adm-page-desc">管理会员套餐，包括价格、时长、等级等</p>
+    </div>
+    <button class="adm-btn adm-btn-primary" @click="openAddDialog()" id="addPlanBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        添加套餐
+    </button>
+</div>
+
+<div id="admin" class="adm-fade-in">
+    <div class="adm-table-wrap">
+        <table class="adm-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>排序</th>
+                    <th>套餐名称</th>
+                    <th>描述</th>
+                    <th>价格</th>
+                    <th>时长</th>
+                    <th>等级</th>
+                    <th>状态</th>
+                    <th style="text-align:right;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="plan in plans" :key="plan.id">
+                    <td><span class="adm-badge adm-badge-default">{{ plan.id }}</span></td>
+                    <td>{{ plan.sort }}</td>
+                    <td><strong style="color:var(--adm-text);">{{ plan.name }}</strong></td>
+                    <td>{{ plan.description }}</td>
+                    <td><strong style="color:var(--adm-warning);">¥{{ plan.price }}</strong></td>
+                    <td>
+                        <span class="adm-badge adm-badge-info" v-if="plan.duration > 0">{{ plan.duration }}天</span>
+                        <span class="adm-badge adm-badge-warning" v-else>永久</span>
+                    </td>
+                    <td><code style="background:var(--adm-primary-bg);color:var(--adm-primary-dark);padding:2px 8px;border-radius:4px;">L{{ plan.level }}</code></td>
+                    <td>
+                        <span class="adm-badge" :class="plan.status == 1 ? 'adm-badge-success' : 'adm-badge-danger'">
+                            <span class="adm-status-dot" :style="{background: plan.status == 1 ? '#10b981' : '#ef4444'}"></span>
+                            {{ plan.status == 1 ? '上架' : '下架' }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="adm-table-actions" style="justify-content:flex-end;">
+                            <button class="adm-btn-icon" @click="editPlan(plan)" title="编辑">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="adm-btn-icon" @click="deletePlan(plan)" title="删除" style="color:var(--adm-danger);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                <tr v-if="plans.length === 0">
+                    <td colspan="9">
+                        <div class="adm-empty">
+                            <div class="adm-empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </div>
+                            <div class="adm-empty-title">暂无套餐数据</div>
+                            <div style="font-size:13px;margin-top:4px;">点击上方按钮添加</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 添加/编辑套餐弹窗 -->
+<div class="mdui-dialog" id="plan-dialog">
+    <div class="mdui-dialog-title">
+        {{ editingPlan.id ? '编辑套餐' : '添加套餐' }}
+        <button class="mdui-btn mdui-btn-icon" mdui-dialog-close style="color:white;"><i class="mdui-icon material-icons">close</i></button>
+    </div>
+    <div class="mdui-dialog-content">
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">套餐名称</label>
+            <input class="mdui-textfield-input" type="text" v-model="editingPlan.name" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">描述</label>
+            <input class="mdui-textfield-input" type="text" v-model="editingPlan.description" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">价格</label>
+            <input class="mdui-textfield-input" type="number" step="0.01" v-model="editingPlan.price" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">时长(天, 0=永久)</label>
+            <input class="mdui-textfield-input" type="number" v-model="editingPlan.duration" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">会员等级(0=普通, 1=月, 2=永久, 3=年)</label>
+            <input class="mdui-textfield-input" type="number" v-model="editingPlan.level" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">排序</label>
+            <input class="mdui-textfield-input" type="number" v-model="editingPlan.sort" />
+        </div>
+        <div class="mdui-textfield">
+            <label class="mdui-textfield-label">状态(1=上架, 0=下架)</label>
+            <input class="mdui-textfield-input" type="number" v-model="editingPlan.status" />
+        </div>
+    </div>
+    <div class="mdui-dialog-actions">
+        <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        <button class="mdui-btn mdui-color-theme-accent" @click="savePlan">保存</button>
+    </div>
+</div>
+
+<?php require "footer.html";?>
+<script src="./assets/js/jquery.min.js"></script>
+<script src="./assets/js/mdui.min.js"></script>
+<script src="./assets/js/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '#admin',
+        data: {
+            plans: [],
+            editingPlan: { id: 0, name: '', description: '', price: 0, duration: 30, level: 1, sort: 0, status: 1, features: '' }
+        },
+        created() { this.loadPlans(); },
+        methods: {
+            loadPlans() {
+                fetch('./Data/user.php?type=getAllPlans')
+                    .then(r => r.json())
+                    .then(json => { if(json.code === 0) this.plans = json.data; });
+            },
+            openAddDialog() {
+                this.editingPlan = { id: 0, name: '', description: '', price: 0, duration: 30, level: 1, sort: 0, status: 1, features: '' };
+                new mdui.Dialog('#plan-dialog').open();
+            },
+            editPlan(plan) {
+                this.editingPlan = {...plan};
+                new mdui.Dialog('#plan-dialog').open();
+            },
+            savePlan() {
+                const body = new URLSearchParams();
+                for(const key in this.editingPlan){
+                    body.append(key, this.editingPlan[key]);
+                }
+                fetch('./Data/user.php?type=savePlan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString()
+                }).then(r => r.json()).then(json => {
+                    if(json.code === 0){
+                        mdui.snackbar('保存成功');
+                        mdui.Dialog.getInstance('#plan-dialog').close();
+                        this.loadPlans();
+                    } else {
+                        mdui.snackbar(json.msg);
+                    }
+                });
+            },
+            deletePlan(plan) {
+                if(confirm('确定要删除套餐 ' + plan.name + ' 吗?')){
+                    fetch('./Data/user.php?type=deletePlan', {
+                        method: 'POST',
+                        body: 'id=' + plan.id
+                    }).then(r => r.json()).then(json => {
+                        if(json.code === 0){
+                            mdui.snackbar('删除成功');
+                            this.loadPlans();
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    // 顶栏添加按钮
+    document.getElementById('addPlanBtn').addEventListener('click', function(){
+        app.openAddDialog();
+    });
+</script>
+</body>
+</html>

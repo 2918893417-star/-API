@@ -1,0 +1,85 @@
+/* Highlight.js - One Dark Pro Theme (基础覆盖，完整覆盖在 doc.css 中) */
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: transparent;
+    color: #abb2bf;
+}
+
+.hljs,
+.hljs-subst {
+    color: #abb2bf;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion {
+    color: #5c6370;
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-link {
+    color: #c678dd;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-name,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name {
+    color: #98c379;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet {
+    color: #d19a66;
+}
+
+.hljs-function,
+.hljs-function .hljs-title,
+.hljs-title.function_ {
+    color: #61afef;
+}
+
+.hljs-variable,
+.hljs-attr,
+.hljs-template-variable,
+.hljs-class .hljs-title {
+    color: #e06c75;
+}
+
+.hljs-tag {
+    color: #e06c75;
+}
+
+.hljs-selector-class,
+.hljs-selector-id {
+    color: #e5c07b;
+}
+
+.hljs-regexp {
+    color: #56b6c2;
+}
+
+.hljs-meta {
+    color: #e06c75;
+}
+
+.hljs-params {
+    color: #abb2bf;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}

@@ -1,0 +1,798 @@
+/* ============================================
+   企业级安装页面样式表
+   现代化 · 玻璃拟态 · 动态极光
+   ============================================ */
+
+:root {
+    --install-primary: #2563eb;
+    --install-primary-dark: #1d4ed8;
+    --install-primary-light: #60a5fa;
+    --install-primary-bg: rgba(37, 99, 235, 0.08);
+    --install-success: #10b981;
+    --install-success-bg: rgba(16, 185, 129, 0.1);
+    --install-text: #1e293b;
+    --install-text-secondary: #64748b;
+    --install-text-muted: #94a3b8;
+    --install-border: #e2e8f0;
+    --install-border-light: #f1f5f9;
+    --install-bg: #f8fafc;
+    --install-card-bg: rgba(255, 255, 255, 0.85);
+    --install-card-border: rgba(255, 255, 255, 0.4);
+    --install-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+    --install-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --install-radius: 1rem;
+    --install-radius-lg: 1.5rem;
+}
+
+/* 基础重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 页面主体 */
+body.install-page {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6b8dd6 100%);
+    min-height: 100vh;
+    color: var(--install-text);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* 动态极光背景 */
+.install-aurora {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.install-aurora::before,
+.install-aurora::after {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: aurora 20s infinite ease-in-out;
+}
+
+.install-aurora::before {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    top: -200px;
+    left: -200px;
+}
+
+.install-aurora::after {
+    background: linear-gradient(135deg, #6b8dd6, #8e3cfc);
+    bottom: -200px;
+    right: -200px;
+    animation-delay: -10s;
+}
+
+@keyframes aurora {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(100px, -50px) scale(1.1);
+    }
+    50% {
+        transform: translate(-50px, 100px) scale(0.95);
+    }
+    75% {
+        transform: translate(-100px, 50px) scale(1.05);
+    }
+}
+
+/* 主容器 */
+.install-container {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 顶部 Logo 区域 */
+.install-header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.install-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.install-logo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+}
+
+.install-logo svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+    position: relative;
+    z-index: 1;
+}
+
+.install-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.install-subtitle {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 400;
+}
+
+/* 步骤指示器 */
+.install-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 32px;
+    gap: 0;
+    animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.install-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    max-width: 100px;
+}
+
+.install-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+}
+
+.install-step.active .install-step-circle {
+    background: white;
+    color: var(--install-primary);
+    border-color: white;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
+}
+
+.install-step.completed .install-step-circle {
+    background: var(--install-success);
+    border-color: var(--install-success);
+    color: white;
+}
+
+.install-step-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.8);
+    margin-top: 8px;
+    white-space: nowrap;
+}
+
+.install-step.active .install-step-label {
+    color: white;
+    font-weight: 600;
+}
+
+.install-step-line {
+    flex: 1;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 0 8px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.install-step-line.completed {
+    background: var(--install-success);
+}
+
+.install-step-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 玻璃拟态卡片 */
+.install-card {
+    background: var(--install-card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: var(--install-radius-lg);
+    border: 1px solid var(--install-card-border);
+    box-shadow: var(--install-shadow);
+    padding: 40px;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+    position: relative;
+    overflow: hidden;
+}
+
+.install-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--install-primary), transparent);
+    opacity: 0.6;
+}
+
+.install-card-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.install-card-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--install-primary-bg);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: var(--install-primary);
+}
+
+.install-card-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.install-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--install-text);
+    margin-bottom: 8px;
+}
+
+.install-card-desc {
+    font-size: 14px;
+    color: var(--install-text-secondary);
+    line-height: 1.6;
+}
+
+/* 表单样式 */
+.install-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.install-form-group {
+    position: relative;
+}
+
+.install-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--install-text);
+    margin-bottom: 8px;
+}
+
+.install-form-required {
+    color: var(--install-primary);
+    margin-left: 2px;
+}
+
+.install-form-input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--install-text);
+    background: white;
+    border: 2px solid var(--install-border);
+    border-radius: var(--install-radius);
+    transition: all 0.3s ease;
+    outline: none;
+    font-family: inherit;
+}
+
+.install-form-input:hover {
+    border-color: var(--install-primary-light);
+}
+
+.install-form-input:focus {
+    border-color: var(--install-primary);
+    box-shadow: 0 0 0 4px var(--install-primary-bg);
+}
+
+.install-form-input::placeholder {
+    color: var(--install-text-muted);
+}
+
+.install-form-input:read-only,
+.install-form-input:disabled {
+    background: var(--install-border-light);
+    color: var(--install-text-muted);
+}
+
+.install-form-hint {
+    font-size: 12px;
+    color: var(--install-text-muted);
+    margin-top: 6px;
+}
+
+.install-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* 下拉选择 */
+.install-form-select {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 14px;
+    color: var(--install-text);
+    background: white;
+    border: 2px solid var(--install-border);
+    border-radius: var(--install-radius);
+    transition: all 0.3s ease;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+}
+
+.install-form-select:hover {
+    border-color: var(--install-primary-light);
+}
+
+.install-form-select:focus {
+    border-color: var(--install-primary);
+    box-shadow: 0 0 0 4px var(--install-primary-bg);
+}
+
+/* 按钮样式 */
+.install-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    justify-content: flex-end;
+}
+
+.install-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    border-radius: var(--install-radius);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    min-width: 140px;
+}
+
+.install-btn-primary {
+    background: linear-gradient(135deg, var(--install-primary) 0%, var(--install-primary-dark) 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+}
+
+.install-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(37, 99, 235, 0.45);
+}
+
+.install-btn-primary:active {
+    transform: translateY(0);
+}
+
+.install-btn-secondary {
+    background: white;
+    color: var(--install-text);
+    border: 2px solid var(--install-border);
+}
+
+.install-btn-secondary:hover {
+    border-color: var(--install-primary);
+    color: var(--install-primary);
+}
+
+.install-btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+}
+
+.install-btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+}
+
+.install-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* 功能列表 */
+.install-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin: 32px 0;
+}
+
+.install-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--install-primary-bg);
+    border-radius: var(--install-radius);
+    border: 1px solid rgba(37, 99, 235, 0.1);
+    transition: all 0.3s ease;
+}
+
+.install-feature:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--install-shadow-sm);
+}
+
+.install-feature-icon {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--install-primary);
+    flex-shrink: 0;
+}
+
+.install-feature-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.install-feature-text {
+    font-size: 13px;
+    color: var(--install-text);
+    font-weight: 500;
+}
+
+.install-feature-desc {
+    font-size: 12px;
+    color: var(--install-text-secondary);
+    margin-top: 2px;
+}
+
+/* 完成页面样式 */
+.install-complete {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.install-complete-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.install-complete-icon svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 20px 50px rgba(16, 185, 129, 0.5);
+    }
+}
+
+.install-complete-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--install-text);
+    margin-bottom: 12px;
+}
+
+.install-complete-desc {
+    font-size: 15px;
+    color: var(--install-text-secondary);
+    line-height: 1.7;
+    margin-bottom: 8px;
+}
+
+.install-complete-links {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+/* 提示框 */
+.install-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: var(--install-radius);
+    margin-bottom: 24px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.install-alert-info {
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    color: var(--install-primary-dark);
+}
+
+.install-alert-success {
+    background: var(--install-success-bg);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #047857;
+}
+
+.install-alert-warning {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: #b45309;
+}
+
+.install-alert-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.install-alert-content {
+    flex: 1;
+}
+
+/* 代码块 / 命令提示 */
+.install-code {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 16px 20px;
+    border-radius: var(--install-radius);
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 16px 0;
+    overflow-x: auto;
+}
+
+/* 底部版权 */
+.install-footer {
+    text-align: center;
+    margin-top: 32px;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+
+.install-footer a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.install-footer a:hover {
+    color: white;
+}
+
+/* 动画 */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 列表样式 */
+.install-list {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+}
+
+.install-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    font-size: 14px;
+    color: var(--install-text);
+    border-bottom: 1px solid var(--install-border-light);
+}
+
+.install-list li:last-child {
+    border-bottom: none;
+}
+
+.install-list-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--install-primary);
+    flex-shrink: 0;
+}
+
+/* 进度环 */
+.install-progress-ring {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    margin: 0 auto;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .install-container {
+        padding: 24px 16px;
+    }
+
+    .install-card {
+        padding: 28px 24px;
+    }
+
+    .install-title {
+        font-size: 22px;
+    }
+
+    .install-subtitle {
+        font-size: 14px;
+    }
+
+    .install-form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .install-features {
+        grid-template-columns: 1fr;
+    }
+
+    .install-step-label {
+        font-size: 11px;
+    }
+
+    .install-step-circle {
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+    }
+
+    .install-actions {
+        flex-direction: column-reverse;
+    }
+
+    .install-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .install-steps {
+        gap: 0;
+    }
+
+    .install-step {
+        max-width: 70px;
+    }
+
+    .install-step-line {
+        margin: 0 4px 20px;
+    }
+
+    .install-step-label {
+        font-size: 10px;
+    }
+}
+
+/* 打印样式 */
+@media print {
+    .install-aurora,
+    .install-header,
+    .install-steps,
+    .install-footer {
+        display: none;
+    }
+
+    .install-card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
